@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Poppins:wght@400;600&display=swap');
+@import "tailwindcss";
+@tailwind utilities;
+
+@theme {
+    --color-*: initial;
+  
+    --color-white: #FEFEFE;
+    --color-gray-50: #EEEEEE;
+    --color-gray-100: #C8C8C8;
+    --color-gray-600: #677081;
+    --color-black: #141212;
+
+    --color-red-tx: #CB3838;
+    --color-blue-tx: #0B0047;
+
+    --color-red-50: #FFD2D2;
+    
+    --color-blue-50: #DAD2FF;
+    --color-blue-500: #4F89F5;
+
+    --color-success-base: #00B37E;
+    --color-success-light: #04D361;
+    --color-danger-base: #AD1E12;
+    --color-danger-light: #E60004;
+
+    --font-sans: 'Montserrat', sans-serif;
+    --font-heading: 'Poppins', sans-serif;
+}
+
+@layer base {
+    .icon {
+      @apply size-6 sm:size-8
+    }
+  }
+
+body {
+    @apply font-sans text-black mx-auto border-x-1 max-w-3xl border-gray-600;
+  }
+  
+h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+}
+
+h1 {
+    @apply text-3xl sm:text-4xl md:text-5xl /*lg:text-6xl xl:text-7xl*/ font-extrabold;
+}
+
+h2 {
+    @apply text-2xl sm:text-3xl md:text-4xl /*lg:text-5xl xl:text-6xl*/ font-extrabold;
+}
+
+h3 {
+    @apply text-xl sm:text-2xl md:text-3xl /*lg:text-4xl xl:text-5xl*/ font-bold; 
+}
+
+h4 { 
+    @apply text-base sm:text-xl md:text-2xl /*lg:text-3xl xl:text-4xl*/ font-bold; 
+}
+
+p {
+    @apply text-base md:text-xl;
+}
+
