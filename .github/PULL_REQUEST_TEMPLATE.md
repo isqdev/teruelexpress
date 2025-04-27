@@ -1,5 +1,5 @@
 ### O que foi feito?
-Descrição do que foi feito implementado ou modificado (1 item p/ linha)
+Descrição do que foi implementado ou modificado (1 item p/ linha)
 
 - 
 
