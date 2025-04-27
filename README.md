@@ -34,3 +34,6 @@ Para o front-end, este projeto utiliza as seguintes tecnologias:
 | Tailwind CSS      | Framework de utilitários para estilização rápida e responsiva.            |
 | Zod               | Biblioteca para validação de esquemas e dados com tipagem estática.       |
 | Phosphor Icons    | Biblioteca de ícones |
+
+## 📝 Padrões de Código
+O código deste projeto segue padrões e convenções definidos em [STANDARTS.MD](./STANDARTS.md)

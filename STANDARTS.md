@@ -62,7 +62,7 @@ Na grande maioria dos casos não será necessário criar um arquivo CSS, devido 
 - **Retornar "null"**: Evite retornar `null` de funções; prefira valores padronizados.
 
 ---
-### Boas Práticas React
+## Boas Práticas React
 Veja a documentação completa em [react.dev](https://react.dev/)
 
 - **Componentes pequenos**: Quebre a UI em componentes reutilizáveis e com **uma única responsabilidade**.
