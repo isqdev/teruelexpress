@@ -4,8 +4,8 @@ export function Footer () {
     return (
         <>
             <div className="bg-blue-tx">
-                <Section>
-                    <h2 className="text-white">Contato</h2>
+                <Section className="py-4 sm:py-6 md:py-8">
+                    <h4 className="text-white">Contato</h4>
                 </Section>
             </div>
         </>

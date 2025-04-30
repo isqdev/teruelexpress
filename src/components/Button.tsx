@@ -8,7 +8,7 @@ export function Button({ className, children, ...props }: ButtonProps) {
   return (
     <button
       className={twMerge(
-        "bg-gray-100 w-full h-12  sm:h-14 hover:cursor-pointer hover:scale-101 hover:opacity-90 duration-200 px-3 rounded-2xl inline-flex items-center gap-3",
+        "bg-gray-100 w-full h-12 sm:h-14 hover:cursor-pointer hover:scale-101 hover:opacity-90 duration-200 px-3 rounded-2xl flex items-center gap-3",
         className
       )}
       {...props}
@@ -23,7 +23,7 @@ interface ButtonTextProps extends ComponentProps<"span"> {}
 export function ButtonText({ children, className, ...props }: ButtonTextProps) {
   return (
     <span
-      className={twMerge("text-base sm:text-xl font-bold", className)}
+      className={twMerge("text-base w-full text-left sm:text-xl font-bold", className)}
       {...props}
     >
       {children}
