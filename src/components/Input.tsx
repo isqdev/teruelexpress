@@ -6,11 +6,11 @@ interface InputRootProps extends ComponentProps<"div"> {
   status?: "default" | "error" | "validated";
 }
 
-export function InputRoot({ status = "default", ...props }: InputRootProps) {
+export function InputRoot({ status = "default", className, ...props }: InputRootProps) {
   return (
     <div
       data-status={status}
-      className="group bg-white h-12 sm:h-14 border-2 border-gray-600 rounded-2xl px-3 flex items-center gap-3 focus-within:border-blue-500 data-[status=error]:border-danger-base data-[status=validated]:border-success-base"
+      className={twMerge("group bg-white h-12 sm:h-14 border-2 border-gray-600 rounded-2xl px-3 flex items-center gap-3 focus-within:border-blue-500 data-[status=error]:border-danger-base data-[status=validated]:border-success-base", className)}
       {...props}
     />
   );
@@ -18,10 +18,10 @@ export function InputRoot({ status = "default", ...props }: InputRootProps) {
 
 interface InputIconProps extends ComponentProps<"span"> {}
 
-export function InputIcon(props: InputIconProps) {
+export function InputIcon({className, ...props}: InputIconProps) {
   return (
     <span
-      className="text-gray-600 group-focus-within:text-blue-500 group-data-[error=true]:text-danger-base group-data-[status=error]:border-danger-base data-[status=validated]:border-success-base"
+      className={twMerge("text-gray-600 group-focus-within:text-blue-500 group-data-[error=true]:text-danger-base group-data-[status=error]:border-danger-base data-[status=validated]:border-success-base", className)}
       {...props}
     />
   );
@@ -60,7 +60,7 @@ export function InputMessage({ className, ...props }: InputLabelProps) {
 
     <span
       className={twMerge(
-        "font-bold text-xs sm:text-base text-red-50 flex justify-end",
+        "font-bold text-xs sm:text-base text-black flex justify-end",
         className
       )}
       {...props}
