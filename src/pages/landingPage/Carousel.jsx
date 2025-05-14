@@ -1,5 +1,6 @@
 import * as React from "react"
 import Autoplay from "embla-carousel-autoplay"
+import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, Section, Shape } from "@/components";
 
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -27,8 +28,9 @@ export function CarouselPlugin() {
           <CarouselItem key={index}>
             <div className="p-1">
               <Card>
-                <CardContent className="flex items-center justify-center p-6">
-                  <span className="text-4xl font-semibold">{index + 1}</span>
+                <CardContent className="flex items-center justify-center px-0" >
+                  <Image src="./src/assets/car04.jpg"/>
+                  
                 </CardContent>
               </Card>
             </div>
