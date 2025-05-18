@@ -1,27 +1,67 @@
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
 import { ArrowArcRight, ArrowClockwise, ArrowFatLeft, ArrowLineRight, ArrowRight, ArrowsInSimple, ArrowSquareRight, FlowArrow, NavigationArrow, Truck } from "phosphor-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 
-function FormField({ title, placeholder, message, ...props }) {
+function FormField({ title, placeholder, register, name, error, ...props }) {
     return (
         <>
             <InputLabel className="pt-4">{title}</InputLabel>
             <InputRoot>
-                <InputField placeholder={placeholder} />
+                <InputField placeholder={placeholder} {...register(name)}/>
             </InputRoot>
-            <InputMessage>{message}</InputMessage>
+            <InputMessage>{error?.message}</InputMessage>
         </>
     );
 }
 
-function SetForms({ ...props }) {
+function AddressForms() {
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors },
+    } = useForm();
+
+    const cep = watch("cep");
+
+    useEffect(() => {
+        const fetchAddress = async () => {
+            const cleanedCep = cep?.replace(/\D/g, "");
+
+            if (cleanedCep?.length === 8) {
+                try {
+                    const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`);
+                    const data = await response.json();
+
+                    if (data.erro) {
+                        console.error("CEP invalido");
+                        return;
+                    }
+
+                    setValue("street", data.logradouro);
+                    setValue("neighborhood", data.bairro);
+                    setValue("city", data.localidade);
+                    setValue("state", data.uf);
+                } catch (error) {
+                    console.error("Erro ao buscar o CEP ", error);
+                }
+            }
+        };
+        fetchAddress();
+    }, [cep, setValue]);
+
     return (
         <>
-            <FormField title="CEP" placeholder="Digite seu CEP" message="CEP invalido" />
-            <FormField title="Estado" placeholder="Digite seu Estado" message="Estado invalido" />
-            <FormField title="Cidade" placeholder="Digite sua Cidade" message="Cidade invalida" />
-            <FormField title="Bairro" placeholder="Digite seu Bairro" message="Bairro invalido" />
-            <FormField title="Rua" placeholder="Digite sua Rua" message="Rua invalida" />
-            <FormField title="Número" placeholder="Digite seu Número" message="Número invalido" />
+            <form onSubmit={handleSubmit()}>
+                <FormField id="cep" name="cep" title="CEP" placeholder="Digite seu CEP" error={errors.cep} register={register} />
+                <FormField id="state" name="state" title="Estado" placeholder="Digite seu Estado" error={errors.state} register={register} />
+                <FormField id="city" name="city" title="Cidade" placeholder="Digite sua Cidade" error={errors.city} register={register} />
+                <FormField id="neighborhood" name="neighborhood" title="Bairro" placeholder="Digite seu Bairro" error={errors.neighborhood} register={register} />
+                <FormField id="street" name="street" title="Rua" placeholder="Digite sua Rua" error={errors.street} register={register} />
+                <FormField id="number" name="number" title="Número" placeholder="Digite seu Número" error={errors.number} register={register} />
+            </form>
         </>
     );
 }
@@ -34,12 +74,12 @@ export function Budget() {
                 <div className="flex flex-col gap-8">
                     <Shape className="border">
                         <h3 className="pb-4">Endereço origem</h3>
-                        <SetForms/>
+                        <AddressForms />
                     </Shape>
 
                     <Shape className="border">
                         <h3 className="pb-4">Endereço destino</h3>
-                        <SetForms />
+                        <AddressForms />
                     </Shape>
 
                     <Shape className="border">
@@ -48,28 +88,28 @@ export function Budget() {
                             <div>
                                 <InputLabel>Largura</InputLabel>
                                 <InputRoot>
-                                    <InputField placeholder="Digite seu CEP" />
+                                    <InputField placeholder="Largura" />
                                 </InputRoot>
                                 <InputMessage>Largura Invalida</InputMessage>
                             </div>
                             <div>
                                 <InputLabel>Altura</InputLabel>
                                 <InputRoot>
-                                    <InputField placeholder="Digite seu Estado" />
+                                    <InputField placeholder="Altura" />
                                 </InputRoot>
                                 <InputMessage>Altura invalida</InputMessage>
                             </div>
                             <div>
                                 <InputLabel>Comprimento</InputLabel>
                                 <InputRoot>
-                                    <InputField placeholder="Digite sua Cidade" />
+                                    <InputField placeholder="Comprimento" />
                                 </InputRoot>
                                 <InputMessage>Comprimento invalido</InputMessage>
                             </div>
                             <div>
                                 <InputLabel>Peso</InputLabel>
                                 <InputRoot>
-                                    <InputField placeholder="Digite seu Bairro" />
+                                    <InputField placeholder="Peso" />
                                 </InputRoot>
                                 <InputMessage>Peso invalido</InputMessage>
                             </div>
@@ -98,12 +138,6 @@ export function Budget() {
                     <ArrowRight className="icon text-gray-100" />
                 </Button>
 
-                <Button className="bg-red-tx">
-                    <ButtonText className="text-left text-white">
-                        Enviar orçamento
-                    </ButtonText>
-                    <ArrowRight className="icon text-white" />
-                </Button>
             </Section>
         </>
     )
