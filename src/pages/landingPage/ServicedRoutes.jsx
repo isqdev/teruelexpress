@@ -3,12 +3,15 @@ import { data } from "autoprefixer";
 import { CaretDown, MapPin, Package } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { map } from "zod";
+import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "@/components/ui/command";
+import { CommandRoot } from "cmdk";
 
 export function ServicedRoutes() {
 
   const [cities, setCities] = useState([]);
   const [isMap, setIsMap] = useState(true);
   const [style, setStyle] = useState('');
+
 
   const toggleComponent = () => {
     setIsMap(!isMap);
@@ -21,34 +24,44 @@ export function ServicedRoutes() {
       then(data => setCities(data))
   }, []);
 
+
   function Map() {
     return (
-    <>
-      <div className="flex justify-evenly font-bold pb-6">
-        <p className="border-b-3 border-red-tx">Mapa</p>
-        <p onClick={toggleComponent}>Ver lista</p>
-      </div>
+      <>
+        <div className="flex justify-evenly font-bold pb-6">
+          <p className="border-b-3 border-red-tx">Mapa</p>
+          <p onClick={toggleComponent}>Ver lista</p>
+        </div>
 
-      <div>
-        <InputLabel>Cidade de origem</InputLabel>
-        <InputRoot status="validated">
-          <InputIcon>
-            <MapPin className="icon" />
-          </InputIcon>
-          <InputField placeholder="Ex: Paranavaí" />
-        </InputRoot>
-        <InputMessage>Atendemos essa cidade!</InputMessage>
+        <div>
+          <CommandRoot>
+            <Command>
+                <CommandInput placeholder="Ex: Paranavaí" />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup>
 
-        <InputLabel>Cidade de destino</InputLabel>
-        <InputRoot>
-          <InputIcon>
-            <MapPin className="icon" />
-          </InputIcon>
-          <InputField placeholder="Ex: Maringá" />
-        </InputRoot>
-        <InputMessage>Cidade fora da rota!</InputMessage>
-      </div>
-    </>
+                <CommandItem>Calendar</CommandItem>
+                <CommandItem>Search Emoji</CommandItem>
+                <CommandItem>Calculator</CommandItem>
+                <CommandItem>Profile</CommandItem>
+                <CommandItem>Billing</CommandItem>
+                <CommandItem>Settings</CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+          </CommandRoot>
+
+          <InputLabel>Cidade de destino</InputLabel>
+          <InputRoot>
+            <InputIcon>
+              <MapPin className="icon" />
+            </InputIcon>
+            <InputField placeholder="Ex: Maringá" />
+          </InputRoot>
+          <InputMessage>Cidade fora da rota!</InputMessage>
+        </div>
+      </>
     )
   }
 
@@ -65,7 +78,7 @@ export function ServicedRoutes() {
             {cities.map(city => (
               <li key={cities.indexOf(city)}>
                 <p className="flex">
-                  <MapPin className="icon mr-4"/>
+                  <MapPin className="icon mr-4" />
                   {city}
                 </p>
               </li>
@@ -89,7 +102,7 @@ export function ServicedRoutes() {
           <h2 className="pb-3">Rotas atendidas</h2>
           <p className="pb-3">Aguardando texto produzido por PO, até lá, estará vazio, assim como a contribuição do PO</p>
 
-          {isMap ? <Map/>: <List/>}
+          {isMap ? <Map /> : <List />}
 
           <Button className="bg-red-tx mt-5">
             <Package className="icon text-white" />
