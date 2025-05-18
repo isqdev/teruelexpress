@@ -1,6 +1,6 @@
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
 import { ArrowArcRight, ArrowClockwise, ArrowFatLeft, ArrowLineRight, ArrowRight, ArrowsInSimple, ArrowSquareRight, FlowArrow, NavigationArrow, Truck } from "phosphor-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 function FormField({ title, placeholder, register, name, error, ...props }) {
@@ -8,7 +8,7 @@ function FormField({ title, placeholder, register, name, error, ...props }) {
         <>
             <InputLabel className="pt-4">{title}</InputLabel>
             <InputRoot>
-                <InputField placeholder={placeholder} {...register(name)}/>
+                <InputField placeholder={placeholder} {...register(name)} />
             </InputRoot>
             <InputMessage>{error?.message}</InputMessage>
         </>
@@ -66,7 +66,41 @@ function AddressForms() {
     );
 }
 
+function MeasuresForms() {
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors },
+    } = useForm();
+
+    return (
+        <>
+            <div>
+                <FormField id="width" name="width" title="Largura" placeholder="Largura" error={errors.cep} register={register} />
+            </div>
+            <div>
+                <FormField id="height" name="height" title="Altura" placeholder="Altura" error={errors.cep} register={register} />
+            </div>
+            <div>
+                <FormField id="length" name="length" title="Comprimento" placeholder="Comprimento" error={errors.cep} register={register} />
+            </div>
+            <div>
+                <FormField id="weight" name="weight" title="Peso" placeholder="Peso" error={errors.cep} register={register} />
+            </div>
+        </>
+    )
+}
+
 export function Budget() {
+    const [isSimulated, setIsSimulated] = useState(false);
+
+    const handleSimulate = () => {
+        console.log("RODANDO SIMULACAO")
+        setIsSimulated(true);
+    };
+
     return (
         <>
             <Section>
@@ -84,58 +118,31 @@ export function Budget() {
 
                     <Shape className="border">
                         <h3 className="pb-4">Dimensões da carga</h3>
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <InputLabel>Largura</InputLabel>
-                                <InputRoot>
-                                    <InputField placeholder="Largura" />
-                                </InputRoot>
-                                <InputMessage>Largura Invalida</InputMessage>
-                            </div>
-                            <div>
-                                <InputLabel>Altura</InputLabel>
-                                <InputRoot>
-                                    <InputField placeholder="Altura" />
-                                </InputRoot>
-                                <InputMessage>Altura invalida</InputMessage>
-                            </div>
-                            <div>
-                                <InputLabel>Comprimento</InputLabel>
-                                <InputRoot>
-                                    <InputField placeholder="Comprimento" />
-                                </InputRoot>
-                                <InputMessage>Comprimento invalido</InputMessage>
-                            </div>
-                            <div>
-                                <InputLabel>Peso</InputLabel>
-                                <InputRoot>
-                                    <InputField placeholder="Peso" />
-                                </InputRoot>
-                                <InputMessage>Peso invalido</InputMessage>
-                            </div>
+                        <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
+                            <MeasuresForms />
                         </div>
                     </Shape>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6 py-8 items-end">
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6 py-8 items-end">
                     <div>
                         <InputLabel>Orçamento aproximado</InputLabel>
                         <InputRoot>
                             <InputField placeholder="R$" />
                         </InputRoot>
                     </div>
-                    <Button className="bg-red-tx">
+                    <Button className="bg-red-tx" onClick={handleSimulate}>
                         <ButtonText className="text-center text-white">
                             Simular
                         </ButtonText>
                     </Button>
                 </div>
 
-                <Button className="bg-gray-50">
-                    <ButtonText className="text-left text-gray-100">
+                <Button className={isSimulated ? "bg-red-tx" : "bg-gray-50"} disabled={!isSimulated}>
+                    <ButtonText className={isSimulated ? "text-white" : "text-gray-100"}>
                         Enviar orçamento
                     </ButtonText>
-                    <ArrowRight className="icon text-gray-100" />
+                    <ArrowRight className={isSimulated ? "icon text-white" : "icon text-gray-100"} />
                 </Button>
 
             </Section>
