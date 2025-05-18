@@ -40,7 +40,6 @@ export function CarouselPlugin() {
               <Card className="border-0 px-0 py-0 gap-6 ">
                 <CardContent className="flex items-center justify-center py-0 px-0  " >
                   <Image src={src} className=" aspect-[16/7] object-cover w-full h-full "/>
-                  
                 </CardContent>
               </Card>
             </div>
