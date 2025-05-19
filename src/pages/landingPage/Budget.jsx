@@ -5,14 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import cities from "@/assets/cities.json";
-
-function normalize(str) {
-    return str
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .trim();
-}
+import { normalize } from "../../lib/utils";
 
 export function Budget() {
     const [isSimulated, setIsSimulated] = useState(false);
