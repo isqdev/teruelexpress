@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { LandingPage } from "../pages/landingPage";
-import { LoginPage } from "../pages/login/LoginPage";
-import { SignUpPage } from "../pages/signUp/SignUpPage";
+import { LoginPage } from "../pages/authentication/LoginPage";
+import { SignUpPage } from "../pages/authentication/SignUpPage";
 import { Home } from "../pages/home";
 
 export function AppRoutes() {

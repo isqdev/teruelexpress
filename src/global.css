@@ -32,6 +32,8 @@
 
     --font-sans: 'Montserrat', sans-serif;
     --font-heading: 'Poppins', sans-serif;
+
+    --breakpoint-xs: 22rem;
 }
 
 @layer base {
