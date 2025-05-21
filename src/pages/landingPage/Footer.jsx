@@ -9,7 +9,7 @@ export function Footer() {
                 <Section className="py-4 sm:py-6 md:py-8 lg:py-8">
                     <h4 className="text-white">Contato</h4>
                     <div className="xl:grid xl:grid-cols-3 xl:gap-x-3">
-                        <Link to="https://wa.me/5544999965596">
+                        <Link to="https://wa.me/5544999965596" target="_blank">
                             <Button className="bg-white mt-2">
                                 <WhatsappLogo className="icon" />
                                 <ButtonText className="font-normal text-black">
@@ -18,7 +18,7 @@ export function Footer() {
                                 <ArrowSquareOut className="icon" />
                             </Button>
                         </Link>
-                        <Link to="https://wa.me/5544920001842">
+                        <Link to="https://wa.me/5544920001842" target="_blank">
                             <Button className="bg-white mt-2">
                                 <WhatsappLogo className="icon" />
                                 <ButtonText className="font-normal text-black">
@@ -27,7 +27,7 @@ export function Footer() {
                                 <ArrowSquareOut className="icon" />
                             </Button>
                         </Link>
-                        <Link to="mailto:teruelexpress.servicos@gmail.com">
+                        <Link to="mailto:teruelexpress.servicos@gmail.com" target="_blank">
                             <Button className="bg-white mt-2">
                                 <EnvelopeSimple className="icon" />
                                 <ButtonText className="font-normal text-black">
