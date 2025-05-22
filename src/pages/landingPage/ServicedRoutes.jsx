@@ -104,7 +104,7 @@ function CitySearch({ suggestions, title, placeholder }) {
 
       {isWriting && <ul className="bg-gray-50 rounded-2xl absolute top-full z-50 w-full">
         {filteredSuggestions.map((suggestion, index) => (
-          <li key={index} onClick={() => handleSelect(suggestion)} onBlur={() => setIsWriting(false)}>
+          <li key={index} onMouseDown={() => handleSelect(suggestion)} onBlur={() => setIsWriting(false)}>
             <p className="hover:bg-gray-100 hover:cursor-pointer rounded-2xl overflow-hidden pl-5 py-2 "> {suggestion}</p>
           </li>
         ))}
