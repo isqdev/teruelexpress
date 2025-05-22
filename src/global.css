@@ -43,7 +43,7 @@
   }
 
 body {
-    @apply font-sans text-black mx-auto border-x-1 max-w-495; 
+    @apply font-sans text-black mx-auto; 
   }
 
 h1, h2, h3, h4, h5, h6 {
