@@ -11,11 +11,13 @@ export function Header() {
         <>
         <div className="w-65 h-auto bg-white fixed top-5 right-0 rounded-bl-2xl justify-self-end pr-5 pl-5 z-2" >
             <X className="icon mb-4" onClick={() => { setMenu(false)}} />
-            <p className="font-bold" >Sobre</p>
-            <p className="font-bold">Avaliações</p>
-            <p className="font-bold">Rotas atendidas</p>
-            <p className="font-bold">Nossos clientes</p>
-            <p className="font-bold">Contato</p>
+            <div className="flex flex-col">
+                <a className="font-bold" href="#about">Sobre</a>
+                <a className="font-bold" href="#reviews">Avaliações</a>
+                <a className="font-bold" href="#routes">Rotas atendidas</a>
+                <a className="font-bold" href="#clients">Nossos clientes</a>
+                <a className="font-bold" href="#footer">Contato</a>
+            </div>
             <div className="flex gap-1 mt-3">
                 <Link to="src\pages\authentication\LoginPage.jsx">
                     <Button className="bg-white border-1 border-gray-600 px-0 w-26 h-8 rounded-lg">
