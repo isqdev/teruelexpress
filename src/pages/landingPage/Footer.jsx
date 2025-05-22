@@ -6,7 +6,7 @@ export function Footer() {
     return (
         <>
             <div className="bg-blue-tx">
-                <Section className="py-4 sm:py-6 md:py-8 lg:py-8">
+                <Section className="py-4 sm:py-6 md:py-8 lg:py-8" id="footer">
                     <h4 className="text-white">Contato</h4>
                     <div className="xl:grid xl:grid-cols-3 xl:gap-x-3">
                         <Link to="https://wa.me/5544999965596" target="_blank">

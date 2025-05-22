@@ -16,7 +16,7 @@ export function ServicedRoutes() {
   return (
     <div className="relative">
       <div className="bg-white">
-        <Section>
+        <Section id="routes">
           <h2 className="pb-3">Rotas atendidas</h2>
           <p className="pb-3">Aguardando texto produzido por PO, até lá, estará vazio, assim como a contribuição do PO</p>
 
@@ -27,7 +27,7 @@ export function ServicedRoutes() {
 
           {isMap ? <Map data={cities} /> : <List data={cities} />}
 
-          <Link to="/login">
+          <Link to="src\pages\authentication\LoginPage.jsx">
             <Button className="bg-red-tx mt-5">
               <Package className="icon text-white"/>
               <ButtonText className="text-white">

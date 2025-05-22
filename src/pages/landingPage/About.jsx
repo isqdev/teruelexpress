@@ -6,7 +6,7 @@ export function About () {
         <>  
             <div className="bg-red-tx">
                 <CarouselPlugin/>
-                <Section>
+                <Section id="about">
                     <h2 className="text-white">Sobre</h2>
                 </Section>
 

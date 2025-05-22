@@ -10,12 +10,12 @@ export function LandingPage() {
     return (
         <>
           <Header />
-          <About id="about"/>
+          <About />
           <Reviews />
           <ServicedRoutes />
           <OurClients />
           <Budget />
-          <Footer id="footer" />
+          <Footer />
         </>
     )
 }
