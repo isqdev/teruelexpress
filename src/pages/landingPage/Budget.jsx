@@ -22,7 +22,7 @@ export function Budget() {
 
     return (
         <>
-            <Section>
+            <Section id="budget">
                 <h2 className="pb-4">Simule um orçamento</h2>
                 <div className="flex flex-col gap-8">
                     <Shape className="border border-black">

@@ -16,13 +16,13 @@ export function ServicedRoutes() {
   return (
     <div className="relative">
       <div className="bg-white">
-        <Section>
+        <Section id="routes">
           <h2 className="pb-3">Rotas atendidas</h2>
           <p className="pb-3">Aguardando texto produzido por PO, até lá, estará vazio, assim como a contribuição do PO</p>
 
           <div className="flex justify-evenly font-bold pb-7">
-            <p onClick={() => setIsMap(true)} className={isMap ? "border-b-3 border-red-tx" : ""}>Mapa</p>
-            <p onClick={() => setIsMap(false)} className={!isMap ? "border-b-3 border-red-tx" : ""}>Ver lista</p>
+            <p onClick={() => setIsMap(true)} className={isMap ? "border-b-3 border-red-tx hover:cursor-pointer" : ""}>Mapa</p>
+            <p onClick={() => setIsMap(false)} className={!isMap ? "border-b-3 border-red-tx hover:cursor-pointer" : ""}>Ver lista</p>
           </div>
 
           {isMap ? <Map data={cities} /> : <List data={cities} />}
