@@ -21,21 +21,21 @@ export function ServicedRoutes() {
           <p className="pb-3">Aguardando texto produzido por PO, até lá, estará vazio, assim como a contribuição do PO</p>
 
           <div className="flex justify-evenly font-bold pb-7">
-            <p onClick={() => setIsMap(true)} className={isMap ? "border-b-3 border-red-tx hover:cursor-pointer" : ""}>Mapa</p>
-            <p onClick={() => setIsMap(false)} className={!isMap ? "border-b-3 border-red-tx hover:cursor-pointer" : ""}>Ver lista</p>
+            <p onClick={() => setIsMap(true)} className={isMap ? "border-b-3 border-red-tx" : "hover:cursor-pointer"}>Mapa</p>
+            <p onClick={() => setIsMap(false)} className={!isMap ? "border-b-3 border-red-tx" : "hover:cursor-pointer"}>Ver lista</p>
           </div>
 
           {isMap ? <Map data={cities} /> : <List data={cities} />}
-
-          <Link to="/login">
-            <Button className="bg-red-tx mt-5">
-              <Package className="icon text-white"/>
-              <ButtonText className="text-white">
-                Solicitar orçamento
-              </ButtonText>
-            </Button>
-          </Link>
-
+          <div className="lg:place-self-end">
+            <Link to="/login">
+              <Button className="bg-red-tx mt-5 lg:w-auto">
+                <Package className="icon text-white" />
+                <ButtonText className="text-white">
+                  Solicitar orçamento
+                </ButtonText>
+              </Button>
+            </Link>
+          </div>
         </Section>
 
       </div>
@@ -94,9 +94,9 @@ function CitySearch({ suggestions, title, placeholder }) {
       <InputLabel>{title}</InputLabel>
       <InputRoot data-status={status}>
         <InputIcon>
-          <MapPin className={`icon ${inputStyle}`}/>
+          <MapPin className={`icon ${inputStyle}`} />
         </InputIcon>
-        <InputField value={inputValue} onChange={handleChange} placeholder={placeholder} onFocus={() => setIsWriting(true)} onBlur={() => setIsWriting(false)}/>
+        <InputField value={inputValue} onChange={handleChange} placeholder={placeholder} onFocus={() => setIsWriting(true)} onBlur={() => setIsWriting(false)} />
       </InputRoot>
       <InputMessage className={inputStyle}>
         {returnMessage ? "Atendemos essa cidade!" : returnMessage === null ? null : "Cidade fora da rota!"}
@@ -116,9 +116,9 @@ function CitySearch({ suggestions, title, placeholder }) {
 function Map({ data }) {
   return (
     <div className="relative">
-      <div>
-        <CitySearch suggestions={data} title="Cidade de origem" placeholder="Ex: Paranavaí"/>
-        <CitySearch suggestions={data} title="Cidade de destino" placeholder="Ex: Maringá"/>
+      <div className="block lg:grid lg:grid-cols-2 lg:gap-x-5">
+        <CitySearch suggestions={data} title="Cidade de origem" placeholder="Ex: Paranavaí" />
+        <CitySearch suggestions={data} title="Cidade de destino" placeholder="Ex: Maringá" />
       </div>
     </div>
   )
@@ -131,11 +131,11 @@ function List({ data }) {
     <div className="relative">
       <div id="container" className="bg-gray-50 rounded-2xl p-6 font-bold flex flex-col gap-y-4">
 
-        <ul className="space-y-2">
+        <ul className="space-y-2 lg:grid lg:grid-cols-2">
           {data.slice(0, 5).map(city => (
             <li key={data.indexOf(city)}>
               <p className="flex">
-                <MapPin className="icon mr-4"/>
+                <MapPin className="icon mr-4" />
                 {city}
               </p>
             </li>
@@ -143,7 +143,7 @@ function List({ data }) {
           {showMore && data.slice(5).map(city => (
             <li key={data.indexOf(city)}>
               <p className="flex">
-                <MapPin className="icon mr-4"/>
+                <MapPin className="icon mr-4" />
                 {city}
               </p>
             </li>
@@ -151,7 +151,7 @@ function List({ data }) {
         </ul>
 
         {<Button className="bg-gray-50" onClick={() => setShowMore(showMore ? false : true)}>
-          {showMore ? <CaretUp className="icon" /> : <CaretDown className="icon"/>}
+          {showMore ? <CaretUp className="icon" /> : <CaretDown className="icon" />}
           <ButtonText className="text-black">
             {showMore ? "Mostrar menos" : "Mostrar mais cidades"}
           </ButtonText>
