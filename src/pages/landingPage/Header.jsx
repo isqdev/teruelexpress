@@ -9,7 +9,7 @@ export function Header() {
     function Menu() {
         return (
             <>
-                <div className="w-6/10 h-auto bg-white fixed top-5 right-0 rounded-bl-2xl justify-self-end pr-5 pl-5 z-3" >
+                <div className="w-6/10 h-auto bg-white fixed top-5 right-0 rounded-bl-2xl justify-self-end pr-5 pl-5 z-3 lg:hidden">
                     <X className="icon mb-4 hover:cursor-pointer" onClick={() => { setMenu(false) }} />
                     <div className="flex flex-col" onClick={() => { setMenu(false) }}>
                         <a className="font-bold hover:cursor-pointer" href="#about">
@@ -48,38 +48,52 @@ export function Header() {
                         </Link>
                     </div>
                 </div>
-                <div className="fixed bg-black size-lvh z-2 opacity-80" onClick={() => { setMenu(false) }}></div>
+                <div className="fixed bg-black h-lvh w-lvw z-2 opacity-80 lg:hidden" onClick={() => { setMenu(false) }}></div>
             </>
         )
     }
     return (
         <>
-            <header className="px-6 py-2 sm:px-4 md:px-10 mx-auto max-w-495 sticky top-0 bg-white z-1 flex justify-between">
+            <header className="px-6 py-2 sm:px-4 md:px-10 mx-auto max-w-495 sticky top-0 bg-white z-1 flex justify-between items-center">
                 <Image src="src\assets\logo.jpg" className="w-26" />
-                <List className="icon self-center hover:cursor-pointer" onClick={() => { setMenu(true) }} />
+                <NavBar> </NavBar>
+                <List className="icon self-center hover:cursor-pointer lg:hidden" onClick={() => { setMenu(true) }} />
             </header>
             {menu && <Menu></Menu>}
         </>
     )
 }
 
-function NavBar(params) {
-    return (<>
-        <a className="font-bold hover:cursor-pointer" href="#about">
-            <p>Sobre</p>
-        </a>
-        <a className="font-bold hover:cursor-pointer" href="#reviews">
-            <p>Avaliações</p>
-        </a>
-        <a className="font-bold hover:cursor-pointer" href="#routes">
-            <p>Rotas atendidas</p>
-        </a>
-        <a className="font-bold hover:cursor-pointer" href="#clients">
-            <p>Nossos clientes</p>
-        </a>
-        <a className="font-bold hover:cursor-pointer" href="#footer">
-            <p>Contato</p>
-        </a>
-    </>
+function NavBar() {
+    return (
+        <div className="hidden lg:contents">
+            <a className="hover:cursor-pointer" href="#about">
+                <p>Sobre</p>
+            </a>
+            <a className="hover:cursor-pointer" href="#reviews">
+                <p>Avaliações</p>
+            </a>
+            <a className="hover:cursor-pointer" href="#routes">
+                <p>Rotas</p>
+            </a>
+            <a className="hover:cursor-pointer" href="#clients">
+                <p>Clientes</p>
+            </a>
+            <a className="hover:cursor-pointer" href="#budget">
+                <p>Orçamento</p>
+            </a>
+            <a className="hover:cursor-pointer" href="#footer">
+                <p>Contato</p>
+            </a>
+            <div className="text-end">
+                <Link to="/login">
+                    <Button className="bg-red-tx px-4 h-10 sm:h-12 rounded-lg">
+                        <ButtonText className="text-white text-xs text-center">
+                            Entrar
+                        </ButtonText>
+                    </Button>
+                </Link>
+            </div>
+        </div>
     )
 }
