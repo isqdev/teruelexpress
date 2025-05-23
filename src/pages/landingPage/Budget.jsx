@@ -7,57 +7,101 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import cities from "@/assets/cities.json";
 import { normalize } from "../../lib/utils";
 
+const normalizedCities = cities.map((city) => normalize(city));
+
 export function Budget() {
     const [isSimulated, setIsSimulated] = useState(false);
     const [data, setData] = useState("Dados do Formulario em JSON");
+    const [showAllertModal, setShowAllertModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-    const handleSimulate = () => {
-        console.log("RODANDO SIMULACAO")
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        formState: { errors, touchedFields, isValid }
+    } = useForm({
+        resolver: zodResolver(generalSchema),
+        mode: "onBlur"
+    });
+
+    const handleSimulate = (formData) => {
+        const randomValue = (Math.random() * 1000 + 100).toFixed(2);
+        setData({ ...formData, budget: randomValue });
         setIsSimulated(true);
+        setValue("budget", randomValue);
     };
 
     const postForm = () => {
-        console.log(data)
+        if (isSimulated) {
+            console.log("JSON enviado:", data);
+            setShowSuccessModal(true);
+        }
+    };
+
+    const onSimulateClick = (e) => {
+        e.preventDefault();
+        if (!isValid) {
+            setShowAllertModal(true);
+            return;
+        }
+        handleSubmit(handleSimulate)();
     };
 
     return (
         <>
             <Section>
                 <h2 className="pb-4">Simule um orçamento</h2>
-                <div className="flex flex-col gap-8">
+                <form className="flex flex-col gap-6">
                     <Shape className="border border-black">
-                        <h3 className="pb-4">Endereço origem</h3>
-                        <AddressForm />
+                        <h3 className="pb-2">Endereço origem</h3>
+                        <AddressForm
+                            register={register}
+                            errors={errors.origin || {}}
+                            touchedFields={touchedFields.origin || {}}
+                            watch={watch}
+                            setValue={setValue}
+                            prefix="origin."
+                        />
                     </Shape>
-
                     <Shape className="border border-black">
-                        <h3 className="pb-4">Endereço destino</h3>
-                        <AddressForm />
+                        <h3 className="pb-2">Endereço destino</h3>
+                        <AddressForm
+                            register={register}
+                            errors={errors.destination || {}}
+                            touchedFields={touchedFields.destination || {}}
+                            watch={watch}
+                            setValue={setValue}
+                            prefix="destination."
+                        />
                     </Shape>
-
                     <Shape className="border border-black">
-                        <h3 className="pb-4">Dimensões da carga</h3>
+                        <h3 className="pb-2">Dimensões da carga</h3>
                         <div >
-                            <MeasuresForms />
+                            <MeasuresForms
+                                register={register}
+                                errors={errors}
+                                touchedFields={touchedFields}
+                            />
                         </div>
                     </Shape>
-                </div>
-
-                <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-8 items-end">
-                    <div>
-                        <InputLabel>Orçamento aproximado</InputLabel>
-                        <InputRoot className="bg-gray-50" >
-                            <InputField placeholder="R$" disabled />
-                        </InputRoot>
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end">
+                        <div>
+                            <InputLabel>Orçamento aproximado</InputLabel>
+                            <InputRoot className="bg-gray-50" >
+                                <InputField placeholder="R$" disabled value={watch("budget") ? `R$ ${watch("budget")}` : ""} />
+                            </InputRoot>
+                        </div>
+                        <Button className={"bg-red-tx"} type="button" onClick={onSimulateClick}>
+                            <ButtonText className="text-center text-white">
+                                Simular
+                            </ButtonText>
+                        </Button>
                     </div>
-                    <Button className="bg-red-tx" onClick={handleSimulate}>
-                        <ButtonText className="text-center text-white">
-                            Simular
-                        </ButtonText>
-                    </Button>
-                </div>
+                </form>
 
-                <Button className={isSimulated ? "bg-red-tx" : "bg-gray-50 pointer-events-none" } onClick={postForm}>
+                <Button className={isSimulated ? "bg-red-tx" : "bg-gray-50 pointer-events-none"} onClick={postForm} disabled={!isSimulated}>
                     <ButtonText className={isSimulated ? "text-white" : "text-gray-100"}>
                         Enviar orçamento
                     </ButtonText>
@@ -65,11 +109,33 @@ export function Budget() {
                 </Button>
 
             </Section>
+
+            {showAllertModal && (
+                <div className="fixed inset-0 flex items-center justify-center">
+                    <Shape className="border border-black bg-white shadow-lg flex flex-col items-center max-w-sm">
+                        <p className="mb-4 text-lg font-semibold text-red-600">Por favor preencher todos os campos!</p>
+                        <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
+                            <ButtonText className="text-white text-center">Fechar</ButtonText>
+                        </Button>
+                    </Shape>
+                </div>
+            )}
+
+            {showSuccessModal && (
+                <div className="fixed inset-0 flex items-center justify-center">
+                    <Shape className="border border-black bg-white shadow-lg flex flex-col items-center max-w-sm">
+                        <p className="mb-4 text-lg font-semibold text-green-600">Enviada solicitação de orçamento</p>
+                        <Button className="bg-success-light" onClick={() => setShowSuccessModal(false)}>
+                            <ButtonText className="text-white text-center">Ok</ButtonText>
+                        </Button>
+                    </Shape>
+                </div>
+            )}
         </>
     )
 }
 
-function FormField({ title, placeholder, register, name, error, dirty }) {
+function FormField({ title, placeholder, register, name, error, dirty, type = "text" }) {
     let status;
     if (dirty) {
         status = error ? "error" : "validated"
@@ -79,7 +145,7 @@ function FormField({ title, placeholder, register, name, error, dirty }) {
         <>
             <InputLabel className="pt-4">{title}</InputLabel>
             <InputRoot status={status}>
-                <InputField placeholder={placeholder} {...register(name)} />
+                <InputField placeholder={placeholder} type={type} {...register(name)} />
                 {status === "validated" && (
                     <InputIcon>
                         <CheckCircle size={32} className="text-success-base" />
@@ -91,117 +157,90 @@ function FormField({ title, placeholder, register, name, error, dirty }) {
     );
 }
 
-function AddressForm() {
-    const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors, dirtyFields },
-    } = useForm({
-        resolver: zodResolver(addressSchema),
-        mode: "onBlur"
-    });
-
-    const cep = watch("cep");
+function AddressForm({ register, errors, touchedFields, watch, setValue, prefix }) {
+    const cep = watch(`${prefix}cep`);
 
     useEffect(() => {
         const fetchAddress = async () => {
             const cleanedCep = cep?.replace(/\D/g, "");
-
             if (cleanedCep?.length === 8) {
                 try {
                     const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`);
                     const data = await response.json();
-
                     if (data.erro) {
                         console.error("CEP invalido");
                         return;
                     }
-
-                    setValue("street", data.logradouro, { shouldDirty: true, shouldValidate: true });
-                    setValue("neighborhood", data.bairro, { shouldDirty: true, shouldValidate: true });
-                    setValue("city", data.localidade, { shouldDirty: true, shouldValidate: true });
-                    setValue("state", data.estado, { shouldDirty: true, shouldValidate: true });
+                    setValue(`${prefix}street`, data.logradouro, { shouldTouch: true, shouldValidate: true });
+                    setValue(`${prefix}neighborhood`, data.bairro, { shouldTouch: true, shouldValidate: true });
+                    setValue(`${prefix}city`, data.localidade, { shouldTouch: true, shouldValidate: true });
+                    setValue(`${prefix}state`, data.uf, { shouldTouch: true, shouldValidate: true });
                 } catch (error) {
                     console.error("Erro ao buscar o CEP ", error);
                 }
             }
         };
         fetchAddress();
-    }, [cep, setValue]);
+    }, [cep, setValue, prefix]);
 
     return (
         <>
-            <form onSubmit={handleSubmit()}>
-                <FormField
-                    register={register}
-                    name="cep"
-                    title="CEP"
-                    placeholder="Digite seu CEP"
-                    error={errors.cep}
-                    dirty={dirtyFields.cep}
-                />
-                <FormField
-                    register={register}
-                    name="state"
-                    title="Estado"
-                    placeholder="Digite seu Estado"
-                    error={errors.state}
-                    dirty={dirtyFields.state}
-                />
-                <FormField
-                    register={register}
-                    name="city"
-                    title="Cidade"
-                    placeholder="Digite sua Cidade"
-                    error={errors.city}
-                    dirty={dirtyFields.city}
-                />
-                <FormField
-                    register={register}
-                    name="neighborhood"
-                    title="Bairro"
-                    placeholder="Digite seu Bairro"
-                    error={errors.neighborhood}
-                    dirty={dirtyFields.neighborhood}
-                />
-                <FormField
-                    register={register}
-                    name="street"
-                    title="Rua"
-                    placeholder="Digite sua Rua"
-                    error={errors.street}
-                    dirty={dirtyFields.street}
-                />
-                <FormField
-                    register={register}
-                    name="number"
-                    title="Número"
-                    placeholder="Digite seu Número"
-                    error={errors.number}
-                    dirty={dirtyFields.number}
-                />
-            </form>
+            <FormField
+                register={register}
+                name={`${prefix}cep`}
+                title="CEP"
+                placeholder="Digite seu CEP"
+                error={errors.cep}
+                dirty={touchedFields.cep}
+            />
+            <FormField
+                register={register}
+                name={`${prefix}state`}
+                title="Estado"
+                placeholder="Digite seu Estado"
+                error={errors.state}
+                dirty={touchedFields.state}
+            />
+            <FormField
+                register={register}
+                name={`${prefix}city`}
+                title="Cidade"
+                placeholder="Digite sua Cidade"
+                error={errors.city}
+                dirty={touchedFields.city}
+            />
+            <FormField
+                register={register}
+                name={`${prefix}neighborhood`}
+                title="Bairro"
+                placeholder="Digite seu Bairro"
+                error={errors.neighborhood}
+                dirty={touchedFields.neighborhood}
+            />
+            <FormField
+                register={register}
+                name={`${prefix}street`}
+                title="Rua"
+                placeholder="Digite sua Rua"
+                error={errors.street}
+                dirty={touchedFields.street}
+            />
+            <FormField
+                register={register}
+                name={`${prefix}number`}
+                title="Número"
+                placeholder="Digite seu Número"
+                error={errors.number}
+                dirty={touchedFields.number}
+            />
         </>
     );
 }
 
-function MeasuresForms() {
-    const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors, dirtyFields },
-    } = useForm({
-        resolver: zodResolver(addressSchema),
-        mode: "onBlur"
-    });
-
+function MeasuresForms({ register, errors, touchedFields }) {
     return (
         <>
-            <form onSubmit={handleSubmit()} className="grid grid-cols-1 xs:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6">
                 <div>
                     <FormField
                         register={register}
@@ -209,7 +248,8 @@ function MeasuresForms() {
                         title="Largura"
                         placeholder="Largura"
                         error={errors.width}
-                        dirty={dirtyFields.width}
+                        dirty={touchedFields.width}
+                        type="number"
                     />
                 </div>
                 <div>
@@ -219,7 +259,8 @@ function MeasuresForms() {
                         title="Altura"
                         placeholder="Altura"
                         error={errors.height}
-                        dirty={dirtyFields.height}
+                        dirty={touchedFields.height}
+                        type="number"
                     />
                 </div>
                 <div>
@@ -229,7 +270,8 @@ function MeasuresForms() {
                         title="Comprimento"
                         placeholder="Comprimento"
                         error={errors.length}
-                        dirty={dirtyFields.length}
+                        dirty={touchedFields.length}
+                        type="number"
                     />
                 </div>
                 <div>
@@ -239,11 +281,11 @@ function MeasuresForms() {
                         title="Peso"
                         placeholder="Peso"
                         error={errors.weight}
-                        dirty={dirtyFields.weight}
+                        dirty={touchedFields.weight}
+                        type="number"
                     />
                 </div>
-
-            </form>
+            </div>
         </>
     )
 }
@@ -269,7 +311,7 @@ const addressSchema = z.object({
         .nonempty("Campo obrigatório")
         .transform(normalize)
         .refine(
-            (val) => cities.includes(val),
+            (val) => normalizedCities.includes(val),
             { message: "Cidade não atendida." }
         ),
 
@@ -284,25 +326,26 @@ const addressSchema = z.object({
     number: z
         .string()
         .nonempty("Campo obrigatório"),
+});
 
+const generalSchema = z.object({
+    origin: addressSchema,
+    destination: addressSchema,
     width: z
         .string()
         .nonempty("Campo obrigatório")
         .transform((val) => Number(val.replace(",", ".")))
         .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
-
     height: z
         .string()
         .nonempty("Campo obrigatório")
         .transform((val) => Number(val.replace(",", ".")))
         .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
-
     length: z
         .string()
         .nonempty("Campo obrigatório")
         .transform((val) => Number(val.replace(",", ".")))
         .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
-
     weight: z
         .string()
         .nonempty("Campo obrigatório")
