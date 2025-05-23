@@ -5,7 +5,7 @@ export function Reviews () {
     return (
         <>
             <div className="bg-blue-tx">
-                <Section>
+                <Section id="reviews">
                     <h2 className="text-white ">Avaliações</h2>
                 </Section>
             </div>

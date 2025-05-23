@@ -51,7 +51,7 @@ export function Budget() {
 
     return (
         <>
-            <Section className="xl:grid grid-cols-2">
+            <Section id="budget" className="xl:grid grid-cols-2">
                 <h2 className="pb-4 grid col-span-2">Simule um orçamento</h2>
                 <form className="flex flex-col gap-6 xl:grid xl:grid-cols-2 xl:col-span-2">
                     <Shape className="border border-black">

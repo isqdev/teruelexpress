@@ -5,7 +5,7 @@ export function OurClients() {
     <>
       <>
         <div className="bg-gray-50">
-          <Section>
+          <Section id="clients">
             <h2>Nossos clientes</h2>
           </Section>
         </div>
