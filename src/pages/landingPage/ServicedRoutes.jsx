@@ -27,7 +27,7 @@ export function ServicedRoutes() {
 
           {isMap ? <Map data={cities} /> : <List data={cities} />}
 
-          <Link to="src\pages\authentication\LoginPage.jsx">
+          <Link to="/login">
             <Button className="bg-red-tx mt-5">
               <Package className="icon text-white"/>
               <ButtonText className="text-white">
