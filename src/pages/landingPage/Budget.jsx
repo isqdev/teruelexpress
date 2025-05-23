@@ -51,9 +51,9 @@ export function Budget() {
 
     return (
         <>
-            <Section>
-                <h2 className="pb-4">Simule um orçamento</h2>
-                <form className="flex flex-col gap-6">
+            <Section className="xl:grid grid-cols-2">
+                <h2 className="pb-4 grid col-span-2">Simule um orçamento</h2>
+                <form className="flex flex-col gap-6 xl:grid xl:grid-cols-2 xl:col-span-2">
                     <Shape className="border border-black">
                         <h3 className="pb-2">Endereço origem</h3>
                         <AddressForm
@@ -86,7 +86,7 @@ export function Budget() {
                             />
                         </div>
                     </Shape>
-                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end xl:grid-cols-1 xl:gap-0 xl:py-0">
                         <div>
                             <InputLabel>Orçamento aproximado</InputLabel>
                             <InputRoot className="bg-gray-50" >
@@ -98,16 +98,14 @@ export function Budget() {
                                 Simular
                             </ButtonText>
                         </Button>
+                        <Button className={isSimulated ? "bg-red-tx" : "bg-gray-50 pointer-events-none"} onClick={postForm} disabled={!isSimulated}>
+                            <ButtonText className={isSimulated ? "text-white" : "text-gray-100"}>
+                                Enviar orçamento
+                            </ButtonText>
+                            <ArrowRight className={isSimulated ? "icon text-white" : "icon text-gray-100"} />
+                        </Button>
                     </div>
                 </form>
-
-                <Button className={isSimulated ? "bg-red-tx" : "bg-gray-50 pointer-events-none"} onClick={postForm} disabled={!isSimulated}>
-                    <ButtonText className={isSimulated ? "text-white" : "text-gray-100"}>
-                        Enviar orçamento
-                    </ButtonText>
-                    <ArrowRight className={isSimulated ? "icon text-white" : "icon text-gray-100"} />
-                </Button>
-
             </Section>
 
             {showAllertModal && (
@@ -192,6 +190,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, prefix 
                 placeholder="Digite seu CEP"
                 error={errors.cep}
                 dirty={touchedFields.cep}
+                type="number"
             />
             <FormField
                 register={register}
@@ -245,8 +244,8 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="width"
-                        title="Largura"
-                        placeholder="Largura"
+                        title="Largura (cm)"
+                        placeholder="cm"
                         error={errors.width}
                         dirty={touchedFields.width}
                         type="number"
@@ -256,8 +255,8 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="height"
-                        title="Altura"
-                        placeholder="Altura"
+                        title="Altura (cm)"
+                        placeholder="cm"
                         error={errors.height}
                         dirty={touchedFields.height}
                         type="number"
@@ -267,8 +266,8 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="length"
-                        title="Comprimento"
-                        placeholder="Comprimento"
+                        title="Comprimento (cm)"
+                        placeholder="cm"
                         error={errors.length}
                         dirty={touchedFields.length}
                         type="number"
@@ -278,8 +277,8 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="weight"
-                        title="Peso"
-                        placeholder="Peso"
+                        title="Peso (kg)"
+                        placeholder="kg"
                         error={errors.weight}
                         dirty={touchedFields.weight}
                         type="number"
