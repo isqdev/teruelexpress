@@ -76,34 +76,38 @@ export function Budget() {
                             prefix="destination."
                         />
                     </Shape>
-                    <Shape className="border border-black">
-                        <h3 className="pb-2">Dimensões da carga</h3>
-                        <div >
-                            <MeasuresForms
-                                register={register}
-                                errors={errors}
-                                touchedFields={touchedFields}
-                            />
+                    <div className="xl:grid xl:grid-cols-4 col-span-2 gap-6">
+                        <Shape className="border border-black xl:col-span-3">
+                            <h3 className="pb-2">Dimensões da carga</h3>
+                            <div>
+                                <MeasuresForms
+                                    register={register}
+                                    errors={errors}
+                                    touchedFields={touchedFields}
+                                />
+                            </div>
+                        </Shape>
+                        <div className="xl:col-span-1">
+                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0">
+                                <div>
+                                    <InputLabel>Orçamento aproximado</InputLabel>
+                                    <InputRoot className="bg-gray-50" >
+                                        <InputField placeholder="R$" disabled value={watch("budget") ? `R$ ${watch("budget")}` : ""} />
+                                    </InputRoot>
+                                </div>
+                                <Button className={"bg-red-tx"} type="button" onClick={onSimulateClick}>
+                                    <ButtonText className="text-center text-white">
+                                        Simular
+                                    </ButtonText>
+                                </Button>
+                                <Button className={isSimulated ? "bg-red-tx xs:col-span-2 xl:col-span-1" : "bg-gray-50 pointer-events-none xs:col-span-2 xl:col-span-1"} onClick={postForm} disabled={!isSimulated} type="button">
+                                    <ButtonText className={isSimulated ? "text-white" : "text-gray-100"}>
+                                        Enviar orçamento
+                                    </ButtonText>
+                                    <ArrowRight className={isSimulated ? "icon text-white" : "icon text-gray-100"} />
+                                </Button>
+                            </div>
                         </div>
-                    </Shape>
-                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end xl:grid-cols-1 xl:gap-0 xl:py-0">
-                        <div>
-                            <InputLabel>Orçamento aproximado</InputLabel>
-                            <InputRoot className="bg-gray-50" >
-                                <InputField placeholder="R$" disabled value={watch("budget") ? `R$ ${watch("budget")}` : ""} />
-                            </InputRoot>
-                        </div>
-                        <Button className={"bg-red-tx"} type="button" onClick={onSimulateClick}>
-                            <ButtonText className="text-center text-white">
-                                Simular
-                            </ButtonText>
-                        </Button>
-                        <Button className={isSimulated ? "bg-red-tx" : "bg-gray-50 pointer-events-none"} onClick={postForm} disabled={!isSimulated}>
-                            <ButtonText className={isSimulated ? "text-white" : "text-gray-100"}>
-                                Enviar orçamento
-                            </ButtonText>
-                            <ArrowRight className={isSimulated ? "icon text-white" : "icon text-gray-100"} />
-                        </Button>
                     </div>
                 </form>
             </Section>
@@ -239,7 +243,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, prefix 
 function MeasuresForms({ register, errors, touchedFields }) {
     return (
         <>
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 xl:grid-cols-4">
                 <div>
                     <FormField
                         register={register}
