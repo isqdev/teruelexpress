@@ -51,9 +51,9 @@ export function Budget() {
 
     return (
         <>
-            <Section id="budget" className="xl:grid grid-cols-2">
+            <Section id="budget" className="2xl:grid grid-cols-2">
                 <h2 className="pb-4 grid col-span-2">Simule um orçamento</h2>
-                <form className="flex flex-col gap-6 xl:grid xl:grid-cols-2 xl:col-span-2">
+                <form className="flex flex-col gap-6 2xl:grid 2xl:grid-cols-2 2xl:col-span-2">
                     <Shape className="border border-black">
                         <h3 className="pb-2">Endereço origem</h3>
                         <AddressForm
@@ -76,8 +76,8 @@ export function Budget() {
                             prefix="destination."
                         />
                     </Shape>
-                    <div className="xl:grid xl:grid-cols-4 col-span-2 gap-6">
-                        <Shape className="border border-black xl:col-span-3">
+                    <div className="2xl:grid 2xl:grid-cols-4 col-span-2 gap-6">
+                        <Shape className="border border-black 2xl:col-span-3">
                             <h3 className="pb-2">Dimensões da carga</h3>
                             <div>
                                 <MeasuresForms
@@ -87,10 +87,10 @@ export function Budget() {
                                 />
                             </div>
                         </Shape>
-                        <div className="xl:col-span-1">
-                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0">
+                        <div className="2xl:col-span-1">
+                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end 2xl:grid-cols-1 2xl:gap-2 2xl:py-0">
                                 <div>
-                                    <InputLabel>Orçamento aproximado</InputLabel>
+                                    <InputLabel>Valor aproximado</InputLabel>
                                     <InputRoot className="bg-gray-50" >
                                         <InputField placeholder="R$" disabled value={watch("budget") ? `R$ ${watch("budget")}` : ""} />
                                     </InputRoot>
@@ -100,11 +100,10 @@ export function Budget() {
                                         Simular
                                     </ButtonText>
                                 </Button>
-                                <Button className={isSimulated ? "bg-red-tx xs:col-span-2 xl:col-span-1" : "bg-gray-50 pointer-events-none xs:col-span-2 xl:col-span-1"} onClick={postForm} disabled={!isSimulated} type="button">
-                                    <ButtonText className={isSimulated ? "text-white" : "text-gray-100"}>
+                                <Button className={isSimulated ? "bg-red-tx xs:col-span-2 2xl:col-span-1" : "bg-gray-50 pointer-events-none xs:col-span-2 2xl:col-span-1"} onClick={postForm} disabled={!isSimulated} type="button">
+                                    <ButtonText className={isSimulated ? "text-white text-center" : "text-gray-100 text-center"}>
                                         Enviar orçamento
                                     </ButtonText>
-                                    <ArrowRight className={isSimulated ? "icon text-white" : "icon text-gray-100"} />
                                 </Button>
                             </div>
                         </div>
@@ -243,7 +242,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, prefix 
 function MeasuresForms({ register, errors, touchedFields }) {
     return (
         <>
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 xl:grid-cols-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 2xl:grid-cols-4">
                 <div>
                     <FormField
                         register={register}
