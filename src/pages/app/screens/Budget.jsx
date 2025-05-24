@@ -1,5 +1,5 @@
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
-import { ArrowRight, CheckCircle, Package, X, ArrowUp, ArrowLeft } from "phosphor-react";
+import { ArrowRight, CheckCircle, Package, X, ArrowUp, ArrowLeft, HouseLine } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
@@ -20,15 +20,16 @@ export function Budget() {
         handleSubmit,
         watch,
         setValue,
+        reset,
         formState: { errors, touchedFields, isValid }
     } = useForm({
         resolver: zodResolver(generalSchema),
         mode: "onBlur"
     });
 
-    const postForm = () => {
+    const postForm = (formData) => {
         setData({ ...formData });
-        console.log("JSON enviado:", data);
+        console.log("JSON enviado:", formData);
         setShowSuccessModal(true);
     };
 
@@ -52,9 +53,9 @@ export function Budget() {
                     <Link to="/home">
                         <ArrowLeft className="text-black size-8 icon" />
                     </Link>
-                    <div className="text-2xl font-semibold text-center flex-auto">
+                    <h2 className="text-center flex-auto">
                         Orçamento
-                    </div>
+                    </h2>
                 </div>
                 <p className="pb-4 grid col-span-2">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
@@ -136,11 +137,28 @@ export function Budget() {
 
             {showSuccessModal && (
                 <div className="fixed inset-0 flex items-center justify-center">
-                    <Shape className="border border-black bg-white shadow-lg flex flex-col items-center max-w-sm">
-                        <p className="mb-4 text-lg font-semibold">Solicitação enviada com sucesso!</p>
-                        <Button className="bg-success-light" onClick={() => setShowSuccessModal(false)}>
-                            <ButtonText className="text-white text-center">Ok</ButtonText>
-                        </Button>
+                    <Shape className="border border-black bg-white shadow-lg max-w-sm flex flex-col items-center gap-4">
+                        <CheckCircle className="icon size-48 text-success-light" weight="fill" />
+                        <h2 className="mb-4 text-center text-lg font-semibold ">Solicitação enviada!</h2>
+                        <p className="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <div className="py-10 flex flex-col gap-4">
+                            <Link to="/budget">
+                                <Button className="bg-red-tx" onClick={() => {
+                                    setShowSuccessModal(false);
+                                    reset();
+                                    window.scrollTo({ top: 0, left: 0 });
+                                }} >
+                                    <Package className="icon text-white" />
+                                    <ButtonText className="text-white">Solicitar outro orçamento</ButtonText>
+                                </Button>
+                            </Link>
+                            <Link to="/home">
+                                <Button className="bg-white border border-black">
+                                    <HouseLine className="icon text-red-tx" />
+                                    <ButtonText className="text-black">Ir para tela inicial</ButtonText>
+                                </Button>
+                            </Link>
+                        </div>
                     </Shape>
                 </div>
             )}
