@@ -1,16 +1,16 @@
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
-import { ArrowRight, CheckCircle } from "phosphor-react";
+import { ArrowRight, CheckCircle, Package, X, ArrowUp, ArrowLeft } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import cities from "@/assets/cities.json";
 import { normalize } from "@/lib/utils.ts";
+import { Link } from "react-router-dom";
 
 const normalizedCities = cities.map((city) => normalize(city));
 
 export function Budget() {
-    const [isSimulated, setIsSimulated] = useState(false);
     const [data, setData] = useState("Dados do Formulario em JSON");
     const [showAllertModal, setShowAllertModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -26,18 +26,10 @@ export function Budget() {
         mode: "onBlur"
     });
 
-    const handleSimulate = (formData) => {
-        const randomValue = (Math.random() * 1000 + 100).toFixed(2);
-        setData({ ...formData, budget: randomValue });
-        setIsSimulated(true);
-        setValue("budget", randomValue);
-    };
-
     const postForm = () => {
-        if (isSimulated) {
-            console.log("JSON enviado:", data);
-            setShowSuccessModal(true);
-        }
+        setData({ ...formData });
+        console.log("JSON enviado:", data);
+        setShowSuccessModal(true);
     };
 
     const onSimulateClick = (e) => {
@@ -46,13 +38,25 @@ export function Budget() {
             setShowAllertModal(true);
             return;
         }
-        handleSubmit(handleSimulate)();
+        handleSubmit(postForm)();
     };
+
+    const handleScrollTop = () => {
+        window.scrollTo({ top: 0, left: 0 });
+    }
 
     return (
         <>
-            <Section id="budget" className="xl:grid grid-cols-2">
-                <h2 className="pb-4 grid col-span-2">Simule um orçamento</h2>
+            <Section className="xl:grid grid-cols-2">
+                <div className="xl:col-span-2 flex items-center">
+                    <Link to="/home">
+                        <ArrowLeft className="text-black size-8 icon" />
+                    </Link>
+                    <div className="text-2xl font-semibold text-center flex-auto">
+                        Orçamento
+                    </div>
+                </div>
+                <p className="pb-4 grid col-span-2">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
                     <Shape className="border border-black">
                         <h3 className="pb-2">Endereço origem</h3>
@@ -88,23 +92,28 @@ export function Budget() {
                             </div>
                         </Shape>
                         <div className="xl:col-span-1">
-                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0">
-                                <div>
-                                    <InputLabel>Valor aproximado</InputLabel>
-                                    <InputRoot className="bg-gray-50" >
-                                        <InputField placeholder="R$" disabled value={watch("budget") ? `R$ ${watch("budget")}` : ""} />
-                                    </InputRoot>
-                                </div>
-                                <Button className={"bg-red-tx"} type="button" onClick={onSimulateClick}>
-                                    <ButtonText className="text-center text-white">
-                                        Simular
+                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0 md:grid-cols-2">
+                                <Button className={"bg-red-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={onSimulateClick} type="button">
+                                    <Package className="icon text-white" />
+                                    <ButtonText className={"text-white"}>
+                                        Solicitar orçamento
+                                    </ButtonText>
+                                    <ArrowRight className="icon text-white" />
+                                </Button>
+                                <Button className={"bg-blue-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={handleScrollTop} type="button">
+                                    <ArrowUp className="icon text-white" />
+                                    <ButtonText className={"text-white"}>
+                                        Ir para o topo
                                     </ButtonText>
                                 </Button>
-                                <Button className={isSimulated ? "bg-red-tx xs:col-span-2 xl:col-span-1" : "bg-gray-50 pointer-events-none xs:col-span-2 xl:col-span-1"} onClick={postForm} disabled={!isSimulated} type="button">
-                                    <ButtonText className={isSimulated ? "text-white text-center" : "text-gray-100 text-center"}>
-                                        Enviar orçamento
-                                    </ButtonText>
-                                </Button>
+                                <Link to="/home" className="xs:col-span-2 xl:col-span-1 md:col-span-1">
+                                    <Button className={"bg-white border border-red-tx"} type="button">
+                                        <X className="icon text-red-tx" />
+                                        <ButtonText className={"text-red-tx"}>
+                                            Cancelar orçamento
+                                        </ButtonText>
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -112,20 +121,23 @@ export function Budget() {
             </Section>
 
             {showAllertModal && (
-                <div className="fixed inset-0 flex items-center justify-center">
-                    <Shape className="border border-black bg-white shadow-lg flex flex-col items-center max-w-sm">
-                        <p className="mb-4 text-lg font-semibold text-red-600">Por favor preencher todos os campos!</p>
-                        <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
-                            <ButtonText className="text-white text-center">Fechar</ButtonText>
-                        </Button>
-                    </Shape>
-                </div>
+                <>
+                    <div className="fixed inset-0 flex items-center justify-center z-3">
+                        <Shape className=" z-2 border border-black bg-white shadow-lg flex flex-col items-center max-w-sm">
+                            <p className="mb-4 text-lg font-semibold">Por favor preencher todos os campos!</p>
+                            <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
+                                <ButtonText className="text-white text-center">Fechar</ButtonText>
+                            </Button>
+                        </Shape>
+                        <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw " />
+                    </div>
+                </>
             )}
 
             {showSuccessModal && (
                 <div className="fixed inset-0 flex items-center justify-center">
                     <Shape className="border border-black bg-white shadow-lg flex flex-col items-center max-w-sm">
-                        <p className="mb-4 text-lg font-semibold text-green-600">Solicitação enviada com sucesso!</p>
+                        <p className="mb-4 text-lg font-semibold">Solicitação enviada com sucesso!</p>
                         <Button className="bg-success-light" onClick={() => setShowSuccessModal(false)}>
                             <ButtonText className="text-white text-center">Ok</ButtonText>
                         </Button>

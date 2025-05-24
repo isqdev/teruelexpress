@@ -3,7 +3,7 @@ import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel
 export function Home() {
   return (
     <>
-
+      HOME
     </>
   );
 }
