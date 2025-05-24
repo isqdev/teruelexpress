@@ -24,6 +24,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import { Star, UserCircle } from "phosphor-react";
 
 export function CarouselSize() {
   return (
@@ -39,7 +40,22 @@ export function CarouselSize() {
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="text-3xl font-semibold">{index + 1}</span>
+                  <div className="flex flex-col">
+                  <div className="flex items-center gap-4">
+                    <UserCircle className="icon w-16 h-16 text-gray-100 "/>
+                    <div className="flex flex-col">
+                      <p className="font-bold">Nome Cliente</p>
+                      <div className="flex flex-row">
+                        <StarFull></StarFull>
+                        <StarFull></StarFull>
+                        <StarFull></StarFull>
+                        <StarFull></StarFull>
+                        <StarFull></StarFull>
+                      </div>
+                    </div>
+                  </div>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -51,3 +67,30 @@ export function CarouselSize() {
     </Carousel>
   )
 }
+
+function StarFull() {
+  return (
+    <div className="relative w-6 h-7">
+      <Star className="absolute inset-0 text-star w-6 h-6" weight="fill" />
+      <Star className="absolute inset-0 text-star-border w-6 h-6" weight="regular"/>
+    </div>
+  )
+}
+
+{/* <div class="img-reviewer"><img src="img/user.png" alt="Imagem de um avaliador"></div>
+    <div class="reviewer-details">
+        <p class="name-reviewer">Gráfica ExpressPrint</p>
+        <div class="stars">
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-star-half"></i>
+        </div>
+    </div>
+</div>
+<div class="txt-review">
+    <p>Entregas feitas com segurança e responsabilidade. O custo-benefício é ótimo e o
+        atendimento é ágil. Apenas sugerimos ampliar os horários de coleta.
+    </p>
+</div>*/}
