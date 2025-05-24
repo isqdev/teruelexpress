@@ -14,7 +14,7 @@ export function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<SignUpPage />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/budget" element={<Budget />} />
+      <Route path="/orcamento" element={<Budget />} />
     </Routes>
   );
 }

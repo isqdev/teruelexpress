@@ -97,7 +97,7 @@ export function Budget() {
                                 <Button className={"bg-red-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={onSimulateClick} type="button">
                                     <Package className="icon text-white" />
                                     <ButtonText className={"text-white"}>
-                                        Solicitar orçamento
+                                        Enviar
                                     </ButtonText>
                                     <ArrowRight className="icon text-white" />
                                 </Button>
@@ -111,7 +111,7 @@ export function Budget() {
                                     <Button className={"bg-white border border-red-tx"} type="button">
                                         <X className="icon text-red-tx" />
                                         <ButtonText className={"text-red-tx"}>
-                                            Cancelar orçamento
+                                            Cancelar
                                         </ButtonText>
                                     </Button>
                                 </Link>
