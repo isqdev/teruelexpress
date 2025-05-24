@@ -2,10 +2,13 @@ import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, Input
 import { CaretDown, CaretUp, MapPin, Package } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { normalize } from "../../lib/utils";
+
 
 export function ServicedRoutes() {
   const [cities, setCities] = useState([]);
   const [isMap, setIsMap] = useState(true);
+
 
   useEffect(() => {
     fetch('./src/assets/cities.json').
@@ -74,9 +77,11 @@ function CitySearch({ suggestions, title, placeholder }) {
     setInputValue(inputValue);
     check();
 
+    if(isWriting === false) setIsWriting(true); 
+
     const filteredSuggestions = suggestions.filter(suggestion =>
-      suggestion.toLowerCase().includes(inputValue.toLowerCase())
-    );
+      normalize(suggestion).includes(normalize(inputValue))
+    )
 
     if (filteredSuggestions.length === 0) check("error");
     setFilteredSuggestions(filteredSuggestions);
@@ -96,7 +101,7 @@ function CitySearch({ suggestions, title, placeholder }) {
         <InputIcon>
           <MapPin className={`icon ${inputStyle}`} />
         </InputIcon>
-        <InputField value={inputValue} onChange={handleChange} placeholder={placeholder} onFocus={() => setIsWriting(true)} onBlur={() => setIsWriting(false)} />
+        <InputField value={inputValue} onChange={handleChange} placeholder={placeholder} onFocus={() => {if(normalize(inputValue)===normalize(filteredSuggestions[0])) setIsWriting(false); else setIsWriting(true)}} onBlur={() => { if(normalize(inputValue)===normalize(filteredSuggestions[0])) {check("validated"); setInputValue(filteredSuggestions[0]);} else { setIsWriting(true);} setIsWriting(false)}} />
       </InputRoot>
       <InputMessage className={inputStyle}>
         {returnMessage ? "Atendemos essa cidade!" : returnMessage === null ? null : "Cidade fora da rota!"}
