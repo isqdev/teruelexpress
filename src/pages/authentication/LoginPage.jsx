@@ -49,11 +49,6 @@ export function LoginPage() {
     reset();
   };
 
- 
-
-  const eyeIcon = 'src/assets/eyeIcon.png';
-  const eyeOff = 'src/assets/eyeOffIcon.png';
-
   return (
     <>
       <SectionBox className="pt-0">
@@ -73,9 +68,7 @@ export function LoginPage() {
               <InputLabel>Senha</InputLabel>
               <InputRoot >
                 <InputField type={showPassword ? 'text' : 'password'} placeholder="Digite sua senha" {...register("senha", { required: true })} />
-                <button type="button" onClick={() => setShowPassword((prev) => !prev)}>
-                  <img src={showPassword ? eyeOff : eyeIcon} alt="toggle senha" style={{ width: '20px', height: '20px' }} />
-                </button>
+                  {showPassword ? <Eye className="icon" onClick={() => setShowPassword((prev) => !prev)}/> : <EyeSlash className="icon" onClick={() => setShowPassword((prev) => !prev)}/>} 
               </InputRoot>
               <InputMessage className="text-danger-base">{errors.senha?.message}</InputMessage>
             </div>

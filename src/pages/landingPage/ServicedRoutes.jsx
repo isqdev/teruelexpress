@@ -21,7 +21,7 @@ export function ServicedRoutes() {
       <div className="bg-white">
         <Section id="routes">
           <h2 className="pb-3">Rotas atendidas</h2>
-          <p className="pb-3">Aguardando texto produzido por PO, até lá, estará vazio, assim como a contribuição do PO</p>
+          <p className="pb-3">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aspernatur neque dolorum omnis nesciunt ut asperiores suscipit adipisci soluta at eum corrupti, numquam, possimus, pariatur explicabo libero accusantium? Earum, veniam voluptatem.</p>
 
           <div className="flex justify-evenly font-bold pb-7">
             <p onClick={() => setIsMap(true)} className={isMap ? "border-b-3 border-red-tx" : "hover:cursor-pointer"}>Mapa</p>
