@@ -59,7 +59,7 @@ export function Budget() {
                 </div>
                 <p className="pb-4 grid col-span-2">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
-                    <Shape className="border border-black">
+                    <Shape className="border border-gray-600">
                         <h3 className="pb-2">Endereço origem</h3>
                         <AddressForm
                             register={register}
@@ -70,7 +70,7 @@ export function Budget() {
                             prefix="origin."
                         />
                     </Shape>
-                    <Shape className="border border-black">
+                    <Shape className="border border-gray-600">
                         <h3 className="pb-2">Endereço destino</h3>
                         <AddressForm
                             register={register}
@@ -82,7 +82,7 @@ export function Budget() {
                         />
                     </Shape>
                     <div className="xl:grid xl:grid-cols-4 col-span-2 gap-6">
-                        <Shape className="border border-black xl:col-span-3">
+                        <Shape className="border border-gray-600 xl:col-span-3">
                             <h3 className="pb-2">Dimensões da carga</h3>
                             <div>
                                 <MeasuresForms
@@ -94,6 +94,14 @@ export function Budget() {
                         </Shape>
                         <div className="xl:col-span-1">
                             <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0 md:grid-cols-2">
+                                <Link to="/home" className="xs:col-span-2 xl:col-span-1 md:col-span-1">
+                                    <Button className={"bg-white border border-red-tx"} type="button">
+                                        <X className="icon text-red-tx" />
+                                        <ButtonText className={"text-red-tx"}>
+                                            Cancelar
+                                        </ButtonText>
+                                    </Button>
+                                </Link>
                                 <Button className={"bg-red-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={onSimulateClick} type="button">
                                     <Package className="icon text-white" />
                                     <ButtonText className={"text-white"}>
@@ -107,14 +115,6 @@ export function Budget() {
                                         Ir para o topo
                                     </ButtonText>
                                 </Button>
-                                <Link to="/home" className="xs:col-span-2 xl:col-span-1 md:col-span-1">
-                                    <Button className={"bg-white border border-red-tx"} type="button">
-                                        <X className="icon text-red-tx" />
-                                        <ButtonText className={"text-red-tx"}>
-                                            Cancelar
-                                        </ButtonText>
-                                    </Button>
-                                </Link>
                             </div>
                         </div>
                     </div>
@@ -124,42 +124,41 @@ export function Budget() {
             {showAllertModal && (
                 <>
                     <div className="fixed inset-0 flex items-center justify-center z-3">
-                        <Shape className=" z-2 border border-black bg-white shadow-lg flex flex-col items-center max-w-sm">
+                        <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
                             <p className="mb-4 text-lg font-semibold">Por favor preencher todos os campos!</p>
                             <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
                                 <ButtonText className="text-white text-center">Fechar</ButtonText>
                             </Button>
                         </Shape>
-                        <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw " />
+                        <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
                     </div>
                 </>
             )}
 
             {showSuccessModal && (
-                <div className="fixed inset-0 flex items-center justify-center">
-                    <Shape className="border border-black bg-white shadow-lg max-w-sm flex flex-col items-center gap-4">
-                        <CheckCircle className="icon size-48 text-success-light" weight="fill" />
-                        <h2 className="mb-4 text-center text-lg font-semibold ">Solicitação enviada!</h2>
-                        <p className="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        <div className="py-10 flex flex-col gap-4">
-                            <Link to="/budget">
-                                <Button className="bg-red-tx" onClick={() => {
-                                    setShowSuccessModal(false);
-                                    reset();
-                                    window.scrollTo({ top: 0, left: 0 });
-                                }} >
-                                    <Package className="icon text-white" />
-                                    <ButtonText className="text-white">Solicitar outro orçamento</ButtonText>
-                                </Button>
-                            </Link>
+                <div className="fixed inset-0 flex items-center justify-center z-3">
+                    <Shape className="z-2 w-full min-h-screen sm:min-h-0 sm:max-w-lg sm:mx-auto sm:my-20 bg-white sm:rounded-2xl sm:h-fit overflow-hidden p-6 sm:p-8">
+                        <CheckCircle className="icon size-48 text-success-light justify-self-center" weight="fill" />
+                        <h3 className="text-center text-lg font-semibold ">Solicitação enviada!</h3>
+                        <p className="text-center mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <div className="flex flex-col gap-2">
+                            <Button className="bg-red-tx" onClick={() => {
+                                setShowSuccessModal(false);
+                                reset();
+                                window.scrollTo({ top: 0, left: 0 });
+                            }} >
+                                <Package className="icon text-white" />
+                                <ButtonText className="text-white">Solicitar outro orçamento</ButtonText>
+                            </Button>
                             <Link to="/home">
-                                <Button className="bg-white border border-black">
+                                <Button className="bg-white border border-gray-600">
                                     <HouseLine className="icon text-red-tx" />
                                     <ButtonText className="text-black">Ir para tela inicial</ButtonText>
                                 </Button>
                             </Link>
                         </div>
                     </Shape>
+                    <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
                 </div>
             )}
         </>
