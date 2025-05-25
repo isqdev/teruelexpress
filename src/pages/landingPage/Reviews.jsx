@@ -1,21 +1,4 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, Section, Shape } from "@/components";
-
-export function Reviews () {
-    
-    return (
-        <>
-            <div className="bg-blue-tx">
-                <Section id="reviews">
-                    <h2 className="text-white ">Avaliações</h2>
-                    <CarouselSize/>
-                </Section>
-            </div>
-        </>
-    )
-}
-
-import * as React from "react"
-
+import { Section } from "@/components";
 import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
@@ -25,8 +8,30 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { Star, UserCircle } from "phosphor-react";
+import { useEffect, useState } from "react";
 
-export function CarouselSize() {
+export function Reviews () {
+    const [reviews, setReviews] = useState([]);
+  
+      useEffect(() => {
+        fetch('./src/assets/reviews.json').
+          then(data => data.json()).
+          then(data => setReviews(data))
+      }, []);
+
+    return (
+        <>
+            <div className="bg-blue-tx">
+                <Section id="reviews">
+                    <h2 className="text-white pb-6">Avaliações</h2>
+                    <CarouselSize data={reviews}/>
+                </Section>
+            </div>
+        </>
+    )
+}
+
+export function CarouselSize({ data }) {
   return (
     <Carousel
       opts={{
@@ -35,26 +40,24 @@ export function CarouselSize() {
       className="w-full"
     >
       <CarouselContent>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {data.map((review, index) => (
           <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/3">
             <div className="p-1">
               <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-6">
+                <CardContent className="flex h-55 items-center justify-center p-6">
                   <div className="flex flex-col">
                   <div className="flex items-center gap-4">
                     <UserCircle className="icon w-16 h-16 text-gray-100 "/>
                     <div className="flex flex-col">
-                      <p className="font-bold">Nome Cliente</p>
+                      <p className="font-bold">{review.nome}</p>
                       <div className="flex flex-row">
-                        <StarFull></StarFull>
-                        <StarFull></StarFull>
-                        <StarFull></StarFull>
-                        <StarFull></StarFull>
-                        <StarFull></StarFull>
+                        {Array.from({ length: review.estrelas }).map((_, index) => (
+                          <StarFull key={index}/>
+                        ))}
                       </div>
                     </div>
                   </div>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                  <p>{ review.comentario }</p>
                   </div>
                 </CardContent>
               </Card>
@@ -77,20 +80,3 @@ function StarFull() {
   )
 }
 
-{/* <div class="img-reviewer"><img src="img/user.png" alt="Imagem de um avaliador"></div>
-    <div class="reviewer-details">
-        <p class="name-reviewer">Gráfica ExpressPrint</p>
-        <div class="stars">
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-fill"></i>
-            <i class="bi bi-star-half"></i>
-        </div>
-    </div>
-</div>
-<div class="txt-review">
-    <p>Entregas feitas com segurança e responsabilidade. O custo-benefício é ótimo e o
-        atendimento é ágil. Apenas sugerimos ampliar os horários de coleta.
-    </p>
-</div>*/}
