@@ -87,8 +87,8 @@ export function SignUpPage() {
             placeholder={isBusiness ? "Digite seu CNPJ" : "Digite seu CPF"}
             error={errors.document}
             dirty={touchedFields.document}
-            type="number"
             icon={UserList}
+            onChangeMask={(v) => maskInput(v, "document")}
           />
 
           <FormField
@@ -108,8 +108,8 @@ export function SignUpPage() {
             placeholder="Digite seu telefone"
             error={errors.phone}
             dirty={touchedFields.phone}
-            type="number"
             icon={Phone}
+            onChangeMask={(v) => maskInput(v, "phone")}
           />
 
           <FormField
@@ -135,8 +135,8 @@ export function SignUpPage() {
           />
 
           <div className="flex items-center gap-2 py-4">
-            <Checkbox checked={acceptedTerms} onCheckedChange={setAcceptedTerms} />
-            <p onClick={handleTermsModal} className="cursor-pointer">Aceitar os termos e condições</p>
+            <Checkbox checked={acceptedTerms} onCheckedChange={setAcceptedTerms} className="border-gray-600 data-[state=checked]:bg-blue-500 cursor-pointer"/>
+            <p className="cursor-pointer">Aceitar os <span onClick={handleTermsModal} className="font-bold text-blue-tx">termos e condições</span></p>
           </div>
 
           <div className="pt-2">
@@ -210,7 +210,7 @@ export function SignUpPage() {
   )
 }
 
-function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon }) {
+function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon, onChangeMask }) {
   let status;
   if (dirty) {
     status = error ? "error" : "validated"
@@ -227,7 +227,11 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
         <InputField
           placeholder={placeholder}
           type={type === "password" ? (showPassword ? "text" : "password") : type}
-          {...register(name)}
+          {...register(name, onChangeMask ? {
+            onChange: (e) => {
+              e.target.value = onChangeMask(e.target.value);
+            }
+          } : {})}
         />
         {type === "password" && (
           <InputIcon onClick={() => setShowPassword((v) => !v)} className="cursor-pointer">
@@ -287,3 +291,44 @@ const generalSchema = z.object({
     message: "As senhas não coincidem",
     path: ["confirmPassword"],
   });
+
+function maskInput(value, field) {
+  const onlyDigits = value.replace(/\D/g, '');
+
+  if (field === "document") {
+    if (onlyDigits.length <= 11) {
+      // CPF: 000.000.000-00
+      return onlyDigits
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    } else {
+      // CNPJ: 00.000.000/0000-00
+      return onlyDigits
+        .replace(/^(\d{2})(\d)/, '$1.$2')
+        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+        .replace(/(\d{4})(\d)/, '$1-$2')
+        .slice(0, 18);
+    }
+  }
+
+  if (field === "phone") {
+    // Celular: (99) 9 9999-9999 (11 dígitos)
+    if (onlyDigits.length > 10) {
+      return onlyDigits
+        .replace(/^(\d{2})(\d{1})(\d{4})(\d{4}).*/, '($1) $2 $3-$4')
+        .replace(/^(\d{2})(\d{1})(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
+    }
+    // Fixo: (99) 9999-9999 (10 dígitos)
+    return onlyDigits
+      .replace(/^(\d{2})(\d{4})(\d{4}).*/, '($1) $2-$3')
+      .replace(/^(\d{2})(\d{0,4})(\d{0,4})/, (match, ddd, first, last) => {
+        if (!first) return ddd ? `(${ddd}` : '';
+        if (!last) return `(${ddd}) ${first}`;
+        return `(${ddd}) ${first}-${last}`;
+      });
+  }
+
+  return value;
+}
