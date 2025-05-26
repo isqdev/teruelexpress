@@ -1,7 +1,7 @@
 import { SectionBox } from "@/components"
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
+import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Shape } from "@/components";
 import { Eye, EyeSlash, UserList, Phone, EnvelopeSimple, LockSimpleOpen, CheckCircle, HouseLine } from "phosphor-react";
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,12 +17,16 @@ export function SignUpPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showAllertModal, setShowAllertModal] = useState(false);
 
+  const selectedSchema = useMemo(() => {
+    return isBusiness ? businessSchema : personSchema;
+  }, [isBusiness]);
+
   const {
     register,
     handleSubmit,
     formState: { errors, touchedFields, isValid }
   } = useForm({
-    resolver: zodResolver(generalSchema),
+    resolver: zodResolver(selectedSchema),
     mode: "onBlur"
   });
 
@@ -69,73 +73,11 @@ export function SignUpPage() {
             </ButtonText>
           </Button>
         </div>
-        <form>
-          <FormField
-            register={register}
-            name="name"
-            title={isBusiness ? "Digite o nome da empresa" : "Seu nome"}
-            placeholder={isBusiness ? "Digite o nome da empresa" : "Digite seu nome"}
-            error={errors.name}
-            dirty={touchedFields.name}
-            icon={UserList}
-          />
-
-          <FormField
-            register={register}
-            name="document"
-            title={isBusiness ? "CNPJ" : "CPF"}
-            placeholder={isBusiness ? "Digite seu CNPJ" : "Digite seu CPF"}
-            error={errors.document}
-            dirty={touchedFields.document}
-            icon={UserList}
-            onChangeMask={(v) => maskInput(v, "document")}
-          />
-
-          <FormField
-            register={register}
-            name="email"
-            title="Email"
-            placeholder="Digite seu email"
-            error={errors.email}
-            dirty={touchedFields.email}
-            icon={EnvelopeSimple}
-          />
-
-          <FormField
-            register={register}
-            name="phone"
-            title="Telefone"
-            placeholder="Digite seu telefone"
-            error={errors.phone}
-            dirty={touchedFields.phone}
-            icon={Phone}
-            onChangeMask={(v) => maskInput(v, "phone")}
-          />
-
-          <FormField
-            register={register}
-            name="password"
-            title="Senha"
-            placeholder="Crie uma senha"
-            error={errors.password}
-            dirty={touchedFields.password}
-            type="password"
-            icon={LockSimpleOpen}
-          />
-
-          <FormField
-            register={register}
-            name="confirmPassword"
-            title="Confirmar senha"
-            placeholder="Confirme sua senha"
-            error={errors.confirmPassword}
-            dirty={touchedFields.confirmPassword}
-            type="password"
-            icon={LockSimpleOpen}
-          />
+        <form className="flex flex-col gap-1">
+          {isBusiness ? <FormBusiness register={register} errors={errors} touchedFields={touchedFields} /> : <FormPerson register={register} errors={errors} touchedFields={touchedFields} />}
 
           <div className="flex items-center gap-2 py-4">
-            <Checkbox checked={acceptedTerms} onCheckedChange={setAcceptedTerms} className="border-gray-600 data-[state=checked]:bg-blue-500 cursor-pointer"/>
+            <Checkbox checked={acceptedTerms} onCheckedChange={setAcceptedTerms} className="border-gray-600 data-[state=checked]:bg-blue-500 cursor-pointer" />
             <p className="cursor-pointer">Aceitar os <span onClick={handleTermsModal} className="font-bold text-blue-tx">termos e condições</span></p>
           </div>
 
@@ -210,6 +152,148 @@ export function SignUpPage() {
   )
 }
 
+function FormPerson({ register, errors, touchedFields }) {
+
+  return (
+    <>
+      <FormField
+        register={register}
+        name="namePerson"
+        title="Digite seu nome"
+        placeholder="Digite seu nome"
+        error={errors.namePerson}
+        dirty={touchedFields.namePerson}
+        icon={UserList}
+      />
+
+      <FormField
+        register={register}
+        name="cpf"
+        title="CPF"
+        placeholder="Digite seu CPF"
+        error={errors.cpf}
+        dirty={touchedFields.cpf}
+        icon={UserList}
+        onChangeMask={(v) => maskInput(v, "cpf")}
+      />
+
+      <FormField
+        register={register}
+        name="email"
+        title="Email"
+        placeholder="Digite seu email"
+        error={errors.email}
+        dirty={touchedFields.email}
+        icon={EnvelopeSimple}
+      />
+
+      <FormField
+        register={register}
+        name="phone"
+        title="Telefone"
+        placeholder="Digite seu telefone"
+        error={errors.phone}
+        dirty={touchedFields.phone}
+        icon={Phone}
+        onChangeMask={(v) => maskInput(v, "phone")}
+      />
+
+      <FormField
+        register={register}
+        name="password"
+        title="Senha"
+        placeholder="Crie uma senha"
+        error={errors.password}
+        dirty={touchedFields.password}
+        type="password"
+        icon={LockSimpleOpen}
+      />
+
+      <FormField
+        register={register}
+        name="confirmPassword"
+        title="Confirmar senha"
+        placeholder="Confirme sua senha"
+        error={errors.confirmPassword}
+        dirty={touchedFields.confirmPassword}
+        type="password"
+        icon={LockSimpleOpen}
+      />
+    </>
+  )
+}
+
+function FormBusiness({ register, errors, touchedFields }) {
+
+  return (
+    <>
+      <FormField
+        register={register}
+        name="nameBusiness"
+        title="Digite o nome da empresa"
+        placeholder="Digite o nome da empresa"
+        error={errors.nameBusiness}
+        dirty={touchedFields.nameBusiness}
+        icon={UserList}
+      />
+
+      <FormField
+        register={register}
+        name="cnpj"
+        title="CNPJ"
+        placeholder="Digite seu CNPJ"
+        error={errors.cnpj}
+        dirty={touchedFields.cnpj}
+        icon={UserList}
+        onChangeMask={(v) => maskInput(v, "cnpj")}
+      />
+
+      <FormField
+        register={register}
+        name="email"
+        title="Email"
+        placeholder="Digite seu email"
+        error={errors.email}
+        dirty={touchedFields.email}
+        icon={EnvelopeSimple}
+      />
+
+      <FormField
+        register={register}
+        name="phone"
+        title="Telefone"
+        placeholder="Digite seu telefone"
+        error={errors.phone}
+        dirty={touchedFields.phone}
+        icon={Phone}
+        onChangeMask={(v) => maskInput(v, "phone")}
+      />
+
+      <FormField
+        register={register}
+        name="password"
+        title="Senha"
+        placeholder="Crie uma senha"
+        error={errors.password}
+        dirty={touchedFields.password}
+        type="password"
+        icon={LockSimpleOpen}
+      />
+
+      <FormField
+        register={register}
+        name="confirmPassword"
+        title="Confirmar senha"
+        placeholder="Confirme sua senha"
+        error={errors.confirmPassword}
+        dirty={touchedFields.confirmPassword}
+        type="password"
+        icon={LockSimpleOpen}
+      />
+    </>
+  )
+}
+
 function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon, onChangeMask }) {
   let status;
   if (dirty) {
@@ -249,20 +333,16 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
   )
 }
 
-const generalSchema = z.object({
-  name: z
+const personSchema = z.object({
+  namePerson: z
     .string()
     .nonempty("Campo obrigatório"),
 
-  document: z
+  cpf: z
     .string()
     .nonempty("Campo obrigatório")
     .transform((val) => val.replace(/\D/g, ""))
-    .refine((val) => {
-      if (val.length === 14) return cnpj.isValid(val);
-      if (val.length === 11) return cpf.isValid(val);
-      return false;
-    }, { message: "Documento inválido" }),
+    .refine((val) => val.length === 11 && cpf.isValid(val), { message: "Documento inválido" }),
 
   email: z
     .string()
@@ -282,35 +362,68 @@ const generalSchema = z.object({
     .refine((val) => /[A-Z]/.test(val), { message: "Deve conter ao menos 1 letra maiúscula" })
     .refine((val) => /[0-9]/.test(val), { message: "Deve conter ao menos 1 número" })
     .refine((val) => /[@#$?]/.test(val), { message: "Deve conter ao menos 1 caractere especial (@, #, $, ?)" }),
+  confirmPassword: z.string().nonempty("Campo obrigatório"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
+});
 
-  confirmPassword: z
+const businessSchema = z.object({
+  nameBusiness: z
+    .string()
+    .nonempty("Campo obrigatório"),
+
+  cnpj: z
     .string()
     .nonempty("Campo obrigatório")
-})
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem",
-    path: ["confirmPassword"],
-  });
+    .transform((val) => val.replace(/\D/g, ""))
+    .refine((val) => val.length === 14 && cnpj.isValid(val), { message: "Documento inválido" }),
+
+  email: z
+    .string()
+    .nonempty("Campo obrigatório")
+    .email("Email inválido"),
+
+  phone: z
+    .string()
+    .nonempty("Campo obrigatório")
+    .transform((val) => val.replace(/\D/g, ""))
+    .refine((val) => val.length === 10 || val.length === 11, { message: "Telefone inválido" }),
+
+  password: z
+    .string()
+    .nonempty("Campo obrigatório")
+    .max(8, "Máximo de 8 caracteres")
+    .refine((val) => /[A-Z]/.test(val), { message: "Deve conter ao menos 1 letra maiúscula" })
+    .refine((val) => /[0-9]/.test(val), { message: "Deve conter ao menos 1 número" })
+    .refine((val) => /[@#$?]/.test(val), { message: "Deve conter ao menos 1 caractere especial (@, #, $, ?)" }),
+  confirmPassword: z.string().nonempty("Campo obrigatório"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
+});
 
 function maskInput(value, field) {
   const onlyDigits = value.replace(/\D/g, '');
 
-  if (field === "document") {
-    if (onlyDigits.length <= 11) {
-      // CPF: 000.000.000-00
-      return onlyDigits
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    } else {
-      // CNPJ: 00.000.000/0000-00
-      return onlyDigits
-        .replace(/^(\d{2})(\d)/, '$1.$2')
-        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-        .replace(/\.(\d{3})(\d)/, '.$1/$2')
-        .replace(/(\d{4})(\d)/, '$1-$2')
-        .slice(0, 18);
-    }
+  if (field === "cpf") {
+    // CPF: 000.000.000-00
+    const cpf = onlyDigits.slice(0, 11);
+    return cpf
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  }
+
+  if (field === "cnpj") {
+    // CNPJ: 00.000.000/0000-00
+    const cnpj = onlyDigits.slice(0, 14);
+    return cnpj
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .slice(0, 18);
   }
 
   if (field === "phone") {
