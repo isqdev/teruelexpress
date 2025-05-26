@@ -2,6 +2,7 @@ import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel
 import { Eye, EyeSlash } from "phosphor-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SectionBox } from "@/components";
@@ -29,9 +30,9 @@ export function LoginPage() {
   return (
     <>
       <SectionBox className="pt-0">
-        <img src="./src/assets/logo-full.png" className="max-w-xs w-full h-auto mx-auto " />
-        <h2 className="font-bold text-center py-7">Entre na sua conta</h2>
-        <div  >
+        <Image src="src\assets\logo.jpg" className="w-48 justify-self-center" />
+        <h3 className="font-bold text-center py-2">Entre na sua conta</h3>
+        <div className="pt-4">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
             <div>
               <InputLabel>CPF ou CNPJ</InputLabel>
@@ -51,8 +52,8 @@ export function LoginPage() {
               </InputRoot>
               <InputMessage className="text-danger-base">{errors.senha?.message}</InputMessage>
             </div>
-            <p className="font-bold text-right cursor-pointer">Esqueceu a senha?</p>
-            <div className="mt-8">
+            <p className="font-bold text-right cursor-pointer text-blue-tx">Esqueceu a senha?</p>
+            <div className="pt-4 pb-20">
               <Button className={"bg-red-tx"} type="submit">
                 <ButtonText className="text-center text-white">
                   Entrar
@@ -60,6 +61,12 @@ export function LoginPage() {
               </Button>
             </div>
           </form>
+          <div className="justify-items-center">
+            <p className="text-center cursor-default">Não possui uma conta Teruel Exepress?</p>
+            <Link to="/login" className="text-red-tx font-bold">
+              Crie uma agora
+            </Link>
+          </div>
         </div>
       </SectionBox>
     </>
