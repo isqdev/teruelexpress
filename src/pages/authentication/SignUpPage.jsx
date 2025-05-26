@@ -7,12 +7,25 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox"
+import { cpf, cnpj } from 'cpf-cnpj-validator';
 
 export function SignUpPage() {
   const [data, setData] = useState("Dados do Formulario em JSON");
   const [isBusiness, setIsBusiness] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showAllertModal, setShowAllertModal] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, touchedFields, isValid }
+  } = useForm({
+    resolver: zodResolver(generalSchema),
+    mode: "onBlur"
+  });
 
   const handleChangedPerson = (business) => {
     if (isBusiness !== business) {
@@ -20,10 +33,19 @@ export function SignUpPage() {
     }
   }
 
-  const postForm = (/*formData*/) => {
-    /*setData({ ...formData });
-    console.log("JSON enviado:", formData);*/
+  const postForm = (formData) => {
+    setData({ ...formData });
+    console.log("JSON enviado:", formData);
     setShowSuccessModal(true);
+  };
+
+  const handleCreateAccount = (e) => {
+    e.preventDefault();
+    if (!isValid) {
+      setShowAllertModal(true);
+      return;
+    }
+    handleSubmit(postForm)();
   };
 
   const handleTermsModal = () => {
@@ -50,58 +72,76 @@ export function SignUpPage() {
         </div>
         <form>
           <FormField
+            register={register}
+            name="name"
             title={isBusiness ? "Digite o nome da empresa" : "Seu nome"}
             placeholder={isBusiness ? "Digite o nome da empresa" : "Digite seu nome"}
-            error="Nome invalido"
+            error={errors.name}
+            dirty={touchedFields.name}
             icon={UserList}
           />
 
           <FormField
+            register={register}
+            name="document"
             title={isBusiness ? "CNPJ" : "CPF"}
             placeholder={isBusiness ? "Digite seu CNPJ" : "Digite seu CPF"}
-            error={isBusiness ? "CNPJ invalido" : "CPF invalido"}
+            error={errors.document}
+            dirty={touchedFields.document}
             type="number"
             icon={UserList}
           />
 
           <FormField
+            register={register}
+            name="email"
             title="Email"
             placeholder="Digite seu email"
-            error="Email invalido"
+            error={errors.email}
+            dirty={touchedFields.email}
             icon={EnvelopeSimple}
           />
 
           <FormField
+            register={register}
+            name="phone"
             title="Telefone"
             placeholder="Digite seu telefone"
-            error="Telefone invalido"
+            error={errors.phone}
+            dirty={touchedFields.phone}
             type="number"
             icon={Phone}
           />
 
           <FormField
+            register={register}
+            name="password"
             title="Senha"
             placeholder="Crie uma senha"
-            error="Senha fraca"
+            error={errors.password}
+            dirty={touchedFields.password}
             type="password"
             icon={LockSimpleOpen}
           />
 
           <FormField
+            register={register}
+            name="confirmPassword"
             title="Confirmar senha"
             placeholder="Confirme sua senha"
-            error="Senhas diferentes"
+            error={errors.confirmPassword}
+            dirty={touchedFields.confirmPassword}
             type="password"
             icon={LockSimpleOpen}
           />
 
-          <div className="flex items-center gap-2">
-            <Checkbox />
+          <div className="flex items-center gap-2 py-4">
+            <Checkbox checked={acceptedTerms} onCheckedChange={setAcceptedTerms} />
             <p onClick={handleTermsModal} className="cursor-pointer">Aceitar os termos e condições</p>
           </div>
 
-          <div className="pt-4">
-            <Button className="bg-red-tx" type="button" onClick={postForm}>
+          <div className="pt-2">
+            <Button className="bg-red-tx" type="button" onClick={handleCreateAccount}>
               <ButtonText className="text-center text-white">
                 Criar conta
               </ButtonText>
@@ -116,6 +156,20 @@ export function SignUpPage() {
           </Link>
         </div>
       </SectionBox>
+
+      {showAllertModal && (
+        <>
+          <div className="fixed inset-0 flex items-center justify-center z-3">
+            <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
+              <p className="mb-4 text-lg font-semibold">Por favor preencher todos os campos!</p>
+              <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
+                <ButtonText className="text-white text-center">Fechar</ButtonText>
+              </Button>
+            </Shape>
+            <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
+          </div>
+        </>
+      )}
 
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center z-3">
@@ -157,27 +211,80 @@ export function SignUpPage() {
   )
 }
 
-function FormField({ title, placeholder, error, type = "text", icon: Icon }) {
+function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon }) {
+  let status;
+  if (dirty) {
+    status = error ? "error" : "validated"
+  }
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <>
       <InputLabel>{title}</InputLabel>
-      <InputRoot>
+      <InputRoot status={status}>
         <InputIcon>
           {Icon && <Icon className="icon" />}
         </InputIcon>
         <InputField
           placeholder={placeholder}
           type={type === "password" ? (showPassword ? "text" : "password") : type}
+          {...register(name)}
         />
         {type === "password" && (
           <InputIcon onClick={() => setShowPassword((v) => !v)} className="cursor-pointer">
             {showPassword ? <Eye className="icon" /> : <EyeSlash className="icon" />}
           </InputIcon>
         )}
+        {status === "validated" && (
+          <InputIcon>
+            <CheckCircle size={32} className="text-success-base" />
+          </InputIcon>
+        )}
       </InputRoot>
-      <InputMessage>{error}</InputMessage>
+      <InputMessage className="text-danger-base">{error?.message}</InputMessage>
     </>
   )
 }
+
+const generalSchema = z.object({
+  name: z
+    .string()
+    .nonempty("Campo obrigatório"),
+
+  document: z
+    .string()
+    .nonempty("Campo obrigatório")
+    .transform((val) => val.replace(/\D/g, ""))
+    .refine((val) => {
+      if (val.length === 14) return cnpj.isValid(val);
+      if (val.length === 11) return cpf.isValid(val);
+      return false;
+    }, { message: "Documento inválido" }),
+
+  email: z
+    .string()
+    .nonempty("Campo obrigatório")
+    .email("Email inválido"),
+
+  phone: z
+    .string()
+    .nonempty("Campo obrigatório")
+    .transform((val) => val.replace(/\D/g, ""))
+    .refine((val) => val.length === 10 || val.length === 11, { message: "Telefone inválido" }),
+
+  password: z
+    .string()
+    .nonempty("Campo obrigatório")
+    .max(8, "Máximo de 8 caracteres")
+    .refine((val) => /[A-Z]/.test(val), { message: "Deve conter ao menos 1 letra maiúscula" })
+    .refine((val) => /[0-9]/.test(val), { message: "Deve conter ao menos 1 número" })
+    .refine((val) => /[@#$?]/.test(val), { message: "Deve conter ao menos 1 caractere especial (@, #, $, ?)" }),
+
+  confirmPassword: z
+    .string()
+    .nonempty("Campo obrigatório")
+})
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+  });
