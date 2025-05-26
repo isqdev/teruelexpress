@@ -57,7 +57,7 @@ export function Budget() {
                         Orçamento
                     </h2>
                 </div>
-                <p className="pb-4 grid col-span-2">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
+                <p className="pb-4 grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
                     <Shape className="border border-gray-600">
                         <h3 className="pb-2">Endereço origem</h3>
