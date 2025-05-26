@@ -17,18 +17,17 @@ export function SignUpPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showAllertModal, setShowAllertModal] = useState(false);
 
-  const selectedSchema = useMemo(() => {
-    return isBusiness ? businessSchema : personSchema;
-  }, [isBusiness]);
+  const schema = isBusiness ? businessSchema : personSchema;
 
   const {
     register,
     handleSubmit,
     formState: { errors, touchedFields, isValid }
   } = useForm({
-    resolver: zodResolver(selectedSchema),
+    resolver: zodResolver(schema),
     mode: "onBlur"
   });
+
 
   const handleChangedPerson = (business) => {
     if (isBusiness !== business) {
@@ -164,6 +163,7 @@ function FormPerson({ register, errors, touchedFields }) {
         error={errors.namePerson}
         dirty={touchedFields.namePerson}
         icon={UserList}
+        autoComplete="name"
       />
 
       <FormField
@@ -185,6 +185,7 @@ function FormPerson({ register, errors, touchedFields }) {
         error={errors.email}
         dirty={touchedFields.email}
         icon={EnvelopeSimple}
+        autoComplete="email"
       />
 
       <FormField
@@ -196,6 +197,7 @@ function FormPerson({ register, errors, touchedFields }) {
         dirty={touchedFields.phone}
         icon={Phone}
         onChangeMask={(v) => maskInput(v, "phone")}
+        autoComplete="tel"
       />
 
       <FormField
@@ -207,6 +209,7 @@ function FormPerson({ register, errors, touchedFields }) {
         dirty={touchedFields.password}
         type="password"
         icon={LockSimpleOpen}
+        autoComplete="new-password"
       />
 
       <FormField
@@ -218,6 +221,7 @@ function FormPerson({ register, errors, touchedFields }) {
         dirty={touchedFields.confirmPassword}
         type="password"
         icon={LockSimpleOpen}
+        autoComplete="new-password"
       />
     </>
   )
@@ -256,6 +260,7 @@ function FormBusiness({ register, errors, touchedFields }) {
         error={errors.email}
         dirty={touchedFields.email}
         icon={EnvelopeSimple}
+        autoComplete="email"
       />
 
       <FormField
@@ -267,6 +272,7 @@ function FormBusiness({ register, errors, touchedFields }) {
         dirty={touchedFields.phone}
         icon={Phone}
         onChangeMask={(v) => maskInput(v, "phone")}
+        autoComplete="tel"
       />
 
       <FormField
@@ -278,6 +284,7 @@ function FormBusiness({ register, errors, touchedFields }) {
         dirty={touchedFields.password}
         type="password"
         icon={LockSimpleOpen}
+        autoComplete="new-password"
       />
 
       <FormField
@@ -289,12 +296,13 @@ function FormBusiness({ register, errors, touchedFields }) {
         dirty={touchedFields.confirmPassword}
         type="password"
         icon={LockSimpleOpen}
+        autoComplete="new-password"
       />
     </>
   )
 }
 
-function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon, onChangeMask }) {
+function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon, onChangeMask, autoComplete = "off" }) {
   let status;
   if (dirty) {
     status = error ? "error" : "validated"
@@ -309,6 +317,7 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
           {Icon && <Icon className="icon" />}
         </InputIcon>
         <InputField
+          autoComplete={autoComplete}
           placeholder={placeholder}
           type={type === "password" ? (showPassword ? "text" : "password") : type}
           {...register(name, onChangeMask ? {
