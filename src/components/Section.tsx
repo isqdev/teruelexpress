@@ -9,7 +9,7 @@ interface SectionProps extends ComponentProps<"section"> {
 export function Section({ className, children, ...props }: SectionProps) {
   return (
     <section
-      className={twMerge("p-6 sm:px-8 md:px-20 lg:px-32 lg:py-10 2xl:px-60 mx-auto max-w-495", className)}
+      className={twMerge("p-6 sm:px-8 md:px-20 lg:px-32 lg:py-10 2xl:px-60 mx-auto max-w-495 scroll-m-30", className)}
       {...props}
     >
       {children ? children : "--vazio--"}
