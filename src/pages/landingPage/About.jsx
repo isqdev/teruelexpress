@@ -4,7 +4,7 @@ import { CarouselPlugin } from "./Carousel";
 export function About () {
     return (
         <>  
-            <div className="bg-red-tx ">
+            <div id="about" className="bg-red-tx ">
                 <Section>
                     <CarouselPlugin />
                     <h2 className="q pt-1 lg:pt-2 text-white mt-4">Sobre</h2>

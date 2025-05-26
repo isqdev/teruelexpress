@@ -10,25 +10,25 @@ import {
 import { Star, UserCircle } from "phosphor-react";
 import { useEffect, useState } from "react";
 
-export function Reviews () {
-    const [reviews, setReviews] = useState([]);
-  
-      useEffect(() => {
-        fetch('./src/assets/reviews.json').
-          then(data => data.json()).
-          then(data => setReviews(data))
-      }, []);
+export function Reviews() {
+  const [reviews, setReviews] = useState([]);
 
-    return (
-        <>
-            <div className="bg-blue-tx">
-                <Section id="reviews">
-                    <h2 className="text-white pb-6">Avaliações</h2>
-                    <CarouselSize data={reviews}/>
-                </Section>
-            </div>
-        </>
-    )
+  useEffect(() => {
+    fetch('./src/assets/reviews.json').
+      then(data => data.json()).
+      then(data => setReviews(data))
+  }, []);
+
+  return (
+    <>
+      <div className="bg-blue-tx">
+        <Section id="reviews">
+          <h2 className="text-white pb-6">Avaliações</h2>
+          <CarouselSize data={reviews} />
+        </Section>
+      </div>
+    </>
+  )
 }
 
 export function CarouselSize({ data }) {
@@ -46,18 +46,18 @@ export function CarouselSize({ data }) {
               <Card>
                 <CardContent className="flex h-55 items-center justify-center p-6">
                   <div className="flex flex-col">
-                  <div className="flex items-center gap-4">
-                    <UserCircle className="icon w-16 h-16 text-gray-100 "/>
-                    <div className="flex flex-col">
-                      <p className="font-bold">{review.nome}</p>
-                      <div className="flex flex-row">
-                        {Array.from({ length: review.estrelas }).map((_, index) => (
-                          <StarFull key={index}/>
-                        ))}
+                    <div className="flex items-center gap-4">
+                      <UserCircle className="icon w-16 h-16 text-gray-100 " />
+                      <div className="flex flex-col">
+                        <p className="font-bold">{review.nome}</p>
+                        <div className="flex flex-row">
+                          {Array.from({ length: review.estrelas }).map((_, index) => (
+                            <StarFull key={index} />
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <p>{ review.comentario }</p>
+                    <p>{review.comentario}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -65,8 +65,10 @@ export function CarouselSize({ data }) {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <div className="bg-white hidden md:block">
+        <CarouselPrevious className="cursor-pointer"/>
+        <CarouselNext className="cursor-pointer"/>
+      </div>
     </Carousel>
   )
 }
@@ -75,7 +77,7 @@ function StarFull() {
   return (
     <div className="relative w-6 h-7">
       <Star className="absolute inset-0 text-star w-6 h-6" weight="fill" />
-      <Star className="absolute inset-0 text-star-border w-6 h-6" weight="regular"/>
+      <Star className="absolute inset-0 text-star-border w-6 h-6" weight="regular" />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { SectionBox } from "@/components"
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Shape } from "@/components";
 import { Eye, EyeSlash, UserList, Phone, EnvelopeSimple, LockSimpleOpen, CheckCircle, HouseLine } from "phosphor-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -58,9 +58,9 @@ export function SignUpPage() {
     <>
       <SectionBox>
         <Image src="src\assets\logo.jpg" className="w-48 justify-self-center" />
-        <h3 className="justify-self-center">Crie sua conta!</h3>
+        <h3 className="justify-self-center cursor-default">Crie sua conta!</h3>
         <div className="grid grid-cols-2 gap-4 py-6">
-          <p className="font-bold col-span-2">Escolha uma opção</p>
+          <p className="font-bold col-span-2 cursor-default">Escolha uma opção</p>
           <Button className={isBusiness ? "bg-white border border-gray-600" : "bg-blue-tx"} onClick={() => handleChangedPerson(false)}>
             <ButtonText className={isBusiness ? "text-gray-600 text-center" : "text-white text-center"}>
               Pessoa Física
@@ -77,7 +77,7 @@ export function SignUpPage() {
 
           <div className="flex items-center gap-2 py-4">
             <Checkbox checked={acceptedTerms} onCheckedChange={setAcceptedTerms} className="border-gray-600 data-[state=checked]:bg-blue-500 cursor-pointer" />
-            <p className="cursor-pointer">Aceitar os <span onClick={handleTermsModal} className="font-bold text-blue-tx">termos e condições</span></p>
+            <p className="cursor-default">Aceitar os <span onClick={handleTermsModal} className="font-bold text-blue-tx cursor-pointer">termos e condições</span></p>
           </div>
 
           <div className="pt-2">
@@ -90,7 +90,7 @@ export function SignUpPage() {
         </form>
 
         <div className="justify-items-center pt-6">
-          <p className="text-center">Já possui uma conta Teruel Exepress?</p>
+          <p className="text-center cursor-default">Já possui uma conta Teruel Exepress?</p>
           <Link to="/login" className="text-red-tx font-bold">
             Entre aqui
           </Link>
