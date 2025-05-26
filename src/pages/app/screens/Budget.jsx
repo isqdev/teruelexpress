@@ -20,6 +20,8 @@ export function Budget() {
         handleSubmit,
         watch,
         setValue,
+        setError,
+        clearErrors,
         reset,
         formState: { errors, touchedFields, isValid }
     } = useForm({
@@ -57,7 +59,7 @@ export function Budget() {
                         Orçamento
                     </h2>
                 </div>
-                <p className="pb-4 grid col-span-2">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
+                <p className="pb-4 grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
                     <Shape className="border border-gray-600">
                         <h3 className="pb-2">Endereço origem</h3>
@@ -67,6 +69,8 @@ export function Budget() {
                             touchedFields={touchedFields.origin || {}}
                             watch={watch}
                             setValue={setValue}
+                            setError={setError}
+                            clearErrors={clearErrors}
                             prefix="origin."
                         />
                     </Shape>
@@ -78,6 +82,8 @@ export function Budget() {
                             touchedFields={touchedFields.destination || {}}
                             watch={watch}
                             setValue={setValue}
+                            setError={setError}
+                            clearErrors={clearErrors}
                             prefix="destination."
                         />
                     </Shape>
@@ -165,7 +171,7 @@ export function Budget() {
     )
 }
 
-function FormField({ title, placeholder, register, name, error, dirty, type = "text" }) {
+function FormField({ title, placeholder, register, name, error, dirty, type = "text", onChangeMask }) {
     let status;
     if (dirty) {
         status = error ? "error" : "validated"
@@ -175,7 +181,15 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
         <>
             <InputLabel className="pt-4">{title}</InputLabel>
             <InputRoot status={status}>
-                <InputField placeholder={placeholder} type={type} {...register(name)} />
+                <InputField
+                    placeholder={placeholder}
+                    type={type}
+                    {...register(name, onChangeMask ? {
+                        onChange: (e) => {
+                            e.target.value = onChangeMask(e.target.value);
+                        }
+                    } : {})}
+                />
                 {status === "validated" && (
                     <InputIcon>
                         <CheckCircle size={32} className="text-success-base" />
@@ -187,7 +201,7 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
     );
 }
 
-function AddressForm({ register, errors, touchedFields, watch, setValue, prefix }) {
+function AddressForm({ register, errors, touchedFields, watch, setValue, setError, clearErrors, prefix }) {
     const cep = watch(`${prefix}cep`);
 
     useEffect(() => {
@@ -198,20 +212,21 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, prefix 
                     const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`);
                     const data = await response.json();
                     if (data.erro) {
-                        console.error("CEP invalido");
+                        setError(`${prefix}cep`, { type: "manual", message: "CEP inválido" });
                         return;
                     }
+                    clearErrors(`${prefix}cep`);
                     setValue(`${prefix}street`, data.logradouro, { shouldTouch: true, shouldValidate: true });
                     setValue(`${prefix}neighborhood`, data.bairro, { shouldTouch: true, shouldValidate: true });
                     setValue(`${prefix}city`, data.localidade, { shouldTouch: true, shouldValidate: true });
                     setValue(`${prefix}state`, data.uf, { shouldTouch: true, shouldValidate: true });
                 } catch (error) {
-                    console.error("Erro ao buscar o CEP ", error);
+                    setError(`${prefix}cep`, { type: "manual", message: "Erro ao buscar o CEP" });
                 }
             }
         };
         fetchAddress();
-    }, [cep, setValue, prefix]);
+    }, [cep, setValue, setError, clearErrors, prefix]);
 
     return (
         <>
@@ -222,7 +237,8 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, prefix 
                 placeholder="Digite seu CEP"
                 error={errors.cep}
                 dirty={touchedFields.cep}
-                type="number"
+                type="text"
+                onChangeMask={(v) => maskInput(v, "cep")}
             />
             <FormField
                 register={register}
@@ -383,3 +399,17 @@ const generalSchema = z.object({
         .transform((val) => Number(val.replace(",", ".")))
         .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
 });
+
+function maskInput(value, field) {
+    const onlyDigits = value.replace(/\D/g, '');
+
+    if (field === "cep") {
+        // CEP: 99999-999
+        return onlyDigits.replace(/^(\d{5})(\d{0,3})/, (match, p1, p2) => {
+            if (p2) return `${p1}-${p2}`;
+            return p1;
+        }).slice(0, 9);
+    }
+
+    return value;
+}
