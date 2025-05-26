@@ -8,14 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox"
 import { cpf, cnpj } from 'cpf-cnpj-validator';
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
-import { Eye, EyeSlash, UserList, Phone, EnvelopeSimple, LockSimpleOpen, CheckCircle, HouseLine } from "phosphor-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from "react-router-dom";
-import { Checkbox } from "@/components/ui/checkbox"
 
 export function SignUpPage() {
   const [data, setData] = useState("Dados do Formulario em JSON");
@@ -28,7 +20,6 @@ export function SignUpPage() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, touchedFields, isValid }
   } = useForm({
     resolver: zodResolver(generalSchema),
@@ -49,7 +40,7 @@ export function SignUpPage() {
 
   const handleCreateAccount = (e) => {
     e.preventDefault();
-    if (!isValid) {
+    if (!isValid || !acceptedTerms) {
       setShowAllertModal(true);
       return;
     }
