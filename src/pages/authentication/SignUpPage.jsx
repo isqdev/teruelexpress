@@ -12,6 +12,7 @@ export function SignUpPage() {
   const [data, setData] = useState("Dados do Formulario em JSON");
   const [isBusiness, setIsBusiness] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const handleChangedPerson = (business) => {
     if (isBusiness !== business) {
@@ -24,6 +25,10 @@ export function SignUpPage() {
     console.log("JSON enviado:", formData);*/
     setShowSuccessModal(true);
   };
+
+  const handleTermsModal = () => {
+    setShowTermsModal(true);
+  }
 
   return (
     <>
@@ -92,7 +97,7 @@ export function SignUpPage() {
 
           <div className="flex items-center gap-2">
             <Checkbox />
-            <p><a href="#">Aceitar os termos e condições</a></p>
+            <p onClick={handleTermsModal} className="cursor-pointer">Aceitar os termos e condições</p>
           </div>
 
           <div className="pt-4">
@@ -117,12 +122,33 @@ export function SignUpPage() {
           <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-xs gap-4">
             <CheckCircle className="icon size-24 text-success-light justify-self-center" weight="fill" />
             <h3 className="text-center text-lg font-semibold ">Conta criada</h3>
-              <Link to="/home">
-                <Button className="bg-white border border-gray-600">
-                  <HouseLine className="icon text-black" />
-                  <ButtonText className="text-black">Entrar</ButtonText>
-                </Button>
-              </Link>
+            <Link to="/home">
+              <Button className="bg-white border border-gray-600">
+                <HouseLine className="icon text-black" />
+                <ButtonText className="text-black">Entrar</ButtonText>
+              </Button>
+            </Link>
+          </Shape>
+          <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
+        </div>
+      )}
+
+      {showTermsModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-3">
+          <Shape className="z-2 w-full min-h-screen sm:min-h-0 sm:max-w-lg sm:mx-auto sm:my-20 bg-white sm:rounded-2xl sm:h-fit overflow-hidden p-6 sm:p-8">
+            <div className="flex flex-col gap-6">
+              <h3 className="text-center text-lg font-semibold ">Termos e condições</h3>
+              <p className="text-justify">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+              <Button className="bg-white border border-gray-600" onClick={() => setShowTermsModal(false)}>
+                <ButtonText className="text-black text-center">Fechar termos</ButtonText>
+              </Button>
+            </div>
           </Shape>
           <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
         </div>
