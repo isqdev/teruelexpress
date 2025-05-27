@@ -1,4 +1,4 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
+import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, SectionApp, Shape } from "@/components";
 import { ArrowRight, CheckCircle, Package, X, ArrowUp, ArrowLeft, HouseLine } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -50,9 +50,9 @@ export function Budget() {
 
     return (
         <>
-            <Section className="xl:grid grid-cols-2">
+            <SectionApp className="xl:grid grid-cols-2">
                 <div className="xl:col-span-2 flex items-center">
-                    <Link to="/home">
+                    <Link to="/app/home">
                         <ArrowLeft className="text-black size-8 icon" />
                     </Link>
                     <h2 className="text-center flex-auto">
@@ -125,7 +125,7 @@ export function Budget() {
                         </div>
                     </div>
                 </form>
-            </Section>
+            </SectionApp>
 
             {showAllertModal && (
                 <>

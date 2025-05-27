@@ -38,3 +38,14 @@ export function SectionBox({ className, children, ...props }: SectionBoxProps) {
       </Background>
     );
 }
+
+export function SectionApp({ className, children, ...props }: SectionProps) {
+  return (
+    <section
+      className={twMerge("p-6 sm:px-0 md:px-8 lg:py-10 mx-auto max-w-350 scroll-m-30", className)}
+      {...props}
+    >
+      {children ? children : "--vazio--"}
+    </section>
+  );
+}

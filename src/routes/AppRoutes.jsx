@@ -20,6 +20,7 @@ export function AppRoutes() {
         <Route path="orcamento" element={<Budget />} />
         <Route path="avaliar" element={Layout}/>
         <Route path="rotas-atendidas" element={Layout}/>
+        <Route path="meus-fretes" element={Layout}/>
 
       </Route>
     </Routes>

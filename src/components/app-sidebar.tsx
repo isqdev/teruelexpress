@@ -11,27 +11,28 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import React from "react"
+import { Link } from "react-router-dom"
 
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
+    title: "Página inicial",
+    url: "/app/home",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "Meus fretes",
+    url: "/app/meus-fretes",
     icon: Inbox,
   },
   {
-    title: "Calendar",
-    url: "#",
+    title: "Rotas atendidas",
+    url: "/app/rotas-atendidas",
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
+    title: "Solicitar orçamento",
+    url: "/app/orcamento",
     icon: Search,
   },
   {
@@ -46,16 +47,16 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Teruel Express</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
