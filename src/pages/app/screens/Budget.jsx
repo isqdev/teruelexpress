@@ -1,4 +1,4 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
+import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape } from "@/components";
 import { ArrowRight, CheckCircle, Package, X, ArrowUp, ArrowLeft, HouseLine } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -50,15 +50,8 @@ export function Budget() {
 
     return (
         <>
-            <Section className="xl:grid grid-cols-2">
-                <div className="xl:col-span-2 flex items-center">
-                    <Link to="/home">
-                        <ArrowLeft className="text-black size-8 icon" />
-                    </Link>
-                    <h2 className="text-center flex-auto">
-                        Orçamento
-                    </h2>
-                </div>
+            <SectionApp className="xl:grid grid-cols-2">
+                <AppHeader screenTitle="Orçamento"/>
                 <p className="pb-4 grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
                     <Shape className="border border-gray-600">
@@ -125,7 +118,7 @@ export function Budget() {
                         </div>
                     </div>
                 </form>
-            </Section>
+            </SectionApp>
 
             {showAllertModal && (
                 <>
