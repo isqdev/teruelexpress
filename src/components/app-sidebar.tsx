@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { House, Package, Truck, Cube, Star } from "phosphor-react"
 
 import {
   Sidebar,
@@ -18,27 +18,27 @@ const items = [
   {
     title: "Página inicial",
     url: "/app/home",
-    icon: Home,
-  },
-  {
-    title: "Meus fretes",
-    url: "/app/meus-fretes",
-    icon: Inbox,
-  },
-  {
-    title: "Rotas atendidas",
-    url: "/app/rotas-atendidas",
-    icon: Calendar,
+    icon: House,
   },
   {
     title: "Solicitar orçamento",
     url: "/app/orcamento",
-    icon: Search,
+    icon: Package,
   },
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "Meus fretes",
+    url: "/app/meus-fretes",
+    icon: Cube,
+  },
+  {
+    title: "Rotas atendidas",
+    url: "/app/rotas-atendidas",
+    icon: Truck,
+  },
+  {
+    title: "Avalie nosso serviço",
+    url: "/app/avaliar",
+    icon: Star,
   },
 ]
 
@@ -52,10 +52,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="h-10">
                     <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="size-10"/>
+                      <span className="text-base">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

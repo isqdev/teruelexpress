@@ -1,10 +1,10 @@
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, Shape } from "@/components";
 
-export function Home() {
+export function Review() {
   return (
     <>
       <SectionApp>
-          Home
+          Avaliar
       </SectionApp>
     </>
   );
