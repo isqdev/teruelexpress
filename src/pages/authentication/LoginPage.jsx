@@ -30,7 +30,7 @@ export function LoginPage() {
       <SectionBox className="pt-0">
         <CloudinaryImage publicId="vfq6dw8u2de9vcybxvka" className="w-64 justify-self-center" />
         <h4 className="font-bold text-center py-7 cursor-default">Entre na sua conta</h4>
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div>
               <FormField
@@ -149,5 +149,5 @@ const loginSchema = z.object({
   password: z
     .string()
     .nonempty("Campo obrigatório")
-    .min(8, "A senha tem que ter no minimo 8 caracteres")
+    .min(8, "Mínimo de 8 caracteres")
 });

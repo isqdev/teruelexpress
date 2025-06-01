@@ -369,7 +369,7 @@ const personSchema = z.object({
   password: z
     .string()
     .nonempty("Campo obrigatório")
-    .max(8, "Máximo de 8 caracteres")
+    .min(8, "Mínimo de 8 caracteres")
     .refine((val) => /[A-Z]/.test(val), { message: "Deve conter ao menos 1 letra maiúscula" })
     .refine((val) => /[0-9]/.test(val), { message: "Deve conter ao menos 1 número" })
     .refine((val) => /[@#$?]/.test(val), { message: "Deve conter ao menos 1 caractere especial (@, #, $, ?)" }),
@@ -404,7 +404,7 @@ const businessSchema = z.object({
   password: z
     .string()
     .nonempty("Campo obrigatório")
-    .max(8, "Máximo de 8 caracteres")
+    .min(8, "Mínimo de 8 caracteres")
     .refine((val) => /[A-Z]/.test(val), { message: "Deve conter ao menos 1 letra maiúscula" })
     .refine((val) => /[0-9]/.test(val), { message: "Deve conter ao menos 1 número" })
     .refine((val) => /[@#$?]/.test(val), { message: "Deve conter ao menos 1 caractere especial (@, #, $, ?)" }),
