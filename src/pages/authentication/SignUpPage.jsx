@@ -8,6 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox"
 import { cpf, cnpj } from 'cpf-cnpj-validator';
+import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
+
 
 export function SignUpPage() {
   const [data, setData] = useState("Dados do Formulario em JSON");
@@ -57,8 +59,8 @@ export function SignUpPage() {
   return (
     <>
       <SectionBox>
-        <Image src="src\assets\logo.jpg" className="w-48 justify-self-center" />
-        <h3 className="justify-self-center cursor-default">Crie sua conta!</h3>
+        <CloudinaryImage publicId="vfq6dw8u2de9vcybxvka" className="w-64 justify-self-center"/>
+        <h4 className="justify-self-center cursor-default">Crie sua conta!</h4>
         <div className="grid grid-cols-2 gap-4 py-6">
           <p className="font-bold col-span-2 cursor-default">Escolha uma opção</p>
           <Button className={isBusiness ? "bg-white border border-gray-600" : "bg-blue-tx"} onClick={() => handleChangedPerson(false)}>

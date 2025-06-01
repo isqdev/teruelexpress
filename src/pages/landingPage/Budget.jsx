@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import cities from "@/assets/cities.json";
-import { normalize } from "@/lib/utils.ts";
+import { normalize } from "@/utils/normalize";
+import { fetchCep } from "@/services/cep";
 
 const normalizedCities = cities.map((city) => normalize(city));
 
@@ -171,8 +172,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             const cleanedCep = cep?.replace(/\D/g, "");
             if (cleanedCep?.length === 8) {
                 try {
-                    const response = await fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`);
-                    const data = await response.json();
+                    const data = await fetchCep(cleanedCep);
                     if (data.erro) {
                         setError(`${prefix}cep`, { type: "manual", message: "CEP inválido" });
                         return;

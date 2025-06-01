@@ -32,8 +32,10 @@ function Background({ className, children, ...props }: SectionBoxProps) {
 export function SectionBox({ className, children, ...props }: SectionBoxProps) {
     return (
       <Background>
-        <div className={twMerge("w-full min-h-screen sm:min-h-0 sm:max-w-lg sm:mx-auto sm:my-4 bg-white sm:rounded-2xl sm:h-fit overflow-hidden p-6 sm:p-8", className,)}{...props}>
+        <div className={twMerge("w-full min-h-screen flex items-center sm:min-h-0 sm:max-w-lg sm:mx-auto sm:my-4 bg-white sm:rounded-2xl sm:h-fit overflow-hidden p-6 sm:p-8", className,)}{...props}>
+            <div className="w-full">
             {children ? children : "--vazio--"}
+            </div>
         </div>
       </Background>
     );

@@ -2,7 +2,7 @@ import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, Input
 import { CaretDown, CaretUp, MapPin, Package } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { normalize } from "../../lib/utils";
+import { normalize } from "@/utils/normalize";
 
 
 export function ServicedRoutes() {

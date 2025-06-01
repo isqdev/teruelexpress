@@ -7,15 +7,15 @@ import { Reviews } from "./Reviews";
 import { Budget } from "./Budget";
 
 export function LandingPage() {
-    return (
-        <>
-          <Header />
-          <About />
-          <Reviews />
-          <ServicedRoutes />
-          <OurClients />
-          <Budget />
-          <Footer />
-        </>
-    )
+  return (
+    <>
+      <Header />
+      <Budget />
+      <ServicedRoutes />
+      <Reviews />
+      <About />
+      <OurClients />
+      <Footer />
+    </>
+  )
 }
