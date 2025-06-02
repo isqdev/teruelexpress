@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { LandingPage } from "../pages/landingPage";
 import { LoginPage } from "../pages/authentication/LoginPage";
 import { SignUpPage } from "../pages/authentication/SignUpPage";
@@ -13,7 +13,8 @@ import { MyShipments } from '../pages/app/screens/MyShipments';
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<Navigate to="/app/home" replace />} />
+      <Route path="/land" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<SignUpPage />} />
       <Route
