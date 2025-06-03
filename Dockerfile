@@ -1,6 +1,7 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY . .
+COPY .env .env
 RUN npm install && npm run build
 
 FROM nginx:alpine
