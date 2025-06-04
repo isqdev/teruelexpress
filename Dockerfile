@@ -1,9 +1,11 @@
-FROM node:18-alpine AS builder
+# Etapa de build
+FROM node:18-alpine as builder
 WORKDIR /app
 COPY . .
 COPY .env .env
 RUN npm install && npm run build
 
+# Etapa de produção
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
