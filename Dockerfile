@@ -1,8 +1,9 @@
 # Etapa de build
-FROM node:18-alpine as builder
+FROM node:18-alpine AS builder
 WORKDIR /app
+ARG VITE_CLOUDINARY_CLOUD_NAME
+ENV VITE_CLOUDINARY_CLOUD_NAME=$VITE_CLOUDINARY_CLOUD_NAME
 COPY . .
-COPY .env .env
 RUN npm install && npm run build
 
 # Etapa de produção
