@@ -1,4 +1,4 @@
-import { House, Package, Truck, Cube, Star, List } from "phosphor-react"
+import { House, Package, Truck, Cube, Star } from "phosphor-react"
 import { useLocation } from "react-router-dom"
 
 import {
@@ -29,8 +29,8 @@ const items = [
     icon: Package,
   },
   {
-    title: "Meus fretes",
-    url: "/app/meus-fretes",
+    title: "Minhas solicitações",
+    url: "/app/minhas-solicitacoes",
     icon: Cube,
   },
   {
@@ -41,6 +41,11 @@ const items = [
   {
     title: "Avalie nosso serviço",
     url: "/app/avaliar",
+    icon: Star,
+  },
+  {
+    title: "Minhas avaliações",
+    url: "/app/minhas-avaliacoes",
     icon: Star,
   },
 ]

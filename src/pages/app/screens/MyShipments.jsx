@@ -4,7 +4,7 @@ export function MyShipments() {
   return (
     <>
       <SectionApp>
-           <AppHeader screenTitle="Meus fretes"/>
+           <AppHeader screenTitle="Minhas solicitações"/>
       </SectionApp>
     </>
   );
