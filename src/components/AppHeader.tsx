@@ -17,5 +17,5 @@ export function AppHeader({ screenTitle }: { screenTitle: string }) {
 
 function CustomTrigger() {
   const { toggleSidebar } = useSidebar()
-  return <List onClick={toggleSidebar} className="icon md:hidden">Toggle Sidebar</List>
+  return <List onClick={toggleSidebar} className="icon md:hidden"/>
 }

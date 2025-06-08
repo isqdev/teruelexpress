@@ -12,7 +12,7 @@ export function Home() {
       children: <ButtonText className="text-white">Solicitar orçamento</ButtonText>,
     },
     {
-      to: "/app/meus-fretes",
+      to: "/app/minhas-solicitacoes",
       className: "lg:order-3",
       buttonClass: "bg-white border border-gray-600",
       icon: <ClipboardText className="text-red-tx icon" />,
@@ -33,7 +33,7 @@ export function Home() {
       children: <ButtonText className="text-black">Avaliar nosso serviço</ButtonText>,
     },
     {
-      to: "#",
+      to: "/app/minhas-avaliacoes",
       className: "lg:order-6",
       buttonClass: "bg-white border border-gray-600",
       icon: <FolderSimpleStar className="text-red-tx icon" />,
