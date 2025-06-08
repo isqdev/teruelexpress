@@ -1,5 +1,5 @@
 import { Button, ButtonText, SectionApp } from "@/components";
-import { Package, UserCircle, Truck, Star, WhatsappLogo, ArrowSquareOut, EnvelopeSimple, Cube, List } from "phosphor-react";
+import { Package, UserCircle, Truck, Star, WhatsappLogo, ArrowSquareOut, EnvelopeSimple, Cube, List, FolderSimpleStar, ClipboardText } from "phosphor-react";
 import { Link } from "react-router-dom";
 
 export function Home() {
@@ -15,7 +15,7 @@ export function Home() {
       to: "/app/meus-fretes",
       className: "lg:order-3",
       buttonClass: "bg-white border border-gray-600",
-      icon: <Cube className="text-red-tx icon" />,
+      icon: <ClipboardText className="text-red-tx icon" />,
       children: <ButtonText className="text-black">Ver minhas Solicitações</ButtonText>,
     },
     {
@@ -36,7 +36,7 @@ export function Home() {
       to: "#",
       className: "lg:order-6",
       buttonClass: "bg-white border border-gray-600",
-      icon: <Star className="text-red-tx icon" />,
+      icon: <FolderSimpleStar className="text-red-tx icon" />,
       children: <ButtonText className="text-black">Ver minhas avaliações</ButtonText>,
     },
     {
