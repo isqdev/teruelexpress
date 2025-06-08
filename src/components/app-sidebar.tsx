@@ -1,4 +1,4 @@
-import { House, Package, Truck, Cube, Star } from "phosphor-react"
+import { House, Package, Truck, Cube, Star, FolderSimpleStar, ClipboardText } from "phosphor-react"
 import { useLocation } from "react-router-dom"
 
 import {
@@ -10,9 +10,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import React from "react"
 import { Link } from "react-router-dom"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 // Menu items.
 const items = [
@@ -27,9 +29,9 @@ const items = [
     icon: Package,
   },
   {
-    title: "Meus fretes",
-    url: "/app/meus-fretes",
-    icon: Cube,
+    title: "Minhas solicitações",
+    url: "/app/minhas-solicitacoes",
+    icon: ClipboardText,
   },
   {
     title: "Rotas atendidas",
@@ -41,10 +43,23 @@ const items = [
     url: "/app/avaliar",
     icon: Star,
   },
+  {
+    title: "Minhas avaliações",
+    url: "/app/minhas-avaliacoes",
+    icon: FolderSimpleStar,
+  },
 ]
 
 export function AppSidebar() {
   const location = useLocation()
+  const { toggleSidebar } = useSidebar()
+  const isMobile = useIsMobile()
+
+  function handleSidebarToggle() {
+    if (isMobile) {
+      toggleSidebar()
+    }
+  }
 
   return (
     <Sidebar>
@@ -56,7 +71,7 @@ export function AppSidebar() {
               {items.map((item) => {
                 const isActive = location.pathname === item.url
                 return (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem key={item.title} onClick={handleSidebarToggle}>
                     <SidebarMenuButton asChild className="h-10">
                       <Link to={item.url}>
                         <item.icon
