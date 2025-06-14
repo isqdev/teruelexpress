@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 
 import {Button} from "@/components/ui/button"
+import { X } from "phosphor-react";
 
 export function MyShipments() {
   return (
@@ -46,9 +47,10 @@ export function MyShipments() {
 const data = [
   {
     id: "m5gr84i9",
-    amount: 316,
+    amount: 10,
     status: "success",
     email: "ken99@example.com",
+    cancelar: "X"
   },
   {
     id: "3u1reuv4",
@@ -90,7 +92,7 @@ const columns = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
+      <X
         checked={row.getIsSelected()}
         onCheckedChange={value => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -118,6 +120,19 @@ const columns = [
       </Button>
     ),
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "cancelar",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Cancelar
+        
+      </Button>
+    ),
+    cell: ({ row }) => <div>{row.getValue("cancelar")}</div>,
   },
   {
     accessorKey: "amount",
@@ -224,11 +239,11 @@ function DataTableDemo() {
       </div>
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader >
             {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} >
                 {headerGroup.headers.map(header => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="text-center">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -243,7 +258,7 @@ function DataTableDemo() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
-                <TableRow
+                <TableRow className="text-center"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
