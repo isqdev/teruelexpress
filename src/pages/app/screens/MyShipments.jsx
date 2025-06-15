@@ -6,6 +6,8 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  isRowSelected,
+  sortingFns,
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
@@ -30,10 +32,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {Button} from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { X } from "phosphor-react";
 
+
 export function MyShipments() {
+
   return (
     <>
       <SectionApp>
@@ -46,39 +50,78 @@ export function MyShipments() {
 
 const data = [
   {
-    id: "m5gr84i9",
+    id: 1,
     amount: 10,
-    status: "success",
-    email: "ken99@example.com",
+    status: "recusado",
+    data: "10/05/2024",
+    "origem/destino": "São Paulo/Rio de Janeiro",
     cancelar: "X"
   },
   {
-    id: "3u1reuv4",
+    id: 2,
     amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
+    status: "aceito",
+    data: "27/06/2024",
+    "origem/destino": "Belo Horizonte/Curitiba"
   },
   {
-    id: "derv1ws0",
+    id: 3,
     amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
+    status: "pendente",
+    data: "09/06/2024",
+    "origem/destino": "Porto Alegre/Salvador"
   },
   {
-    id: "5kma53ae",
+    id: 4,
     amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
+    status: "recusado",
+    data: "18/06/2023",
+    "origem/destino": "Brasília/Recife"
   },
   {
-    id: "bhqecj4p",
+    id: 5,
     amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
+    status: "pendente",
+    data: "20/06/2024",
+    "origem/destino": "Fortaleza/Florianópolis"
   },
 ];
 
 const columns = [
+  {
+    accessorKey: "id",
+    header: "ID",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("id")}</div>
+    ),
+  },
+  {
+    accessorKey: "data",
+    header: "Data",
+    sortingFn: (rowA, rowB, columnId) => {
+      function parseDate(dateString) {
+        const parts = dateString.split("/");
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+
+        return new Date(year, month, day);
+      }
+      rowA = parseDate(rowA.getValue(columnId))
+      rowB = parseDate(rowB.getValue(columnId))
+      return rowA > rowB ? 1 : rowA < rowB ? -1 : 0
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("data")}</div>
+    ),
+  },
+  {
+    accessorKey: "origem/destino",
+    header: "Origem/Destino",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("origem/destino")}</div>
+    ),
+  },
   {
     accessorKey: "status",
     header: "Status",
@@ -87,50 +130,23 @@ const columns = [
     ),
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Email
-        <ArrowUpDown />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className=" font-medium">{formatted}</div>;
-    },
-  },
-  {
     id: "actions",
     enableHiding: false,
     header: ({ column }) => (
       <Button
+        className="font-bold"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Cancelar
-        
+
       </Button>),
     cell: ({ row }) => {
-      const payment = row.original;
-
       return (
-            <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer">
-              <X />
-            </Button>
-  
+        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer" onClick={() => console.log(row.id)}>
+          <X className={row.getValue("status") == "pendente" ? "capitalize" : "capitalize text-gray-100"} />
+        </Button>
+
       );
     },
   },
@@ -154,10 +170,17 @@ function DataTableDemo() {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
-      sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+    },
+    initialState: {
+      sorting: [
+        {
+          id: 'data',
+          desc: true,
+        },
+      ],
     },
   });
 
@@ -171,13 +194,13 @@ function DataTableDemo() {
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id} >
                 {headerGroup.headers.map(header => (
-                  <TableHead key={header.id} className="text-center">
+                  <TableHead key={header.id} className="text-center font-bold">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -190,6 +213,8 @@ function DataTableDemo() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
+                  {console.log(row)}
+
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -230,7 +255,35 @@ function DataTableDemo() {
           </Button>
         </div>
       </div>
-
+      <Button
+        size="sm"
+        onClick={() => console.log(table.getRow)}
+      >
+        test
+      </Button>
     </div>
   );
 }
+
+function Modal() {
+  const [showAllertModal, setShowAllertModal] = React.useState(false);
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-3">
+      <Shape className="z-2 border border-gray-600 bg-white shadow-lg flex flex-col items-center max-w-md">
+        <p className="mb-4 text-lg font-semibold text-red-600">Você realmente deseja cancelar essa
+          solicitação??</p>
+        <div className="flex flex-row gap-x-10">
+          <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
+            <ButtonText className="text-white text-center">Sim</ButtonText>
+          </Button>
+          <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
+            <ButtonText className="text-white text-center">Não</ButtonText>
+          </Button>
+        </div>
+      </Shape>
+      <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
+    </div>
+  )
+}
+
