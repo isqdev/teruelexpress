@@ -10,7 +10,7 @@ import {
   sortingFns,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, TriangleAlertIcon } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -33,16 +33,18 @@ import {
 } from "@/components/ui/table";
 
 import { Button } from "@/components/ui/button"
-import { X } from "phosphor-react";
+import { Warning, X } from "phosphor-react";
 
 
 export function MyShipments() {
-
+  const [showAllertModal, setShowAllertModal] = React.useState(false);
+  
   return (
     <>
       <SectionApp>
         <AppHeader screenTitle="Solicitações" />
-        <DataTableDemo />
+        <DataTableDemo modalHandler={setShowAllertModal} />
+        {showAllertModal && <Modal modalHandler={setShowAllertModal}/>}
       </SectionApp>
     </>
   );
@@ -51,40 +53,68 @@ export function MyShipments() {
 const data = [
   {
     id: 1,
-    amount: 10,
     status: "recusado",
     data: "10/05/2024",
-    "origem/destino": "São Paulo/Rio de Janeiro",
+    origem: "Rio de Janeiro",
+    destino: "São Paulo",
     cancelar: "X"
   },
   {
     id: 2,
-    amount: 242,
     status: "aceito",
     data: "27/06/2024",
-    "origem/destino": "Belo Horizonte/Curitiba"
+    origem: "Curitiba",
+    destino: "Belo Horizonte"
   },
   {
     id: 3,
-    amount: 837,
     status: "pendente",
     data: "09/06/2024",
-    "origem/destino": "Porto Alegre/Salvador"
+    origem: "Salvador",
+    destino: "Porto Alegre",
   },
   {
     id: 4,
-    amount: 874,
     status: "recusado",
     data: "18/06/2023",
-    "origem/destino": "Brasília/Recife"
+    origem: "Recife",
+    destino: "Brasília",
   },
   {
     id: 5,
-    amount: 721,
     status: "pendente",
     data: "20/06/2024",
-    "origem/destino": "Fortaleza/Florianópolis"
+    origem: "Florianópolis",
+    destino: "Fortaleza",
   },
+  {
+    id: 6,
+    status: "aceito",
+    data: "02/07/2024",
+    origem: "Manaus",
+    destino: "Belém",
+  },
+  {
+    id: 7,
+    status: "pendente",
+    data: "15/07/2024",
+    origem: "Goiânia",
+    destino: "Natal",
+  },
+  {
+    id: 8,
+    status: "recusado",
+    data: "28/05/2024",
+    origem: "Campo Grande",
+    destino: "João Pessoa",
+  },
+  {
+    id: 9,
+    status: "aceito",
+    data: "05/06/2025",
+    origem: "Vitória",
+    destino: "Maceió",
+  }
 ];
 
 const columns = [
@@ -119,7 +149,8 @@ const columns = [
     accessorKey: "origem/destino",
     header: "Origem/Destino",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("origem/destino")}</div>
+      <div className="capitalize">{    
+        `${JSON.parse(localStorage.getItem("solicitacoes"))[row.index].origem}/${JSON.parse(localStorage.getItem("solicitacoes"))[row.index].destino}`}</div>
     ),
   },
   {
@@ -143,7 +174,12 @@ const columns = [
       </Button>),
     cell: ({ row }) => {
       return (
-        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer" onClick={() => console.log(row.id)}>
+        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer" onClick={() => {
+          console.log(row.index);
+          row.toggleSelected();  
+          sessionStorage.setItem("id", row.index);
+          row.getToggleSelectedHandler();
+          }}>
           <X className={row.getValue("status") == "pendente" ? "capitalize" : "capitalize text-gray-100"} />
         </Button>
 
@@ -152,7 +188,7 @@ const columns = [
   },
 ];
 
-function DataTableDemo() {
+function DataTableDemo({ modalHandler }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -168,7 +204,7 @@ function DataTableDemo() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: () => modalHandler(true),
     state: {
       columnFilters,
       columnVisibility,
@@ -213,8 +249,6 @@ function DataTableDemo() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {console.log(row)}
-
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -257,7 +291,7 @@ function DataTableDemo() {
       </div>
       <Button
         size="sm"
-        onClick={() => console.log(table.getRow)}
+        onClick={() => localStorage.setItem("solicitacoes", JSON.stringify(data))}
       >
         test
       </Button>
@@ -265,20 +299,29 @@ function DataTableDemo() {
   );
 }
 
-function Modal() {
-  const [showAllertModal, setShowAllertModal] = React.useState(false);
+function Modal({ modalHandler }){
+  function sla(){
+    const sla = JSON.parse(localStorage.getItem("solicitacoes"));
+    const nsei = sessionStorage.getItem("id");
+    
+    sla.splice(nsei, 1);
+    console.log(sla);
+    localStorage.setItem("solicitacoes", JSON.stringify(sla));
+  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-3">
-      <Shape className="z-2 border border-gray-600 bg-white shadow-lg flex flex-col items-center max-w-md">
-        <p className="mb-4 text-lg font-semibold text-red-600">Você realmente deseja cancelar essa
-          solicitação??</p>
-        <div className="flex flex-row gap-x-10">
-          <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
+      <Shape className="z-2 border border-gray-600 bg-white shadow-lg flex flex-col items-center w-131 h-46 rounded-2xl ">
+        
+        <p className="mb-8 text-lg font-semibold text-red-600 flex gap-x-6">
+          <Warning className="icon w-13 h-11"/>
+          Você realmente deseja cancelar essa solicitação??</p>
+        <div className="flex flex-row gap-x-4">
+          <Button className="bg-red-tx w-60 h-12 rounded-2xl" onClick={() => sla( )}>
             <ButtonText className="text-white text-center">Sim</ButtonText>
           </Button>
-          <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
-            <ButtonText className="text-white text-center">Não</ButtonText>
+          <Button className="border-danger-base border-1 bg-white w-60 h-12 rounded-2xl" onClick={() => modalHandler(false)}>
+            <ButtonText className="text-red-tx text-center">Não</ButtonText>
           </Button>
         </div>
       </Shape>
