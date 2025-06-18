@@ -100,7 +100,14 @@ export function Home() {
             </span>
           </div>
         </div>
-
+        <div className="rounded-2xl px-3 py-2 sm:p-3 gap-x-2 flex items-center mb-5 shadow-sm drop-shadow-primary border-gray-50 xs:border-1 text-black ">
+          <UserCircle size={48}/>
+          <div className="flex flex-col w-full">
+            <span className="font-heading text-sm text-gray-600">Pessoa física</span>
+            <span className="font-heading text-xl">João Silva</span>
+          </div>
+          <Gear size={32} className="hover:cursor-pointer"/>
+        </div>
         <div className="grid grid-cols-1 gap-y-5 gap-x-5 lg:grid-cols-2">
           <Shape className="p-0 xs:p-4 sm:p-4 xl:p-6 xs:shadow-sm drop-shadow-primary border-gray-50 xs:border-1">
             <h4 className="lg:col-span mb-4">Frete</h4>
