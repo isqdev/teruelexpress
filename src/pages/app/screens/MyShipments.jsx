@@ -1,4 +1,4 @@
-import { ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape } from "@/components";
+import { ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape, Modal, ModalConfirm } from "@/components";
 import * as React from "react";
 import {
   flexRender,
@@ -34,14 +34,9 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Warning, X } from "phosphor-react";
-import { useEffect } from "react";
 
-
-export function MyShipments() {
-  // const [showAllertModal, setShowAllertModal] = React.useState(false);
-  React.useState(() => {
-    localStorage.setItem("solicitacoes", JSON.stringify(data))
-  }, [])
+export function MyShipments() {  
+  localStorage.setItem("solicitacoes", JSON.stringify(data));
   
   return (
     <>
@@ -186,7 +181,7 @@ const getColumns = ({ onCancelClick }) => [
       </Button>),
     cell: ({ row }) => {
       return (
-        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer"  onClick={(e) =>{e.stopPropagation(); onCancelClick(row.original)}
+        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer"  onClick={() => {onCancelClick(row.original)}
           // console.log(row.index);
           // row.toggleSelected();  
           // sessionStorage.setItem("id", row.index);
@@ -210,11 +205,26 @@ function DataTableDemo() {
   const [selectedRow, setSelectedRow] = React.useState(null);
 
   const columns = getColumns({
-    onCancelClick: setSelectedRow,
+    onCancelClick: setSelectedRow
   })
 
-  const table = useReactTable({
-    data,
+  const [tableData, setTableData] = React.useState(
+    () => JSON.parse(localStorage.getItem("solicitacoes")) || []
+  );
+
+  const handleCancel = () => {
+    if (!selectedRow) return;
+
+    const stored = JSON.parse(localStorage.getItem("solicitacoes")) || [];
+    const updated = stored.filter(item => item.id !== selectedRow.id); 
+
+    localStorage.setItem("solicitacoes", JSON.stringify(updated));
+    setTableData(updated); 
+    setSelectedRow(null);  
+  };
+
+const table = useReactTable({
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -307,13 +317,14 @@ function DataTableDemo() {
           </Button>
           
         </div>
-        {selectedRow && (
-  <Modal
-    open={!!selectedRow}
-    data={selectedRow}
-    onClose={() => setSelectedRow(null)}
-  />
-)}
+        
+      <ModalConfirm
+        message="Você realmente deseja cancelar esta solicitação?"
+        open={!!selectedRow}
+        actionWord="Cancelar"
+        action={() => handleCancel()}
+        onClose={() => setSelectedRow(null)}
+      />
       </div>
       <Button
         size="sm"
@@ -323,40 +334,4 @@ function DataTableDemo() {
       </Button>
     </div>
   );
-}
-
-function Modal({ modalHandler, onClose, id, open, data }){
-  // const [showAllertModal, setShowAllertModal] = React.useState(status);
-
-  function sla(){
-    // const sla = JSON.parse(localStorage.getItem("solicitacoes"));
-    
-    // sla.splice(id, 1);
-    // console.log(sla);
-    // localStorage.setItem("solicitacoes", JSON.stringify(sla));
-  }
-
-    if (!open) return null;
-
-  return (
-    // showAllertModal && <div className="fixed inset-0 flex items-center justify-center z-3">
-    <>
-      <Shape className="z-2 border border-gray-600 bg-white shadow-lg flex flex-col items-center w-131 h-46 rounded-2xl ">
-        
-        <p className="mb-8 text-lg font-semibold text-red-600 flex gap-x-6">
-          <Warning className="icon w-13 h-11"/>
-          Você realmente deseja cancelar essa solicitação?? {data.origem}</p>
-        <div className="flex flex-row gap-x-4">
-          <Button className="bg-red-tx w-60 h-12 rounded-2xl" onClick={() => sla( )}>
-            <ButtonText className="text-white text-center">Sim</ButtonText>
-          </Button>
-          <Button className="border-danger-base border-1 bg-white w-60 h-12 rounded-2xl" >
-            <ButtonText className="text-red-tx text-center" onClick={onClose}>Não</ButtonText>
-          </Button>
-        </div>
-      </Shape>
-      <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
-    
-    </>
-  )
 }
