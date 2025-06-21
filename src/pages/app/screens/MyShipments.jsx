@@ -6,23 +6,9 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  isRowSelected,
-  sortingFns,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, TriangleAlertIcon } from "lucide-react";
 
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -33,89 +19,23 @@ import {
 } from "@/components/ui/table";
 
 import { Button } from "@/components/ui/button"
-import { Warning, X } from "phosphor-react";
+import { X } from "phosphor-react";
+import { setInfo, getInfo, updateInfo, getOriginDestiny } from "@/services/shipments";
+
 
 export function MyShipments() {  
-  localStorage.setItem("solicitacoes", JSON.stringify(data));
+  getInfo() ?? setInfo();
   
   return (
     <>
       <SectionApp>
         <AppHeader screenTitle="Solicitações" />
         <DataTableDemo />
-        {/* {showAllertModal && <Modal modalHandler={setShowAllertModal} />} */}
         <Modal status={false} />
       </SectionApp>
     </>
   );
 }
-
-const data = [
-  {
-    id: 1,
-    status: "recusado",
-    data: "10/05/2024",
-    origem: "Rio de Janeiro",
-    destino: "São Paulo",
-    cancelar: "X"
-  },
-  {
-    id: 2,
-    status: "aceito",
-    data: "27/06/2024",
-    origem: "Curitiba",
-    destino: "Belo Horizonte"
-  },
-  {
-    id: 3,
-    status: "pendente",
-    data: "09/06/2024",
-    origem: "Salvador",
-    destino: "Porto Alegre",
-  },
-  {
-    id: 4,
-    status: "recusado",
-    data: "18/06/2023",
-    origem: "Reci ",
-    destino: "Brasília",
-  },
-  {
-    id: 5,
-    status: "pendente",
-    data: "20/06/2024",
-    origem: "Florianópolis",
-    destino: "Fortaleza",
-  },
-  {
-    id: 6,
-    status: "aceito",
-    data: "02/07/2024",
-    origem: "Manaus",
-    destino: "Belém",
-  },
-  {
-    id: 7,
-    status: "pendente",
-    data: "15/07/2024",
-    origem: "Goiânia",
-    destino: "Natal",
-  },
-  {
-    id: 8,
-    status: "recusado",
-    data: "28/05/2024",
-    origem: "Campo Grande",
-    destino: "João Pessoa",
-  },
-  {
-    id: 9,
-    status: "aceito",
-    data: "05/06/2025",
-    origem: "Vitória",
-    destino: "Maceió",
-  }
-];
 
 const getColumns = ({ onCancelClick }) => [
   {
@@ -149,15 +69,7 @@ const getColumns = ({ onCancelClick }) => [
     accessorKey: "origem",
     header: "Origem/Destino",
     cell: ({ row }) => (
-        <div className="capitalize">
-          {
-            JSON.parse(localStorage.getItem("solicitacoes"))[row.index].origem +
-            "/" +
-            JSON.parse(localStorage.getItem("solicitacoes"))[row.index].destino
-          }
-        </div>
-        //   <div className="capitalize">{row.getValue("origem")}</div>
-
+        <div className="capitalize">{getOriginDestiny(row.index)}</div>
     ),
   },
   {
@@ -170,56 +82,37 @@ const getColumns = ({ onCancelClick }) => [
   {
     id: "actions",
     enableHiding: false,
-    header: ({ column }) => (
-      <Button
-        className="font-bold"
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Cancelar
-
-      </Button>),
+    header: "Cancelar",
     cell: ({ row }) => {
       return (
-        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer"  onClick={() => {onCancelClick(row.original)}
-          // console.log(row.index);
-          // row.toggleSelected();  
-          // sessionStorage.setItem("id", row.index);
-          // row.getToggleSelectedHandler();
-          // Modal(true , row.index);
-          }>
-            
-          <X className={row.getValue("status") == "pendente" ? "capitalize" : "capitalize text-gray-100"} />
+        <Button variant="secondary" className={`h-8 w-8 p-0 ${row.getValue('status') == 'pendente' ? ' hover:cursor-pointer' : 'capitalize text-gray-100 cursor-default'}`}  onClick={() => 
+          {
+            if(row.getValue("status") == "pendente")
+             onCancelClick(row.original)
+          }}>
+          <X/>
         </Button>
-
       );
     },
   },
 ];
 
-function DataTableDemo({ modalHandler }) {
+function DataTableDemo() {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRow, setSelectedRow] = React.useState(null);
+  const [tableData, setTableData] = React.useState(getInfo());
 
   const columns = getColumns({
     onCancelClick: setSelectedRow
   })
 
-  const [tableData, setTableData] = React.useState(
-    () => JSON.parse(localStorage.getItem("solicitacoes")) || []
-  );
-
   const handleCancel = () => {
     if (!selectedRow) return;
 
-    const stored = JSON.parse(localStorage.getItem("solicitacoes")) || [];
-    const updated = stored.filter(item => item.id !== selectedRow.id); 
-
-    localStorage.setItem("solicitacoes", JSON.stringify(updated));
-    setTableData(updated); 
+    setTableData(updateInfo(selectedRow.id)); 
     setSelectedRow(null);  
   };
 
@@ -249,7 +142,7 @@ const table = useReactTable({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-5">
       <div className="rounded-md border">
         <Table>
           <TableHeader >
@@ -274,14 +167,12 @@ const table = useReactTable({
                 <TableRow className="text-center"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                 
                 >
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
-                        
+                        cell.getContext()                  
                       )}
                     </TableCell>
                   ))}
@@ -315,7 +206,6 @@ const table = useReactTable({
           >
             Next
           </Button>
-          
         </div>
         
       <ModalConfirm
@@ -326,12 +216,6 @@ const table = useReactTable({
         onClose={() => setSelectedRow(null)}
       />
       </div>
-      <Button
-        size="sm"
-        onClick={() => localStorage.setItem("solicitacoes", JSON.stringify(data))}
-      >
-        test
-      </Button>
     </div>
   );
 }
