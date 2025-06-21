@@ -44,7 +44,8 @@ export function MyShipments() {
       <SectionApp>
         <AppHeader screenTitle="Solicitações" />
         <DataTableDemo modalHandler={setShowAllertModal} />
-        {showAllertModal && <Modal modalHandler={setShowAllertModal}/>}
+        {/* {showAllertModal && <Modal modalHandler={setShowAllertModal} />} */}
+        <Modal status={false} />
       </SectionApp>
     </>
   );
@@ -77,7 +78,7 @@ const data = [
     id: 4,
     status: "recusado",
     data: "18/06/2023",
-    origem: "Recife",
+    origem: "Reci ",
     destino: "Brasília",
   },
   {
@@ -146,11 +147,12 @@ const columns = [
     ),
   },
   {
-    accessorKey: "origem/destino",
+    accessorKey: "origem",
     header: "Origem/Destino",
     cell: ({ row }) => (
-      <div className="capitalize">{    
+        <div className="capitalize">{    
         `${JSON.parse(localStorage.getItem("solicitacoes"))[row.index].origem}/${JSON.parse(localStorage.getItem("solicitacoes"))[row.index].destino}`}</div>
+        //   <div className="capitalize">{row.getValue("origem")}</div>
     ),
   },
   {
@@ -176,9 +178,10 @@ const columns = [
       return (
         <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer" onClick={() => {
           console.log(row.index);
-          row.toggleSelected();  
-          sessionStorage.setItem("id", row.index);
-          row.getToggleSelectedHandler();
+          // row.toggleSelected();  
+          // sessionStorage.setItem("id", row.index);
+          // row.getToggleSelectedHandler();
+          Modal(true , row.index);
           }}>
           <X className={row.getValue("status") == "pendente" ? "capitalize" : "capitalize text-gray-100"} />
         </Button>
@@ -204,7 +207,6 @@ function DataTableDemo({ modalHandler }) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: () => modalHandler(true),
     state: {
       columnFilters,
       columnVisibility,
@@ -222,8 +224,6 @@ function DataTableDemo({ modalHandler }) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader >
@@ -299,18 +299,19 @@ function DataTableDemo({ modalHandler }) {
   );
 }
 
-function Modal({ modalHandler }){
+function Modal({ modalHandler, status, id, }){
+  const [showAllertModal, setShowAllertModal] = React.useState(status);
+
   function sla(){
     const sla = JSON.parse(localStorage.getItem("solicitacoes"));
-    const nsei = sessionStorage.getItem("id");
     
-    sla.splice(nsei, 1);
+    sla.splice(id, 1);
     console.log(sla);
     localStorage.setItem("solicitacoes", JSON.stringify(sla));
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-3">
+    showAllertModal && <div className="fixed inset-0 flex items-center justify-center z-3">
       <Shape className="z-2 border border-gray-600 bg-white shadow-lg flex flex-col items-center w-131 h-46 rounded-2xl ">
         
         <p className="mb-8 text-lg font-semibold text-red-600 flex gap-x-6">
