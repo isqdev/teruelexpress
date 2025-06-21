@@ -1,4 +1,4 @@
-import { ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape } from "@/components";
+import { ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape, Modal, ModalConfirm } from "@/components";
 import * as React from "react";
 import {
   flexRender,
@@ -35,15 +35,14 @@ import {
 import { Button } from "@/components/ui/button"
 import { Warning, X } from "phosphor-react";
 
-
-export function MyShipments() {
-  const [showAllertModal, setShowAllertModal] = React.useState(false);
+export function MyShipments() {  
+  localStorage.setItem("solicitacoes", JSON.stringify(data));
   
   return (
     <>
       <SectionApp>
         <AppHeader screenTitle="Solicitações" />
-        <DataTableDemo modalHandler={setShowAllertModal} />
+        <DataTableDemo />
         {/* {showAllertModal && <Modal modalHandler={setShowAllertModal} />} */}
         <Modal status={false} />
       </SectionApp>
@@ -118,7 +117,7 @@ const data = [
   }
 ];
 
-const columns = [
+const getColumns = ({ onCancelClick }) => [
   {
     accessorKey: "id",
     header: "ID",
@@ -150,9 +149,15 @@ const columns = [
     accessorKey: "origem",
     header: "Origem/Destino",
     cell: ({ row }) => (
-        <div className="capitalize">{    
-        `${JSON.parse(localStorage.getItem("solicitacoes"))[row.index].origem}/${JSON.parse(localStorage.getItem("solicitacoes"))[row.index].destino}`}</div>
+        <div className="capitalize">
+          {
+            JSON.parse(localStorage.getItem("solicitacoes"))[row.index].origem +
+            "/" +
+            JSON.parse(localStorage.getItem("solicitacoes"))[row.index].destino
+          }
+        </div>
         //   <div className="capitalize">{row.getValue("origem")}</div>
+
     ),
   },
   {
@@ -176,13 +181,14 @@ const columns = [
       </Button>),
     cell: ({ row }) => {
       return (
-        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer" onClick={() => {
-          console.log(row.index);
+        <Button variant="secondary" className="h-8 w-8 p-0 hover:cursor-pointer"  onClick={() => {onCancelClick(row.original)}
+          // console.log(row.index);
           // row.toggleSelected();  
           // sessionStorage.setItem("id", row.index);
           // row.getToggleSelectedHandler();
-          Modal(true , row.index);
-          }}>
+          // Modal(true , row.index);
+          }>
+            
           <X className={row.getValue("status") == "pendente" ? "capitalize" : "capitalize text-gray-100"} />
         </Button>
 
@@ -196,9 +202,29 @@ function DataTableDemo({ modalHandler }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [selectedRow, setSelectedRow] = React.useState(null);
 
-  const table = useReactTable({
-    data,
+  const columns = getColumns({
+    onCancelClick: setSelectedRow
+  })
+
+  const [tableData, setTableData] = React.useState(
+    () => JSON.parse(localStorage.getItem("solicitacoes")) || []
+  );
+
+  const handleCancel = () => {
+    if (!selectedRow) return;
+
+    const stored = JSON.parse(localStorage.getItem("solicitacoes")) || [];
+    const updated = stored.filter(item => item.id !== selectedRow.id); 
+
+    localStorage.setItem("solicitacoes", JSON.stringify(updated));
+    setTableData(updated); 
+    setSelectedRow(null);  
+  };
+
+const table = useReactTable({
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -248,12 +274,14 @@ function DataTableDemo({ modalHandler }) {
                 <TableRow className="text-center"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                 
                 >
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
+                        
                       )}
                     </TableCell>
                   ))}
@@ -287,7 +315,16 @@ function DataTableDemo({ modalHandler }) {
           >
             Next
           </Button>
+          
         </div>
+        
+      <ModalConfirm
+        message="Você realmente deseja cancelar esta solicitação?"
+        open={!!selectedRow}
+        actionWord="Cancelar"
+        action={() => handleCancel()}
+        onClose={() => setSelectedRow(null)}
+      />
       </div>
       <Button
         size="sm"
@@ -298,36 +335,3 @@ function DataTableDemo({ modalHandler }) {
     </div>
   );
 }
-
-function Modal({ modalHandler, status, id, }){
-  const [showAllertModal, setShowAllertModal] = React.useState(status);
-
-  function sla(){
-    const sla = JSON.parse(localStorage.getItem("solicitacoes"));
-    
-    sla.splice(id, 1);
-    console.log(sla);
-    localStorage.setItem("solicitacoes", JSON.stringify(sla));
-  }
-
-  return (
-    showAllertModal && <div className="fixed inset-0 flex items-center justify-center z-3">
-      <Shape className="z-2 border border-gray-600 bg-white shadow-lg flex flex-col items-center w-131 h-46 rounded-2xl ">
-        
-        <p className="mb-8 text-lg font-semibold text-red-600 flex gap-x-6">
-          <Warning className="icon w-13 h-11"/>
-          Você realmente deseja cancelar essa solicitação??</p>
-        <div className="flex flex-row gap-x-4">
-          <Button className="bg-red-tx w-60 h-12 rounded-2xl" onClick={() => sla( )}>
-            <ButtonText className="text-white text-center">Sim</ButtonText>
-          </Button>
-          <Button className="border-danger-base border-1 bg-white w-60 h-12 rounded-2xl" onClick={() => modalHandler(false)}>
-            <ButtonText className="text-red-tx text-center">Não</ButtonText>
-          </Button>
-        </div>
-      </Shape>
-      <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
-    </div>
-  )
-}
-
