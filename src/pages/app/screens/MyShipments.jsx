@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { X } from "phosphor-react";
 import { setInfo, getInfo, updateInfo, getOriginDestiny } from "@/services/shipments";
-
+import { useIsMobile } from "@/hooks/use-mobile" 
 
 export function MyShipments() {  
   getInfo() ?? setInfo();
@@ -100,10 +100,19 @@ const getColumns = ({ onCancelClick }) => [
 function DataTableDemo() {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
-  const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRow, setSelectedRow] = React.useState(null);
   const [tableData, setTableData] = React.useState(getInfo());
+  const [columnVisibility, setColumnVisibility] = React.useState({});
+
+  const isMobile = useIsMobile()
+
+  React.useEffect(() => {
+      setColumnVisibility({
+        id: !isMobile,
+        origem: !isMobile,
+      })
+    }, [isMobile])
 
   const columns = getColumns({
     onCancelClick: setSelectedRow
