@@ -14,7 +14,7 @@ export function Reviews() {
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/front-end/refs/heads/main/src/assets/reviews.json').
+    fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/reviews.json').
       then(data => data.json()).
       then(data => setReviews(data))
   }, []);
