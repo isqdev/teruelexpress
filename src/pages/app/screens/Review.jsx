@@ -33,6 +33,8 @@ export function Review() {
 
   const onSubmit = (values) => {
     console.log("Dados do formulario",values);
+    const formDataJson = JSON.stringify(values);
+    localStorage.setItem('jsonReview', formDataJson);
     reset();
     setIsModalSmOpen(true)
   };
@@ -46,13 +48,11 @@ export function Review() {
     <>
       <SectionApp>
         <AppHeader screenTitle="Avaliar" />
-        <CloudinaryImage publicId="vfq6dw8u2de9vcybxvka" className="w-64 justify-self-center"/>
-        <div className="md:px-6" >
+        <div className="max-w-sm sm:max-w-lg mx-auto mt-30" >
           <form onSubmit={handleSubmit(onSubmit)} >
             <div className=" shadow-md p-4 rounded-lg ">
               <div className="flex gap-2">
                 <div className="w-16 h-16 rounded-full  bg-gray-50 flex items-center justify-center">
-                  <Image src="" alt="Imagem do cliente"  className="w-full h-full object-cover "/>
                 </div>
                 <div>
                   <FormField
@@ -65,13 +65,12 @@ export function Review() {
                   />
                 </div>
               </div>
-              
-              
-              <textarea className="w-full bg-gray-50 rounded-sm p-2 mt-4 resize-none  gap-1" placeholder="Digite sua avaliação aqui" rows={5} {...register("avaliacao",{required:true})}></textarea>
+              <textarea className="w-full bg-gray-50 rounded-sm p-2 mt-4 resize-none  gap-1" maxLength={300} 
+              placeholder="Digite sua avaliação aqui" rows={5} {...register("avaliacao")}></textarea>
               
             </div>
             <div className="flex gap-1 mt-2">
-            <Button className={"bg-gray-50"} type="button">
+            <Button className={"bg-gray-50"} type="button" onClick={() => reset()}>
                 <ButtonText className="text-center ">
                   Cancelar
                 </ButtonText>
@@ -100,7 +99,7 @@ function ModalView({open, onClose}){
     <ModalSm open={open} onClose={onClose}>
       <div className="justify-self-center text-center">
         <CheckCircle size={130} weight="fill" className="text-success-base mx-auto "/>
-        <h2 className="font-bold ">Avaliação registrada com sucesso!</h2>
+        <h4 className="font-bold ">Avaliação registrada com sucesso!</h4>
         <p className="pb-4 grid col-span-2 pt-4 mb-4">A TeruelExpress agradece pelo seu feedback.</p>
         <div >
           <Button onClick={onClose} className="border border-black w-30 mx-auto ">
@@ -138,3 +137,4 @@ function FormField({ title,  error, dirty, rating, register,setValue, autoComple
     </>
   )
 }
+
