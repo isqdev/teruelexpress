@@ -3,7 +3,7 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - dev  
+      - dev
 
 jobs:
   build-and-push:
@@ -24,10 +24,10 @@ jobs:
         run: |
           docker build \
             --build-arg VITE_CLOUDINARY_CLOUD_NAME=${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }} \
-            -t menonijesus/frontend-dev:${{ env.TAG }} \
-            -t menonijesus/frontend-dev:latest .
+            -t menonijesus/frontend-dev-client:${{ env.TAG }} \
+            -t menonijesus/frontend-dev-client:latest .
 
       - name: Push both tags
         run: |
-          docker push menonijesus/frontend-dev:${{ env.TAG }}
-          docker push menonijesus/frontend-dev:latest
+          docker push menonijesus/frontend-dev-client:${{ env.TAG }}
+          docker push menonijesus/frontend-dev-client:latest

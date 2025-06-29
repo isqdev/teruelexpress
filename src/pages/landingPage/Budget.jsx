@@ -5,16 +5,24 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import cities from "@/assets/cities.json";
 import { normalize } from "@/utils/normalize";
 import { fetchCep } from "@/services/cep";
-
-const normalizedCities = cities.map((city) => normalize(city));
 
 export function Budget() {
     const [isSimulated, setIsSimulated] = useState(false);
     const [data, setData] = useState("Dados do Formulario em JSON");
     const [showAllertModal, setShowAllertModal] = useState(false);
+    const [cities, setCities] = useState([]);
+    const [normalizedCities, setNormalizedCities] = useState([]);
+
+    useEffect(() => {
+        fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/cities.json')
+            .then(res => res.json())
+            .then(citiesData => {
+                setCities(citiesData);
+                setNormalizedCities(citiesData.map((city) => normalize(city)));
+            });
+    }, []);
 
     const {
         register,
@@ -25,7 +33,7 @@ export function Budget() {
         clearErrors,
         formState: { errors, touchedFields, isValid }
     } = useForm({
-        resolver: zodResolver(generalSchema),
+        resolver: zodResolver(generalSchema(normalizedCities)),
         mode: "onBlur"
     });
 
@@ -299,68 +307,73 @@ function MeasuresForms({ register, errors, touchedFields }) {
     )
 }
 
-const addressSchema = z.object({
-    cep: z
-        .string()
-        .nullable()
-        .transform((val) => val.replace(/\D/g, ""))
-        .refine((val) => val.length === 8, { message: "CEP inválido" }),
 
-    state: z
-        .string()
-        .nonempty("Campo obrigatório")
-        .transform(normalize)
-        .refine(
-            (val) => ["parana", "pr"].includes(val),
-            { message: "Só atendemos o Paraná no momento." }
-        ),
+function addressSchema(normalizedCities) {
+    return z.object({
+        cep: z
+            .string()
+            .nullable()
+            .transform((val) => val.replace(/\D/g, ""))
+            .refine((val) => val.length === 8, { message: "CEP inválido" }),
 
-    city: z
-        .string()
-        .nonempty("Campo obrigatório")
-        .transform(normalize)
-        .refine(
-            (val) => normalizedCities.includes(val),
-            { message: "Cidade não atendida." }
-        ),
+        state: z
+            .string()
+            .nonempty("Campo obrigatório")
+            .transform(normalize)
+            .refine(
+                (val) => ["parana", "pr"].includes(val),
+                { message: "Só atendemos o Paraná no momento." }
+            ),
 
-    neighborhood: z
-        .string()
-        .nonempty("Campo obrigatório"),
+        city: z
+            .string()
+            .nonempty("Campo obrigatório")
+            .transform(normalize)
+            .refine(
+                (val) => normalizedCities.includes(val),
+                { message: "Cidade não atendida." }
+            ),
 
-    street: z
-        .string()
-        .nonempty("Campo obrigatório"),
+        neighborhood: z
+            .string()
+            .nonempty("Campo obrigatório"),
 
-    number: z
-        .string()
-        .nonempty("Campo obrigatório"),
-});
+        street: z
+            .string()
+            .nonempty("Campo obrigatório"),
 
-const generalSchema = z.object({
-    origin: addressSchema,
-    destination: addressSchema,
-    width: z
-        .string()
-        .nonempty("Campo obrigatório")
-        .transform((val) => Number(val.replace(",", ".")))
-        .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
-    height: z
-        .string()
-        .nonempty("Campo obrigatório")
-        .transform((val) => Number(val.replace(",", ".")))
-        .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
-    length: z
-        .string()
-        .nonempty("Campo obrigatório")
-        .transform((val) => Number(val.replace(",", ".")))
-        .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
-    weight: z
-        .string()
-        .nonempty("Campo obrigatório")
-        .transform((val) => Number(val.replace(",", ".")))
-        .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
-});
+        number: z
+            .string()
+            .nonempty("Campo obrigatório"),
+    });
+}
+
+function generalSchema(normalizedCities) {
+    return z.object({
+        origin: addressSchema(normalizedCities),
+        destination: addressSchema(normalizedCities),
+        width: z
+            .string()
+            .nonempty("Campo obrigatório")
+            .transform((val) => Number(val.replace(",", ".")))
+            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+        height: z
+            .string()
+            .nonempty("Campo obrigatório")
+            .transform((val) => Number(val.replace(",", ".")))
+            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+        length: z
+            .string()
+            .nonempty("Campo obrigatório")
+            .transform((val) => Number(val.replace(",", ".")))
+            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+        weight: z
+            .string()
+            .nonempty("Campo obrigatório")
+            .transform((val) => Number(val.replace(",", ".")))
+            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+    });
+}
 
 function maskInput(value, field) {
     const onlyDigits = value.replace(/\D/g, '');
