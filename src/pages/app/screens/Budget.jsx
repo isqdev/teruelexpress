@@ -1,5 +1,5 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape } from "@/components";
-import { ArrowRight, CheckCircle, Package, X, ArrowUp, ArrowLeft, HouseLine } from "phosphor-react";
+import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape } from "@/components";
+import { ArrowRight, CheckCircle, Package, X, ArrowUp, HouseLine, ToteSimple, File, CaretRight, CaretDown, Plus, Minus } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
@@ -14,6 +14,7 @@ export function Budget() {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [cities, setCities] = useState([]);
     const [normalizedCities, setNormalizedCities] = useState([]);
+    const [showDetails, setShowDetails] = useState(false);
 
     useEffect(() => {
         fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/cities.json')
@@ -23,6 +24,10 @@ export function Budget() {
                 setNormalizedCities(citiesData.map((city) => normalize(city)));
             });
     }, []);
+
+    const toggleDetails = () => {
+        setShowDetails((prev) => !prev);
+    };
 
     const {
         register,
@@ -60,7 +65,7 @@ export function Budget() {
     return (
         <>
             <SectionApp className="xl:grid grid-cols-2">
-                <AppHeader screenTitle="Orçamento"/>
+                <AppHeader screenTitle="Orçamento" />
                 <p className="pb-4 grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
                     <Shape className="border border-gray-600">
@@ -89,20 +94,104 @@ export function Budget() {
                             prefix="destination."
                         />
                     </Shape>
-                    <div className="xl:grid xl:grid-cols-4 col-span-2 gap-6">
-                        <Shape className="border border-gray-600 xl:col-span-3">
-                            <h4 className="pb-2">Dimensões da carga</h4>
-                            <div>
-                                <MeasuresForms
-                                    register={register}
-                                    errors={errors}
-                                    touchedFields={touchedFields}
-                                />
+                    <div className="xl:grid xl:grid-cols-4 col-span-2 grid gap-6">
+                        <Shape className="border border-gray-600">
+                            <h4 className="pb-2">Tipo da carga*</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                <label className="flex gap-1">
+                                    <input type="radio" value="caixa" {...register("tipoCarga")} />
+                                    <Package className="icon" />
+                                    <span>Caixa</span>
+                                </label>
+                                <label className="flex gap-1">
+                                    <input type="radio" value="envelope" {...register("tipoCarga")} />
+                                    <File className="icon" />
+                                    <span>Envelope</span>
+                                </label>
+                                <label className="flex gap-1">
+                                    <input type="radio" value="sacola" {...register("tipoCarga")} />
+                                    <ToteSimple className="icon" />
+                                    <span>Sacola</span>
+                                </label>
                             </div>
                         </Shape>
+
+                        <Button className="bg-white p-0" type="button" onClick={toggleDetails}>
+                            {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
+                            <ButtonText>
+                                Mais detalhes sobre a carga
+                            </ButtonText>
+                        </Button>
+
+                        {showDetails && (
+                            <Shape className="border border-gray-600 xl:col-span-3">
+                                <h4 className="pb-2">Dimensões da carga</h4>
+                                <div>
+                                    <MeasuresForms
+                                        register={register}
+                                        errors={errors}
+                                        touchedFields={touchedFields}
+                                    />
+                                </div>
+                            </Shape>
+                        )}
+
+                        <Button className="bg-blue-tx" type="button">
+                            <ButtonText className="text-center text-white">
+                                Adicionar pacote
+                            </ButtonText>
+                        </Button>
+
+                        <Shape className="bg-gray-50">
+                            <div className="flex flex-col gap-2">
+                                <div className="flex gap-3 justify-between">
+                                    <div className="flex">
+                                        <Package className="icon" />
+                                        <p>Pacote 1</p>
+                                    </div>
+                                    <div>
+                                        <p>20x20x20</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Plus className="icon cursor-pointer" />
+                                        <p>2</p>
+                                        <Minus className="icon cursor-pointer" />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 justify-between">
+                                    <div className="flex">
+                                        <File className="icon" />
+                                        <p>Pacote 1</p>
+                                    </div>
+                                    <div>
+                                        <p>20x20x20</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Plus className="icon cursor-pointer" />
+                                        <p>2</p>
+                                        <Minus className="icon cursor-pointer" />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 justify-between">
+                                    <div className="flex">
+                                        <ToteSimple className="icon" />
+                                        <p>Pacote 1</p>
+                                    </div>
+                                    <div>
+                                        <p>20x20x20</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Plus className="icon cursor-pointer" />
+                                        <p>2</p>
+                                        <Minus className="icon cursor-pointer" />
+                                    </div>
+                                </div>
+                            </div>
+                        </Shape>
+
                         <div className="xl:col-span-1">
                             <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0 md:grid-cols-2">
-                                <Link to="/home" className="xs:col-span-2 xl:col-span-1 md:col-span-1">
+                                <Link to="/app/home" className="xs:col-span-2 xl:col-span-1 md:col-span-1">
                                     <Button className={"bg-white border border-red-tx"} type="button">
                                         <X className="icon text-red-tx" />
                                         <ButtonText className={"text-red-tx"}>
@@ -234,7 +323,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}cep`}
-                title="CEP"
+                title="CEP*"
                 placeholder="Digite seu CEP"
                 error={errors.cep}
                 dirty={touchedFields.cep}
@@ -244,7 +333,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}state`}
-                title="Estado"
+                title="Estado*"
                 placeholder="Digite seu Estado"
                 error={errors.state}
                 dirty={touchedFields.state}
@@ -252,7 +341,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}city`}
-                title="Cidade"
+                title="Cidade*"
                 placeholder="Digite sua Cidade"
                 error={errors.city}
                 dirty={touchedFields.city}
@@ -260,7 +349,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}neighborhood`}
-                title="Bairro"
+                title="Bairro*"
                 placeholder="Digite seu Bairro"
                 error={errors.neighborhood}
                 dirty={touchedFields.neighborhood}
@@ -268,7 +357,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}street`}
-                title="Rua"
+                title="Rua*"
                 placeholder="Digite sua Rua"
                 error={errors.street}
                 dirty={touchedFields.street}
@@ -276,7 +365,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}number`}
-                title="Número"
+                title="Número*"
                 placeholder="Digite seu Número"
                 error={errors.number}
                 dirty={touchedFields.number}
@@ -382,26 +471,29 @@ function generalSchema(normalizedCities) {
     return z.object({
         origin: addressSchema(normalizedCities),
         destination: addressSchema(normalizedCities),
+        tipoCarga: z
+            .string()
+            .nonempty("Selecione o tipo de carga"),
         width: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
         height: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
         length: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
         weight: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
     });
 }
 
