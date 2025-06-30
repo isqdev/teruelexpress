@@ -94,124 +94,168 @@ export function Budget() {
                             prefix="destination."
                         />
                     </Shape>
-                    <div className="xl:grid xl:grid-cols-4 col-span-2 grid gap-6">
-                        <Shape className="border border-gray-600">
-                            <h4 className="pb-2">Tipo da carga*</h4>
-                            <div className="grid grid-cols-2 gap-2">
-                                <label className="flex gap-1">
-                                    <input type="radio" value="caixa" {...register("tipoCarga")} />
-                                    <Package className="icon" />
-                                    <span>Caixa</span>
-                                </label>
-                                <label className="flex gap-1">
-                                    <input type="radio" value="envelope" {...register("tipoCarga")} />
-                                    <File className="icon" />
-                                    <span>Envelope</span>
-                                </label>
-                                <label className="flex gap-1">
-                                    <input type="radio" value="sacola" {...register("tipoCarga")} />
-                                    <ToteSimple className="icon" />
-                                    <span>Sacola</span>
-                                </label>
+                    <div className="col-span-2">
+                        <div className="xl:grid xl:grid-cols-2 col-span-2 grid gap-6">
+                            <div>
+                                <div className="flex flex-col gap-4">
+                                    <Shape className="border border-gray-600">
+                                        <h4 className="pb-2">Tipo da carga*</h4>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <label className="flex gap-1">
+                                                <input type="radio" value="caixa" {...register("tipoCarga")} className="accent-red-tx" />
+                                                <Package className="icon" />
+                                                <span>Caixa</span>
+                                            </label>
+                                            <label className="flex gap-1">
+                                                <input type="radio" value="envelope" {...register("tipoCarga")} className="accent-red-tx" />
+                                                <File className="icon" />
+                                                <span>Envelope</span>
+                                            </label>
+                                            <label className="flex gap-1">
+                                                <input type="radio" value="sacola" {...register("tipoCarga")} className="accent-red-tx" />
+                                                <ToteSimple className="icon" />
+                                                <span>Sacola</span>
+                                            </label>
+                                        </div>
+                                    </Shape>
+
+                                    <Shape className="bg-gray-50 hidden lg:block">
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex gap-3 justify-between">
+                                                <div className="flex">
+                                                    <Package className="icon" />
+                                                    <p>Pacote 1</p>
+                                                </div>
+                                                <div>
+                                                    <p>20x20x20</p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Plus className="icon cursor-pointer" />
+                                                    <p>2</p>
+                                                    <Minus className="icon cursor-pointer" />
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-3 justify-between">
+                                                <div className="flex">
+                                                    <File className="icon" />
+                                                    <p>Pacote 1</p>
+                                                </div>
+                                                <div>
+                                                    <p>20x20x20</p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Plus className="icon cursor-pointer" />
+                                                    <p>2</p>
+                                                    <Minus className="icon cursor-pointer" />
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-3 justify-between">
+                                                <div className="flex">
+                                                    <ToteSimple className="icon" />
+                                                    <p>Pacote 1</p>
+                                                </div>
+                                                <div>
+                                                    <p>20x20x20</p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Plus className="icon cursor-pointer" />
+                                                    <p>2</p>
+                                                    <Minus className="icon cursor-pointer" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Shape>
+                                </div>
+
                             </div>
-                        </Shape>
 
-                        <Button className="bg-white p-0" type="button" onClick={toggleDetails}>
-                            {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
-                            <ButtonText>
-                                Mais detalhes sobre a carga
-                            </ButtonText>
-                        </Button>
+                            <div className="flex flex-col gap-4">
+                                <Button className="bg-white p-0 m-0" type="button" onClick={toggleDetails}>
+                                    {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
+                                    <ButtonText>
+                                        Mais detalhes sobre a carga
+                                    </ButtonText>
+                                </Button>
 
-                        {showDetails && (
-                            <Shape className="border border-gray-600 xl:col-span-3">
-                                <h4 className="pb-2">Dimensões da carga</h4>
-                                <div>
-                                    <MeasuresForms
-                                        register={register}
-                                        errors={errors}
-                                        touchedFields={touchedFields}
-                                    />
-                                </div>
-                            </Shape>
-                        )}
+                                {showDetails && (
+                                    <Shape className="border border-gray-600 xl:col-span-3">
+                                        <h4 className="pb-2">Dimensões da carga</h4>
+                                        <div>
+                                            <MeasuresForms
+                                                register={register}
+                                                errors={errors}
+                                                touchedFields={touchedFields}
+                                            />
+                                        </div>
+                                    </Shape>
+                                )}
 
-                        <Button className="bg-blue-tx" type="button">
-                            <ButtonText className="text-center text-white">
-                                Adicionar pacote
-                            </ButtonText>
-                        </Button>
+                                <Shape className="bg-gray-50 lg:hidden">
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex gap-3 justify-between">
+                                            <div className="flex">
+                                                <Package className="icon" />
+                                                <p>Pacote 1</p>
+                                            </div>
+                                            <div>
+                                                <p>20x20x20</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Plus className="icon cursor-pointer" />
+                                                <p>2</p>
+                                                <Minus className="icon cursor-pointer" />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-3 justify-between">
+                                            <div className="flex">
+                                                <File className="icon" />
+                                                <p>Pacote 1</p>
+                                            </div>
+                                            <div>
+                                                <p>20x20x20</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Plus className="icon cursor-pointer" />
+                                                <p>2</p>
+                                                <Minus className="icon cursor-pointer" />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-3 justify-between">
+                                            <div className="flex">
+                                                <ToteSimple className="icon" />
+                                                <p>Pacote 1</p>
+                                            </div>
+                                            <div>
+                                                <p>20x20x20</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Plus className="icon cursor-pointer" />
+                                                <p>2</p>
+                                                <Minus className="icon cursor-pointer" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Shape>
 
-                        <Shape className="bg-gray-50">
-                            <div className="flex flex-col gap-2">
-                                <div className="flex gap-3 justify-between">
-                                    <div className="flex">
-                                        <Package className="icon" />
-                                        <p>Pacote 1</p>
-                                    </div>
-                                    <div>
-                                        <p>20x20x20</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Plus className="icon cursor-pointer" />
-                                        <p>2</p>
-                                        <Minus className="icon cursor-pointer" />
-                                    </div>
-                                </div>
-                                <div className="flex gap-3 justify-between">
-                                    <div className="flex">
-                                        <File className="icon" />
-                                        <p>Pacote 1</p>
-                                    </div>
-                                    <div>
-                                        <p>20x20x20</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Plus className="icon cursor-pointer" />
-                                        <p>2</p>
-                                        <Minus className="icon cursor-pointer" />
-                                    </div>
-                                </div>
-                                <div className="flex gap-3 justify-between">
-                                    <div className="flex">
-                                        <ToteSimple className="icon" />
-                                        <p>Pacote 1</p>
-                                    </div>
-                                    <div>
-                                        <p>20x20x20</p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Plus className="icon cursor-pointer" />
-                                        <p>2</p>
-                                        <Minus className="icon cursor-pointer" />
-                                    </div>
-                                </div>
-                            </div>
-                        </Shape>
-
-                        <div className="xl:col-span-1">
-                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0 md:grid-cols-2">
-                                <Link to="/app/home" className="xs:col-span-2 xl:col-span-1 md:col-span-1">
-                                    <Button className={"bg-white border border-red-tx"} type="button">
-                                        <X className="icon text-red-tx" />
-                                        <ButtonText className={"text-red-tx"}>
-                                            Cancelar
+                                <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
+                                    <Button className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1" type="button">
+                                        <ButtonText className="text-center text-white">
+                                            Adicionar pacote
                                         </ButtonText>
                                     </Button>
-                                </Link>
-                                <Button className={"bg-red-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={onSimulateClick} type="button">
-                                    <Package className="icon text-white" />
-                                    <ButtonText className={"text-white"}>
-                                        Enviar
-                                    </ButtonText>
-                                    <ArrowRight className="icon text-white" />
-                                </Button>
-                                <Button className={"bg-blue-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={handleScrollTop} type="button">
-                                    <ArrowUp className="icon text-white" />
-                                    <ButtonText className={"text-white"}>
-                                        Ir para o topo
-                                    </ButtonText>
-                                </Button>
+                                    <Button className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2" onClick={onSimulateClick} type="button">
+                                        <ButtonText className="text-white text-center">
+                                            Enviar
+                                        </ButtonText>
+                                    </Button>
+                                    <Link to="/app/home" className="xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2">
+                                        <Button className="bg-gray-50" type="button">
+                                            <ButtonText className="text-black text-center">
+                                                Cancelar
+                                            </ButtonText>
+                                        </Button>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -377,7 +421,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
 function MeasuresForms({ register, errors, touchedFields }) {
     return (
         <>
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 lg:grid-cols-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 lg:grid-cols-2">
                 <div>
                     <FormField
                         register={register}
