@@ -47,20 +47,41 @@ export function Budget() {
         setData({ ...formData });
         console.log("JSON enviado:", formData);
         setShowSuccessModal(true);
+
+        const currentOrders = JSON.parse(localStorage.getItem("ordersList")) || [];
+        const updatedOrders = [...currentOrders, formData];
+
+        localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
     };
 
-    const onSimulateClick = (e) => {
+    const addPackage = (formData) => {
+        setData({ ...formData });
+        console.log("Pacote adicionado:", formData);
+
+        const currentOrders = JSON.parse(localStorage.getItem("ordersList")) || [];
+        const updatedOrders = [...currentOrders, formData];
+
+        localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
+    };
+
+    const sendOrders = () => {
+        const ordersList = JSON.parse(localStorage.getItem("ordersList")) || [];
+        console.log("Lista de pedidos:", ordersList);
+    };
+
+    const onAddPackageClick = (e) => {
         e.preventDefault();
         if (!isValid) {
             setShowAllertModal(true);
             return;
         }
-        handleSubmit(postForm)();
+        handleSubmit(addPackage)();
     };
 
-    const handleScrollTop = () => {
-        window.scrollTo({ top: 0, left: 0 });
-    }
+    const onSendClick = (e) => {
+        e.preventDefault();
+        sendOrders();
+    };
 
     return (
         <>
@@ -104,17 +125,17 @@ export function Budget() {
                                             <label className="flex gap-1">
                                                 <input type="radio" value="caixa" {...register("tipoCarga")} className="accent-red-tx" />
                                                 <Package className="icon" />
-                                                <span>Caixa</span>
+                                                <p>Caixa</p>
                                             </label>
                                             <label className="flex gap-1">
                                                 <input type="radio" value="envelope" {...register("tipoCarga")} className="accent-red-tx" />
                                                 <File className="icon" />
-                                                <span>Envelope</span>
+                                                <p>Envelope</p>
                                             </label>
                                             <label className="flex gap-1">
                                                 <input type="radio" value="sacola" {...register("tipoCarga")} className="accent-red-tx" />
                                                 <ToteSimple className="icon" />
-                                                <span>Sacola</span>
+                                                <p>Sacola</p>
                                             </label>
                                         </div>
                                     </Shape>
@@ -238,17 +259,28 @@ export function Budget() {
                                 </Shape>
 
                                 <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
-                                    <Button className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1" type="button">
+                                    <Button
+                                        className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
+                                        onClick={onAddPackageClick}
+                                        type="button"
+                                    >
                                         <ButtonText className="text-center text-white">
                                             Adicionar pacote
                                         </ButtonText>
                                     </Button>
-                                    <Button className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2" onClick={onSimulateClick} type="button">
+                                    <Button
+                                        className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
+                                        onClick={onSendClick}
+                                        type="button"
+                                    >
                                         <ButtonText className="text-white text-center">
                                             Enviar
                                         </ButtonText>
                                     </Button>
-                                    <Link to="/app/home" className="xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2">
+                                    <Link
+                                        to="/app/home"
+                                        className="xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
+                                    >
                                         <Button className="bg-gray-50" type="button">
                                             <ButtonText className="text-black text-center">
                                                 Cancelar
