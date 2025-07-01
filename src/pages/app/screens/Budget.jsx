@@ -1,5 +1,5 @@
 import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape } from "@/components";
-import { ArrowRight, CheckCircle, Package, X, ArrowUp, HouseLine, ToteSimple, File, CaretRight, CaretDown, Plus, Minus } from "phosphor-react";
+import { CheckCircle, Package, HouseLine, ToteSimple, File, CaretRight, CaretDown, Plus, Minus } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
@@ -15,6 +15,9 @@ export function Budget() {
     const [cities, setCities] = useState([]);
     const [normalizedCities, setNormalizedCities] = useState([]);
     const [showDetails, setShowDetails] = useState(false);
+    const [showEmptyListModal, setShowEmptyListModal] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [packages, setPackages] = useState([]);
 
     useEffect(() => {
         fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/cities.json')
@@ -23,6 +26,11 @@ export function Budget() {
                 setCities(citiesData);
                 setNormalizedCities(citiesData.map((city) => normalize(city)));
             });
+    }, []);
+
+    useEffect(() => {
+        const storedPackages = JSON.parse(localStorage.getItem("ordersList")) || [];
+        setPackages(storedPackages);
     }, []);
 
     const toggleDetails = () => {
@@ -54,33 +62,38 @@ export function Budget() {
         localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
     };
 
-    const addPackage = (formData) => {
-        setData({ ...formData });
-        console.log("Pacote adicionado:", formData);
-
-        const currentOrders = JSON.parse(localStorage.getItem("ordersList")) || [];
-        const updatedOrders = [...currentOrders, formData];
-
-        localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
-    };
-
-    const sendOrders = () => {
-        const ordersList = JSON.parse(localStorage.getItem("ordersList")) || [];
-        console.log("Lista de pedidos:", ordersList);
-    };
-
     const onAddPackageClick = (e) => {
         e.preventDefault();
         if (!isValid) {
             setShowAllertModal(true);
             return;
         }
-        handleSubmit(addPackage)();
+        handleSubmit((formData) => {
+            const currentOrders = JSON.parse(localStorage.getItem("ordersList")) || [];
+            const updatedOrders = [...currentOrders, formData];
+            localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
+            setPackages(updatedOrders);
+        })();
+        reset();
     };
 
     const onSendClick = (e) => {
         e.preventDefault();
-        sendOrders();
+        const ordersList = JSON.parse(localStorage.getItem("ordersList")) || [];
+
+        if (ordersList.length === 0) {
+            setShowEmptyListModal(true);
+            return;
+        }
+
+        setShowConfirmationModal(true);
+    };
+
+    const confirmSend = () => {
+        const ordersList = JSON.parse(localStorage.getItem("ordersList")) || [];
+        postForm(ordersList);
+        localStorage.removeItem("ordersList");
+        setShowConfirmationModal(false);
     };
 
     return (
@@ -116,7 +129,7 @@ export function Budget() {
                         />
                     </Shape>
                     <div className="col-span-2">
-                        <div className="xl:grid xl:grid-cols-2 col-span-2 grid gap-6">
+                        <div className="lg:grid lg:grid-cols-2 col-span-2 grid gap-6">
                             <div>
                                 <div className="flex flex-col gap-4">
                                     <Shape className="border border-gray-600">
@@ -141,53 +154,9 @@ export function Budget() {
                                     </Shape>
 
                                     <Shape className="bg-gray-50 hidden lg:block">
-                                        <div className="flex flex-col gap-2">
-                                            <div className="flex gap-3 justify-between">
-                                                <div className="flex">
-                                                    <Package className="icon" />
-                                                    <p>Pacote 1</p>
-                                                </div>
-                                                <div>
-                                                    <p>20x20x20</p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Plus className="icon cursor-pointer" />
-                                                    <p>2</p>
-                                                    <Minus className="icon cursor-pointer" />
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-3 justify-between">
-                                                <div className="flex">
-                                                    <File className="icon" />
-                                                    <p>Pacote 1</p>
-                                                </div>
-                                                <div>
-                                                    <p>20x20x20</p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Plus className="icon cursor-pointer" />
-                                                    <p>2</p>
-                                                    <Minus className="icon cursor-pointer" />
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-3 justify-between">
-                                                <div className="flex">
-                                                    <ToteSimple className="icon" />
-                                                    <p>Pacote 1</p>
-                                                </div>
-                                                <div>
-                                                    <p>20x20x20</p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Plus className="icon cursor-pointer" />
-                                                    <p>2</p>
-                                                    <Minus className="icon cursor-pointer" />
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <PackageList packages={packages} />
                                     </Shape>
                                 </div>
-
                             </div>
 
                             <div className="flex flex-col gap-4">
@@ -212,50 +181,7 @@ export function Budget() {
                                 )}
 
                                 <Shape className="bg-gray-50 lg:hidden">
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex gap-3 justify-between">
-                                            <div className="flex">
-                                                <Package className="icon" />
-                                                <p>Pacote 1</p>
-                                            </div>
-                                            <div>
-                                                <p>20x20x20</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Plus className="icon cursor-pointer" />
-                                                <p>2</p>
-                                                <Minus className="icon cursor-pointer" />
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-3 justify-between">
-                                            <div className="flex">
-                                                <File className="icon" />
-                                                <p>Pacote 1</p>
-                                            </div>
-                                            <div>
-                                                <p>20x20x20</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Plus className="icon cursor-pointer" />
-                                                <p>2</p>
-                                                <Minus className="icon cursor-pointer" />
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-3 justify-between">
-                                            <div className="flex">
-                                                <ToteSimple className="icon" />
-                                                <p>Pacote 1</p>
-                                            </div>
-                                            <div>
-                                                <p>20x20x20</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Plus className="icon cursor-pointer" />
-                                                <p>2</p>
-                                                <Minus className="icon cursor-pointer" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <PackageList packages={packages} />
                                 </Shape>
 
                                 <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
@@ -334,8 +260,60 @@ export function Budget() {
                     <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
                 </div>
             )}
+
+            {showEmptyListModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-3">
+                    <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
+                        <p className="mb-4 text-lg font-semibold">Adicione no mínimo um pacote para realizar o envio!</p>
+                        <Button className="bg-red-tx" onClick={() => setShowEmptyListModal(false)}>
+                            <ButtonText className="text-white text-center">Fechar</ButtonText>
+                        </Button>
+                    </Shape>
+                    <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
+                </div>
+            )}
+
+            {showConfirmationModal && (
+                <div className="fixed inset-0 flex items-center justify-center z-3">
+                    <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
+                        <p className="mb-4 text-lg font-semibold">Deseja finalizar e realizar os pedidos?</p>
+                        <div className="flex gap-4">
+                            <Button className="bg-red-tx" onClick={() => setShowConfirmationModal(false)}>
+                                <ButtonText className="text-white text-center">Não</ButtonText>
+                            </Button>
+                            <Button className="bg-success-light" onClick={confirmSend}>
+                                <ButtonText className="text-white text-center">Sim</ButtonText>
+                            </Button>
+                        </div>
+                    </Shape>
+                    <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
+                </div>
+            )}
         </>
     )
+}
+
+function PackageList({ packages }) {
+    return (
+        <div className="flex flex-col gap-2">
+            {packages.map((pkg, index) => (
+                <div key={index} className="flex gap-3 justify-between">
+                    <div className="flex gap-2">
+                        {pkg.tipoCarga === "caixa" && <Package className="icon" />}
+                        {pkg.tipoCarga === "envelope" && <File className="icon" />}
+                        {pkg.tipoCarga === "sacola" && <ToteSimple className="icon" />}
+                        <p>{pkg.tipoCarga}</p>
+                        <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}`}</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Plus className="icon cursor-pointer" />
+                        <p>{pkg.quantity || 1}</p>
+                        <Minus className="icon cursor-pointer" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
 }
 
 function FormField({ title, placeholder, register, name, error, dirty, type = "text", onChangeMask }) {
@@ -507,7 +485,6 @@ function addressSchema(normalizedCities) {
     return z.object({
         cep: z
             .string()
-            .nullable()
             .transform((val) => val.replace(/\D/g, ""))
             .refine((val) => val.length === 8, { message: "CEP inválido" }),
 
