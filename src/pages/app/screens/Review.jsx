@@ -25,16 +25,28 @@ export function Review() {
   const [isModalSmOpen, setIsModalSmOpen] = useState(false);
   const avaliacao = watch("avaliacao", "");
   const rating = watch('rating', 0);
-
+  const [clickedSuggestions,setClickedSuggestions] = useState([]);
 
   const handleCloseModalSm = () => {
     setIsModalSmOpen(false);
   }
 
   const onSubmit = (values) => {
-    setClickedSuggestions(prev => [...prev, value]);
-    const formDataJson = JSON.stringify(values);
-    localStorage.setItem('jsonReview', formDataJson);
+    const newReview = {...values, timestamp: new Date().toISOString};
+    setClickedSuggestions(prev => [...prev, newReview]);
+    const existingReviews=localStorage.getItem("jsonReview");
+    let allReviews= [];
+    if (existingReviews){
+      const parsedReviews = JSON.parse(existingReviews);
+      if(Array.isArray(parsedReviews)){
+        allReviews = parsedReviews;
+      } else{
+        allReviews = [];
+      }
+    }
+    allReviews.push(newReview);    
+    const updateReviews = JSON.stringify(allReviews);
+    localStorage.setItem("jsonReview", updateReviews);
     reset();
     setIsModalSmOpen(true)
   };
