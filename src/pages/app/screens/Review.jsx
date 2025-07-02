@@ -22,25 +22,25 @@ export function Review() {
     mode: "onBlur"
   });
   const [submittedData, setSubmittedData] = useState(null);
-
   const [isModalSmOpen, setIsModalSmOpen] = useState(false);
+  const avaliacao = watch("avaliacao", "");
+  const rating = watch('rating', 0);
 
-  
 
   const handleCloseModalSm = () => {
     setIsModalSmOpen(false);
   }
 
   const onSubmit = (values) => {
-    console.log("Dados do formulario",values);
+    setClickedSuggestions(prev => [...prev, value]);
     const formDataJson = JSON.stringify(values);
     localStorage.setItem('jsonReview', formDataJson);
     reset();
     setIsModalSmOpen(true)
   };
+  
 
-  const rating = watch('rating', 0);
-
+  
   
 
   
@@ -50,7 +50,7 @@ export function Review() {
         <AppHeader screenTitle="Avaliar" />
         <div className="max-w-sm sm:max-w-lg mx-auto mt-30" >
           <form onSubmit={handleSubmit(onSubmit)} >
-            <div className=" shadow-md p-4 rounded-lg ">
+            <div className=" shadow-md p-4 rounded-2xl ">
               <div className="flex gap-2">
                 <div className="w-16 h-16 rounded-full  bg-gray-50 flex items-center justify-center">
                 </div>
@@ -65,16 +65,28 @@ export function Review() {
                   />
                 </div>
               </div>
-              <textarea className="w-full bg-gray-50 rounded-sm p-2 mt-4 resize-none  gap-1" maxLength={300} 
-              placeholder="Digite sua avaliação aqui" rows={5} {...register("avaliacao")}></textarea>
+              <div className="relative">
+                <textarea
+                  className="w-full bg-gray-50 rounded-2xl p-2 mt-4 resize-none gap-1 outline-blue-500"
+                  maxLength={300}
+                  placeholder="Digite sua avaliação aqui"
+                  rows={6}
+                  {...register("avaliacao")}
+                ></textarea>
+                <span className="absolute bottom-2 right-2 text-sm  text-gray-600 text-gray-500">
+                  {avaliacao.length}/300
+                </span>
+              </div>
               
             </div>
-            <div className="flex gap-1 mt-2">
-            <Button className={"bg-gray-50"} type="button" onClick={() => reset()}>
-                <ButtonText className="text-center ">
-                  Cancelar
-                </ButtonText>
-              </Button>
+            <div className="grid grid-cols-2 gap-2 mt-2 sm:gap-4 sm:mt-4">
+              <Link to="/app/home">
+                <Button className={"bg-gray-50"} type="button" onClick={() => reset()}>
+                  <ButtonText className="text-center ">
+                    Cancelar
+                  </ButtonText>
+                </Button>
+              </Link>
               <Button className={"bg-red-tx"} type="submit">
                 <ButtonText className="text-center text-white">
                   Enviar
@@ -102,9 +114,11 @@ function ModalView({open, onClose}){
         <h4 className="font-bold ">Avaliação registrada com sucesso!</h4>
         <p className="pb-4 grid col-span-2 pt-4 mb-4">A TeruelExpress agradece pelo seu feedback.</p>
         <div >
-          <Button onClick={onClose} className="border border-black w-30 mx-auto ">
-            <ButtonText className="text-center font-bold">Fechar</ButtonText>
-          </Button>
+          <Link to="/app/home">
+            <Button onClick={onClose} className="border border-black w-30 mx-auto ">
+              <ButtonText className="text-center font-bold">Fechar</ButtonText>
+            </Button>
+          </Link>
         </div>
       </div>
     </ModalSm>
