@@ -220,7 +220,7 @@ const table = useReactTable({
       <ModalConfirm
         message="Você realmente deseja cancelar esta solicitação?"
         open={!!selectedRow}
-        actionWord="Cancelar"
+        options={["Não", "Sim"]}
         action={() => handleCancel()}
         onClose={() => setSelectedRow(null)}
       />
