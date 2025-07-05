@@ -10,7 +10,6 @@ import { localStorageUtils } from "@/utils/localStorageUtils";
 import { fetchCep } from "@/services/cep";
 
 export function Budget() {
-    const [data, setData] = useState("Dados do Formulario em JSON");
     const [showDetails, setShowDetails] = useState(false);
     const [packages, setPackages] = useState([]);
     const [normalizedCityList, setNormalizedCityList] = useState([]);
@@ -18,6 +17,7 @@ export function Budget() {
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
     const [isEmptyListModalVisible, setIsEmptyListModalVisible] = useState(false);
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
+    const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [packageToDelete, setPackageToDelete] = useState(null);
 
@@ -103,6 +103,7 @@ export function Budget() {
         };
 
         console.log("JSON enviado:", finalJson);
+        localStorageUtils.setItem("finalBudget", JSON.stringify(finalJson));
         setIsSuccessModalVisible(true);
         localStorageUtils.removeItem("ordersList");
         setPackages([]);
@@ -138,8 +139,6 @@ export function Budget() {
     const handleConfirmSend = () => {
         const ordersList = localStorageUtils.getItem("ordersList") || [];
         handleSubmitOrder(ordersList);
-        localStorageUtils.removeItem("ordersList");
-        setPackages([]);
         setIsConfirmationModalVisible(false);
     };
 
@@ -149,6 +148,15 @@ export function Budget() {
         setValue("height", "");
         setValue("length", "");
         setValue("weight", "");
+    };
+
+    const handleCancel = () => {
+        setIsCancelModalVisible(true);
+    };
+
+    const confirmCancel = () => {
+        setIsCancelModalVisible(false);
+        window.location.href = "/app/home";
     };
 
     return (
@@ -184,53 +192,33 @@ export function Budget() {
                         />
                     </Shape>
                     <div className="col-span-2">
-                        <div className="lg:grid lg:grid-cols-2 col-span-2 grid gap-6">
-                            <div>
-                                <div className="flex flex-col gap-4">
-                                    <Shape className="border border-gray-600">
-                                        <h4 className="pb-2">Tipo da carga*</h4>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <label className="flex gap-1">
-                                                <input type="radio" value="caixa" {...register("loadType")} className="accent-red-tx" />
-                                                <Package className="icon" />
-                                                <p>Caixa</p>
-                                            </label>
-                                            <label className="flex gap-1">
-                                                <input type="radio" value="envelope" {...register("loadType")} className="accent-red-tx" />
-                                                <File className="icon" />
-                                                <p>Envelope</p>
-                                            </label>
-                                            <label className="flex gap-1">
-                                                <input type="radio" value="sacola" {...register("loadType")} className="accent-red-tx" />
-                                                <ToteSimple className="icon" />
-                                                <p>Sacola</p>
-                                            </label>
-                                        </div>
-                                    </Shape>
-
-                                    <div className="hidden lg:block">
-                                        <div className="flex gap-3">
-                                            <Info className="icon" />
-                                            <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
-                                        </div>
-                                        <Shape className="bg-gray-50">
-                                            <PackageList
-                                                packages={packages}
-                                                onIncrease={handleIncreaseAmount}
-                                                onDecrease={handleDecreaseAmount}
-                                            />
-                                        </Shape>
-                                    </div>
+                        <div className="grid col-span-2 gap-6 lg:grid-cols-2 lg:grid-flow-col lg:grid-rows-2">
+                            <Shape className="border border-gray-600 order-1">
+                                <h4 className="pb-2">Tipo da carga*</h4>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                                    <label className="flex gap-1">
+                                        <input type="radio" value="caixa" {...register("loadType")} className="accent-red-tx" />
+                                        <Package className="icon" />
+                                        <p>Caixa</p>
+                                    </label>
+                                    <label className="flex gap-1">
+                                        <input type="radio" value="envelope" {...register("loadType")} className="accent-red-tx" />
+                                        <File className="icon" />
+                                        <p>Envelope</p>
+                                    </label>
+                                    <label className="flex gap-1">
+                                        <input type="radio" value="sacola" {...register("loadType")} className="accent-red-tx" />
+                                        <ToteSimple className="icon" />
+                                        <p>Sacola</p>
+                                    </label>
                                 </div>
-                            </div>
+                            </Shape>
 
-                            <div className="flex flex-col gap-4">
-                                <Button className="bg-white p-0 m-0" type="button" onClick={toggleDetails}>
+                            <div className="order-2 lg:order-3">
+                                <p onClick={toggleDetails} className="cursor-pointer flex items-center">
                                     {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
-                                    <ButtonText>
-                                        Mais detalhes sobre a carga
-                                    </ButtonText>
-                                </Button>
+                                    Mais detalhes sobre a carga (opcional)
+                                </p>
 
                                 {showDetails && (
                                     <Shape className="border border-gray-600 xl:col-span-3">
@@ -244,51 +232,50 @@ export function Budget() {
                                         </div>
                                     </Shape>
                                 )}
+                            </div>
 
-                                <div className="lg:hidden">
-                                    <div className="flex gap-3">
-                                        <Info className="icon" />
-                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
-                                    </div>
-                                    <Shape className="bg-gray-50">
-                                        <PackageList
-                                            packages={packages}
-                                            onIncrease={handleIncreaseAmount}
-                                            onDecrease={handleDecreaseAmount}
-                                        />
-                                    </Shape>
+                            <div className="space-y-2 order-3 lg:order-2">
+                                <div className="flex gap-3">
+                                    <Info className="icon" />
+                                    <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
                                 </div>
+                                <Shape className="bg-gray-50">
+                                    <PackageList
+                                        packages={packages}
+                                        onIncrease={handleIncreaseAmount}
+                                        onDecrease={handleDecreaseAmount}
+                                    />
+                                </Shape>
+                            </div>
 
-                                <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
-                                    <Button
-                                        className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
-                                        onClick={handleAddPackage}
-                                        type="button"
-                                    >
-                                        <ButtonText className="text-center text-white">
-                                            Adicionar pacote
-                                        </ButtonText>
-                                    </Button>
-                                    <Button
-                                        className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
-                                        onClick={handleSend}
-                                        type="button"
-                                    >
-                                        <ButtonText className="text-white text-center">
-                                            Enviar
-                                        </ButtonText>
-                                    </Button>
-                                    <Link
-                                        to="/app/home"
-                                        className="xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
-                                    >
-                                        <Button className="bg-gray-50" type="button">
-                                            <ButtonText className="text-black text-center">
-                                                Cancelar
-                                            </ButtonText>
-                                        </Button>
-                                    </Link>
-                                </div>
+                            <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
+                                <Button
+                                    className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
+                                    onClick={handleAddPackage}
+                                    type="button"
+                                >
+                                    <ButtonText className="text-center text-white">
+                                        Adicionar pacote
+                                    </ButtonText>
+                                </Button>
+                                <Button
+                                    className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
+                                    onClick={handleSend}
+                                    type="button"
+                                >
+                                    <ButtonText className="text-white text-center">
+                                        Enviar
+                                    </ButtonText>
+                                </Button>
+                                <Button
+                                    className="bg-gray-50 xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
+                                    onClick={handleCancel}
+                                    type="button"
+                                >
+                                    <ButtonText className="text-black text-center">
+                                        Cancelar
+                                    </ButtonText>
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -335,7 +322,7 @@ export function Budget() {
                 message="Deseja finalizar e realizar o pedido?"
                 open={isConfirmationModalVisible}
                 options={["Não", "Sim"]}
-                good = {true}
+                good
                 action={() => handleConfirmSend()}
                 onClose={() => setIsConfirmationModalVisible(false)}
             />
@@ -346,6 +333,14 @@ export function Budget() {
                 options={["Não", "Sim"]}
                 action={confirmDeletePackage}
                 onClose={handleCancelDelete}
+            />
+
+            <ModalConfirm
+                message="Cancelar e voltar para a Página inicial?"
+                open={isCancelModalVisible}
+                options={["Não", "Sim"]}
+                action={confirmCancel}
+                onClose={() => setIsCancelModalVisible(false)}
             />
         </>
     )
@@ -363,17 +358,19 @@ function PackageList({ packages, onIncrease, onDecrease }) {
                             {pkg.loadType === "caixa" && <Package className="icon" />}
                             {pkg.loadType === "envelope" && <File className="icon" />}
                             {pkg.loadType === "sacola" && <ToteSimple className="icon" />}
-                            <p>{pkg.loadType}</p>
-                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}    ${pkg.weight || 0}kg`}</p>
+                            <p className="capitalize">{pkg.loadType}</p>
+                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}cm    ${pkg.weight || 0}kg`}</p>
                         </div>
                         <div className="flex gap-2 items-center">
                             <Minus
-                                className="icon cursor-pointer"
+                                className="cursor-pointer"
+                                size={20}
                                 onClick={() => onDecrease(index)}
                             />
                             <p>{pkg.amount || 1}</p>
                             <Plus
-                                className="icon cursor-pointer"
+                                className="cursor-pointer"
+                                size={20}
                                 onClick={() => onIncrease(index)}
                             />
                         </div>

@@ -87,7 +87,7 @@ export function Budget() {
         };
 
         console.log("JSON enviado:", finalJson);
-        localStorage.setItem("finalBudget", JSON.stringify(finalJson));
+        localStorageUtils.setItem("finalBudget", JSON.stringify(finalJson));
         localStorageUtils.removeItem("ordersList");
         setPackages([]);
         setTimeout(() => {
