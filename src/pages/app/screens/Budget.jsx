@@ -1,5 +1,5 @@
 import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape } from "@/components";
-import { CheckCircle, Package, HouseLine, ToteSimple, File, CaretRight, CaretDown, Plus, Minus } from "phosphor-react";
+import { CheckCircle, Package, HouseLine, ToteSimple, File, CaretRight, CaretDown, Plus, Minus, Info } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
@@ -10,9 +10,8 @@ import { fetchCep } from "@/services/cep";
 
 export function Budget() {
     const [data, setData] = useState("Dados do Formulario em JSON");
-    const [showAllertModal, setShowAllertModal] = useState(false);
+    const [showAlertModal, setShowAlertModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [cities, setCities] = useState([]);
     const [normalizedCities, setNormalizedCities] = useState([]);
     const [showDetails, setShowDetails] = useState(false);
     const [showEmptyListModal, setShowEmptyListModal] = useState(false);
@@ -23,7 +22,6 @@ export function Budget() {
         fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/cities.json')
             .then(res => res.json())
             .then(citiesData => {
-                setCities(citiesData);
                 setNormalizedCities(citiesData.map((city) => normalize(city)));
             });
     }, []);
@@ -65,7 +63,7 @@ export function Budget() {
     const onAddPackageClick = (e) => {
         e.preventDefault();
         if (!isValid) {
-            setShowAllertModal(true);
+            setShowAlertModal(true);
             return;
         }
         handleSubmit((formData) => {
@@ -73,8 +71,8 @@ export function Budget() {
             const updatedOrders = [...currentOrders, formData];
             localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
             setPackages(updatedOrders);
+            clearMeasuresFields();
         })();
-        reset();
     };
 
     const onSendClick = (e) => {
@@ -94,6 +92,14 @@ export function Budget() {
         postForm(ordersList);
         localStorage.removeItem("ordersList");
         setShowConfirmationModal(false);
+    };
+
+    const clearMeasuresFields = () => {
+        setValue("tipoCarga", "");
+        setValue("width", "");
+        setValue("height", "");
+        setValue("length", "");
+        setValue("weight", "");
     };
 
     return (
@@ -153,9 +159,15 @@ export function Budget() {
                                         </div>
                                     </Shape>
 
-                                    <Shape className="bg-gray-50 hidden lg:block">
-                                        <PackageList packages={packages} />
-                                    </Shape>
+                                    <div className="hidden lg:block">
+                                        <div className="flex gap-3">
+                                            <Info className="icon" />
+                                            <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                        </div>
+                                        <Shape className="bg-gray-50">
+                                            <PackageList packages={packages} />
+                                        </Shape>
+                                    </div>
                                 </div>
                             </div>
 
@@ -180,9 +192,15 @@ export function Budget() {
                                     </Shape>
                                 )}
 
-                                <Shape className="bg-gray-50 lg:hidden">
-                                    <PackageList packages={packages} />
-                                </Shape>
+                                <div className="lg:hidden">
+                                    <div className="flex gap-3">
+                                        <Info className="Icon" />
+                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                    </div>
+                                    <Shape className="bg-gray-50">
+                                        <PackageList packages={packages} />
+                                    </Shape>
+                                </div>
 
                                 <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
                                     <Button
@@ -220,12 +238,12 @@ export function Budget() {
                 </form>
             </SectionApp>
 
-            {showAllertModal && (
+            {showAlertModal && (
                 <>
                     <div className="fixed inset-0 flex items-center justify-center z-3">
                         <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
                             <p className="mb-4 text-lg font-semibold">Por favor preencher todos os campos!</p>
-                            <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
+                            <Button className="bg-red-tx" onClick={() => setShowAlertModal(false)}>
                                 <ButtonText className="text-white text-center">Fechar</ButtonText>
                             </Button>
                         </Shape>
@@ -296,22 +314,26 @@ export function Budget() {
 function PackageList({ packages }) {
     return (
         <div className="flex flex-col gap-2">
-            {packages.map((pkg, index) => (
-                <div key={index} className="flex gap-3 justify-between">
-                    <div className="flex gap-2">
-                        {pkg.tipoCarga === "caixa" && <Package className="icon" />}
-                        {pkg.tipoCarga === "envelope" && <File className="icon" />}
-                        {pkg.tipoCarga === "sacola" && <ToteSimple className="icon" />}
-                        <p>{pkg.tipoCarga}</p>
-                        <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}`}</p>
+            {packages.length === 0 ? (
+                <p className="text-black text-center">Sem pacotes no momento</p>
+            ) : (
+                packages.map((pkg, index) => (
+                    <div key={index} className="flex gap-3 justify-between">
+                        <div className="flex gap-2">
+                            {pkg.tipoCarga === "caixa" && <Package className="icon" />}
+                            {pkg.tipoCarga === "envelope" && <File className="icon" />}
+                            {pkg.tipoCarga === "sacola" && <ToteSimple className="icon" />}
+                            <p>{pkg.tipoCarga}</p>
+                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}x${pkg.weight || 0}`}</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Plus className="icon cursor-pointer" />
+                            <p>{pkg.quantity || 1}</p>
+                            <Minus className="icon cursor-pointer" />
+                        </div>
                     </div>
-                    <div className="flex gap-2">
-                        <Plus className="icon cursor-pointer" />
-                        <p>{pkg.quantity || 1}</p>
-                        <Minus className="icon cursor-pointer" />
-                    </div>
-                </div>
-            ))}
+                ))
+            )}
         </div>
     );
 }
