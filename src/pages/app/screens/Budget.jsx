@@ -11,13 +11,13 @@ import { fetchCep } from "@/services/cep";
 
 export function Budget() {
     const [data, setData] = useState("Dados do Formulario em JSON");
+    const [showDetails, setShowDetails] = useState(false);
+    const [packages, setPackages] = useState([]);
+    const [normalizedCityList, setNormalizedCityList] = useState([]);
     const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-    const [normalizedCityList, setNormalizedCityList] = useState([]);
-    const [showDetails, setShowDetails] = useState(false);
     const [isEmptyListModalVisible, setIsEmptyListModalVisible] = useState(false);
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
-    const [packages, setPackages] = useState([]);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [packageToDelete, setPackageToDelete] = useState(null);
 
