@@ -6,28 +6,31 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from "react-router-dom";
 import { normalize } from "@/utils/normalize";
+import { localStorageUtils } from "@/utils/localStorageUtils";
 import { fetchCep } from "@/services/cep";
 
 export function Budget() {
     const [data, setData] = useState("Dados do Formulario em JSON");
-    const [showAlertModal, setShowAlertModal] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [normalizedCities, setNormalizedCities] = useState([]);
+    const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+    const [normalizedCityList, setNormalizedCityList] = useState([]);
     const [showDetails, setShowDetails] = useState(false);
-    const [showEmptyListModal, setShowEmptyListModal] = useState(false);
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [isEmptyListModalVisible, setIsEmptyListModalVisible] = useState(false);
+    const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
     const [packages, setPackages] = useState([]);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [packageToDelete, setPackageToDelete] = useState(null);
 
     useEffect(() => {
         fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/cities.json')
             .then(res => res.json())
             .then(citiesData => {
-                setNormalizedCities(citiesData.map((city) => normalize(city)));
+                setNormalizedCityList(citiesData.map((city) => normalize(city)));
             });
     }, []);
 
     useEffect(() => {
-        const storedPackages = JSON.parse(localStorage.getItem("ordersList")) || [];
+        const storedPackages = localStorageUtils.getItem("ordersList") || [];
         setPackages(storedPackages);
     }, []);
 
@@ -45,57 +48,103 @@ export function Budget() {
         reset,
         formState: { errors, touchedFields, isValid }
     } = useForm({
-        resolver: zodResolver(generalSchema(normalizedCities)),
+        resolver: zodResolver(generalSchema(normalizedCityList)),
         mode: "onBlur"
     });
 
-    const postForm = (formData) => {
-        setData({ ...formData });
-        console.log("JSON enviado:", formData);
-        setShowSuccessModal(true);
-
-        const currentOrders = JSON.parse(localStorage.getItem("ordersList")) || [];
-        const updatedOrders = [...currentOrders, formData];
-
-        localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
+    const handleIncreaseAmount = (index) => {
+        const updatedPackages = [...packages];
+        updatedPackages[index].amount = (updatedPackages[index].amount || 1) + 1;
+        setPackages(updatedPackages);
+        localStorageUtils.setItem("ordersList", updatedPackages);
     };
 
-    const onAddPackageClick = (e) => {
+    const handleDecreaseAmount = (index) => {
+        const updatedPackages = [...packages];
+        updatedPackages[index].amount = (updatedPackages[index].amount || 1) - 1;
+
+        if (updatedPackages[index].amount < 1) {
+            setPackageToDelete(index);
+            setIsDeleteModalVisible(true);
+        } else {
+            setPackages(updatedPackages);
+            localStorageUtils.setItem("ordersList", updatedPackages);
+        }
+    };
+
+    const confirmDeletePackage = () => {
+        const updatedPackages = [...packages];
+        updatedPackages.splice(packageToDelete, 1);
+        setPackages(updatedPackages);
+        localStorageUtils.setItem("ordersList", updatedPackages);
+        setIsDeleteModalVisible(false);
+        setPackageToDelete(null);
+    };
+
+    const handleCancelDelete = () => {
+        setIsDeleteModalVisible(false);
+        setPackageToDelete(null);
+    };
+
+    const handleSubmitOrder = (formData) => {
+        const lastPackage = packages[packages.length - 1];
+
+        const finalJson = {
+            addressOrigin: lastPackage.origin,
+            addressDestiny: lastPackage.destination,
+            listPackages: packages.map((pkg) => ({
+                width: pkg.width || 0,
+                height: pkg.height || 0,
+                length: pkg.length || 0,
+                weight: pkg.weight || 0,
+                loadType: pkg.loadType,
+                amount: pkg.amount || 1,
+            })),
+        };
+
+        console.log("JSON enviado:", finalJson);
+        setIsSuccessModalVisible(true);
+        localStorageUtils.removeItem("ordersList");
+        setPackages([]);
+    };
+
+    const handleAddPackage = (e) => {
         e.preventDefault();
         if (!isValid) {
-            setShowAlertModal(true);
+            setIsAlertModalVisible(true);
             return;
         }
         handleSubmit((formData) => {
-            const currentOrders = JSON.parse(localStorage.getItem("ordersList")) || [];
+            const currentOrders = localStorageUtils.getItem("ordersList") || [];
             const updatedOrders = [...currentOrders, formData];
-            localStorage.setItem("ordersList", JSON.stringify(updatedOrders));
+            localStorageUtils.setItem("ordersList", updatedOrders);
             setPackages(updatedOrders);
-            clearMeasuresFields();
+            resetPackageDimensions();
         })();
     };
 
-    const onSendClick = (e) => {
+    const handleSend = (e) => {
         e.preventDefault();
-        const ordersList = JSON.parse(localStorage.getItem("ordersList")) || [];
+        const ordersList = localStorageUtils.getItem("ordersList") || [];
 
         if (ordersList.length === 0) {
-            setShowEmptyListModal(true);
+            setIsEmptyListModalVisible(true);
             return;
         }
 
-        setShowConfirmationModal(true);
+        setIsConfirmationModalVisible(true);
     };
 
-    const confirmSend = () => {
-        const ordersList = JSON.parse(localStorage.getItem("ordersList")) || [];
-        postForm(ordersList);
-        localStorage.removeItem("ordersList");
-        setShowConfirmationModal(false);
+    const handleConfirmSend = () => {
+        const ordersList = localStorageUtils.getItem("ordersList") || [];
+        handleSubmitOrder(ordersList);
+        localStorageUtils.removeItem("ordersList");
+        setPackages([]);
+        setIsConfirmationModalVisible(false);
     };
 
-    const clearMeasuresFields = () => {
-        setValue("tipoCarga", "");
+    const resetPackageDimensions = () => {
+        setValue("loadType", "");
         setValue("width", "");
         setValue("height", "");
         setValue("length", "");
@@ -142,17 +191,17 @@ export function Budget() {
                                         <h4 className="pb-2">Tipo da carga*</h4>
                                         <div className="grid grid-cols-2 gap-2">
                                             <label className="flex gap-1">
-                                                <input type="radio" value="caixa" {...register("tipoCarga")} className="accent-red-tx" />
+                                                <input type="radio" value="caixa" {...register("loadType")} className="accent-red-tx" />
                                                 <Package className="icon" />
                                                 <p>Caixa</p>
                                             </label>
                                             <label className="flex gap-1">
-                                                <input type="radio" value="envelope" {...register("tipoCarga")} className="accent-red-tx" />
+                                                <input type="radio" value="envelope" {...register("loadType")} className="accent-red-tx" />
                                                 <File className="icon" />
                                                 <p>Envelope</p>
                                             </label>
                                             <label className="flex gap-1">
-                                                <input type="radio" value="sacola" {...register("tipoCarga")} className="accent-red-tx" />
+                                                <input type="radio" value="sacola" {...register("loadType")} className="accent-red-tx" />
                                                 <ToteSimple className="icon" />
                                                 <p>Sacola</p>
                                             </label>
@@ -165,7 +214,11 @@ export function Budget() {
                                             <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
                                         </div>
                                         <Shape className="bg-gray-50">
-                                            <PackageList packages={packages} />
+                                            <PackageList
+                                                packages={packages}
+                                                onIncrease={handleIncreaseAmount}
+                                                onDecrease={handleDecreaseAmount}
+                                            />
                                         </Shape>
                                     </div>
                                 </div>
@@ -194,18 +247,22 @@ export function Budget() {
 
                                 <div className="lg:hidden">
                                     <div className="flex gap-3">
-                                        <Info className="Icon" />
+                                        <Info className="icon" />
                                         <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
                                     </div>
                                     <Shape className="bg-gray-50">
-                                        <PackageList packages={packages} />
+                                        <PackageList
+                                            packages={packages}
+                                            onIncrease={handleIncreaseAmount}
+                                            onDecrease={handleDecreaseAmount}
+                                        />
                                     </Shape>
                                 </div>
 
                                 <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
                                     <Button
                                         className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
-                                        onClick={onAddPackageClick}
+                                        onClick={handleAddPackage}
                                         type="button"
                                     >
                                         <ButtonText className="text-center text-white">
@@ -214,7 +271,7 @@ export function Budget() {
                                     </Button>
                                     <Button
                                         className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
-                                        onClick={onSendClick}
+                                        onClick={handleSend}
                                         type="button"
                                     >
                                         <ButtonText className="text-white text-center">
@@ -238,20 +295,20 @@ export function Budget() {
                 </form>
             </SectionApp>
 
-            <ModalSm open={showAlertModal} onClose={() => setShowAlertModal(false)} >
+            <ModalSm open={isAlertModalVisible} onClose={() => setIsAlertModalVisible(false)} >
                 <p className="mb-4 text-lg font-semibold">Preencha os campos obrigatórios!</p>
-                <Button variant="secondary" onClick={() => setShowAlertModal(false)}>
+                <Button variant="secondary" onClick={() => setIsAlertModalVisible(false)}>
                     <ButtonText className="text-center">Fechar</ButtonText>
                 </Button>
             </ModalSm>
 
-            <ModalSm open={showSuccessModal} onClose={() => setShowSuccessModal(false)}>
+            <ModalSm open={isSuccessModalVisible} onClose={() => setIsSuccessModalVisible(false)}>
                 <CheckCircle className="icon size-48 text-success-light justify-self-center" weight="fill" />
                 <h3 className="text-center text-lg font-semibold ">Solicitação enviada!</h3>
                 <p className="text-center mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                 <div className="flex flex-col gap-2">
                     <Button className="bg-red-tx" onClick={() => {
-                        setShowSuccessModal(false);
+                        setIsSuccessModalVisible(false);
                         reset();
                         window.scrollTo({ top: 0, left: 0 });
                     }} >
@@ -267,25 +324,34 @@ export function Budget() {
                 </div>
             </ModalSm>
 
-            <ModalSm open={showEmptyListModal} onClose={() => setShowEmptyListModal(false)}>
+            <ModalSm open={isEmptyListModalVisible} onClose={() => setIsEmptyListModalVisible(false)}>
                 <p className="mb-4 text-lg font-semibold">Adicione no mínimo um pacote!</p>
-                <Button variant="secondary" onClick={() => setShowEmptyListModal(false)}>
+                <Button variant="secondary" onClick={() => setIsEmptyListModalVisible(false)}>
                     <ButtonText className=" text-center">Fechar</ButtonText>
                 </Button>
             </ModalSm>
 
             <ModalConfirm
                 message="Deseja finalizar e realizar o pedido?"
-                open={showConfirmationModal}
+                open={isConfirmationModalVisible}
                 options={["Não", "Sim"]}
-                action={() => confirmSend()}
-                onClose={() => setShowConfirmationModal(false)}
+                good = {true}
+                action={() => handleConfirmSend()}
+                onClose={() => setIsConfirmationModalVisible(false)}
+            />
+
+            <ModalConfirm
+                message="Deseja excluir este pacote da lista?"
+                open={isDeleteModalVisible}
+                options={["Não", "Sim"]}
+                action={confirmDeletePackage}
+                onClose={handleCancelDelete}
             />
         </>
     )
 }
 
-function PackageList({ packages }) {
+function PackageList({ packages, onIncrease, onDecrease }) {
     return (
         <div className="flex flex-col gap-2">
             {packages.length === 0 ? (
@@ -294,16 +360,22 @@ function PackageList({ packages }) {
                 packages.map((pkg, index) => (
                     <div key={index} className="flex gap-3 justify-between">
                         <div className="flex gap-2">
-                            {pkg.tipoCarga === "caixa" && <Package className="icon" />}
-                            {pkg.tipoCarga === "envelope" && <File className="icon" />}
-                            {pkg.tipoCarga === "sacola" && <ToteSimple className="icon" />}
-                            <p>{pkg.tipoCarga}</p>
-                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}        ${pkg.weight || 0}kg`}</p>
+                            {pkg.loadType === "caixa" && <Package className="icon" />}
+                            {pkg.loadType === "envelope" && <File className="icon" />}
+                            {pkg.loadType === "sacola" && <ToteSimple className="icon" />}
+                            <p>{pkg.loadType}</p>
+                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}    ${pkg.weight || 0}kg`}</p>
                         </div>
-                        <div className="flex gap-2">
-                            <Plus className="icon cursor-pointer" />
-                            <p>{pkg.quantity || 1}</p>
-                            <Minus className="icon cursor-pointer" />
+                        <div className="flex gap-2 items-center">
+                            <Minus
+                                className="icon cursor-pointer"
+                                onClick={() => onDecrease(index)}
+                            />
+                            <p>{pkg.amount || 1}</p>
+                            <Plus
+                                className="icon cursor-pointer"
+                                onClick={() => onIncrease(index)}
+                            />
                         </div>
                     </div>
                 ))
@@ -477,7 +549,7 @@ function MeasuresForms({ register, errors, touchedFields }) {
     )
 }
 
-function addressSchema(normalizedCities) {
+function addressSchema(normalizedCityList) {
     return z.object({
         cep: z
             .string()
@@ -498,7 +570,7 @@ function addressSchema(normalizedCities) {
             .nonempty("Campo obrigatório")
             .transform(normalize)
             .refine(
-                (val) => normalizedCities.includes(val),
+                (val) => normalizedCityList.includes(val),
                 { message: "Cidade não atendida." }
             ),
 
@@ -516,11 +588,11 @@ function addressSchema(normalizedCities) {
     });
 }
 
-function generalSchema(normalizedCities) {
+function generalSchema(normalizedCityList) {
     return z.object({
-        origin: addressSchema(normalizedCities),
-        destination: addressSchema(normalizedCities),
-        tipoCarga: z
+        origin: addressSchema(normalizedCityList),
+        destination: addressSchema(normalizedCityList),
+        loadType: z
             .string()
             .nonempty("Selecione o tipo de carga"),
         width: z
