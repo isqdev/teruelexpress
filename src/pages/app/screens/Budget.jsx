@@ -1,4 +1,4 @@
-import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape } from "@/components";
+import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape, ModalConfirm, ModalSm } from "@/components";
 import { CheckCircle, Package, HouseLine, ToteSimple, File, CaretRight, CaretDown, Plus, Minus, Info } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -238,75 +238,49 @@ export function Budget() {
                 </form>
             </SectionApp>
 
-            {showAlertModal && (
-                <>
-                    <div className="fixed inset-0 flex items-center justify-center z-3">
-                        <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
-                            <p className="mb-4 text-lg font-semibold">Por favor preencher todos os campos!</p>
-                            <Button className="bg-red-tx" onClick={() => setShowAlertModal(false)}>
-                                <ButtonText className="text-white text-center">Fechar</ButtonText>
-                            </Button>
-                        </Shape>
-                        <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
-                    </div>
-                </>
-            )}
+            <ModalSm open={showAlertModal} onClose={() => setShowAlertModal(false)} >
+                <p className="mb-4 text-lg font-semibold">Preencha os campos obrigatórios!</p>
+                <Button variant="secondary" onClick={() => setShowAlertModal(false)}>
+                    <ButtonText className="text-center">Fechar</ButtonText>
+                </Button>
+            </ModalSm>
 
-            {showSuccessModal && (
-                <div className="fixed inset-0 flex items-center justify-center z-3">
-                    <Shape className="z-2 w-full min-h-screen sm:min-h-0 sm:max-w-lg sm:mx-auto sm:my-20 bg-white sm:rounded-2xl sm:h-fit overflow-hidden p-6 sm:p-8">
-                        <CheckCircle className="icon size-48 text-success-light justify-self-center" weight="fill" />
-                        <h3 className="text-center text-lg font-semibold ">Solicitação enviada!</h3>
-                        <p className="text-center mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        <div className="flex flex-col gap-2">
-                            <Button className="bg-red-tx" onClick={() => {
-                                setShowSuccessModal(false);
-                                reset();
-                                window.scrollTo({ top: 0, left: 0 });
-                            }} >
-                                <Package className="icon text-white" />
-                                <ButtonText className="text-white">Solicitar outro orçamento</ButtonText>
-                            </Button>
-                            <Link to="/home">
-                                <Button className="bg-white border border-gray-600">
-                                    <HouseLine className="icon text-red-tx" />
-                                    <ButtonText className="text-black">Ir para tela inicial</ButtonText>
-                                </Button>
-                            </Link>
-                        </div>
-                    </Shape>
-                    <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
-                </div>
-            )}
-
-            {showEmptyListModal && (
-                <div className="fixed inset-0 flex items-center justify-center z-3">
-                    <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
-                        <p className="mb-4 text-lg font-semibold">Adicione no mínimo um pacote para realizar o envio!</p>
-                        <Button className="bg-red-tx" onClick={() => setShowEmptyListModal(false)}>
-                            <ButtonText className="text-white text-center">Fechar</ButtonText>
+            <ModalSm open={showSuccessModal} onClose={() => setShowSuccessModal(false)}>
+                <CheckCircle className="icon size-48 text-success-light justify-self-center" weight="fill" />
+                <h3 className="text-center text-lg font-semibold ">Solicitação enviada!</h3>
+                <p className="text-center mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <div className="flex flex-col gap-2">
+                    <Button className="bg-red-tx" onClick={() => {
+                        setShowSuccessModal(false);
+                        reset();
+                        window.scrollTo({ top: 0, left: 0 });
+                    }} >
+                        <Package className="icon text-white" />
+                        <ButtonText className="text-white">Solicitar novo orçamento</ButtonText>
+                    </Button>
+                    <Link to="/app/home">
+                        <Button className="bg-white border border-gray-600">
+                            <HouseLine className="icon text-red-tx" />
+                            <ButtonText className="text-black">Ir para tela inicial</ButtonText>
                         </Button>
-                    </Shape>
-                    <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
+                    </Link>
                 </div>
-            )}
+            </ModalSm>
 
-            {showConfirmationModal && (
-                <div className="fixed inset-0 flex items-center justify-center z-3">
-                    <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
-                        <p className="mb-4 text-lg font-semibold">Deseja finalizar e realizar os pedidos?</p>
-                        <div className="flex gap-4">
-                            <Button className="bg-red-tx" onClick={() => setShowConfirmationModal(false)}>
-                                <ButtonText className="text-white text-center">Não</ButtonText>
-                            </Button>
-                            <Button className="bg-success-light" onClick={confirmSend}>
-                                <ButtonText className="text-white text-center">Sim</ButtonText>
-                            </Button>
-                        </div>
-                    </Shape>
-                    <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
-                </div>
-            )}
+            <ModalSm open={showEmptyListModal} onClose={() => setShowEmptyListModal(false)}>
+                <p className="mb-4 text-lg font-semibold">Adicione no mínimo um pacote!</p>
+                <Button variant="secondary" onClick={() => setShowEmptyListModal(false)}>
+                    <ButtonText className=" text-center">Fechar</ButtonText>
+                </Button>
+            </ModalSm>
+
+            <ModalConfirm
+                message="Deseja finalizar e realizar o pedido?"
+                open={showConfirmationModal}
+                options={["Não", "Sim"]}
+                action={() => confirmSend()}
+                onClose={() => setShowConfirmationModal(false)}
+            />
         </>
     )
 }
@@ -315,7 +289,7 @@ function PackageList({ packages }) {
     return (
         <div className="flex flex-col gap-2">
             {packages.length === 0 ? (
-                <p className="text-black text-center">Sem pacotes no momento</p>
+                <p className="text-gray-600 text-center">Nenhum pacote adicionado</p>
             ) : (
                 packages.map((pkg, index) => (
                     <div key={index} className="flex gap-3 justify-between">
@@ -324,7 +298,7 @@ function PackageList({ packages }) {
                             {pkg.tipoCarga === "envelope" && <File className="icon" />}
                             {pkg.tipoCarga === "sacola" && <ToteSimple className="icon" />}
                             <p>{pkg.tipoCarga}</p>
-                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}x${pkg.weight || 0}`}</p>
+                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}        ${pkg.weight || 0}kg`}</p>
                         </div>
                         <div className="flex gap-2">
                             <Plus className="icon cursor-pointer" />
