@@ -29,11 +29,6 @@ export function Budget() {
             });
     }, []);
 
-    useEffect(() => {
-        const storedPackages = localStorageUtils.getItem("ordersList") || [];
-        setPackages(storedPackages);
-    }, []);
-
     const toggleDetails = () => {
         setShowDetails((prev) => !prev);
     };
@@ -56,7 +51,6 @@ export function Budget() {
         const updatedPackages = [...packages];
         updatedPackages[index].amount = (updatedPackages[index].amount || 1) + 1;
         setPackages(updatedPackages);
-        localStorageUtils.setItem("ordersList", updatedPackages);
     };
 
     const handleDecreaseAmount = (index) => {
@@ -68,7 +62,6 @@ export function Budget() {
             setIsDeleteModalVisible(true);
         } else {
             setPackages(updatedPackages);
-            localStorageUtils.setItem("ordersList", updatedPackages);
         }
     };
 
@@ -76,7 +69,6 @@ export function Budget() {
         const updatedPackages = [...packages];
         updatedPackages.splice(packageToDelete, 1);
         setPackages(updatedPackages);
-        localStorageUtils.setItem("ordersList", updatedPackages);
         setIsDeleteModalVisible(false);
         setPackageToDelete(null);
     };
@@ -86,7 +78,7 @@ export function Budget() {
         setPackageToDelete(null);
     };
 
-    const handleSubmitOrder = (formData) => {
+    const handleSubmitOrder = () => {
         const lastPackage = packages[packages.length - 1];
 
         const finalJson = {
@@ -105,7 +97,6 @@ export function Budget() {
         console.log("JSON enviado:", finalJson);
         localStorageUtils.setItem("finalBudget", JSON.stringify(finalJson));
         setIsSuccessModalVisible(true);
-        localStorageUtils.removeItem("ordersList");
         setPackages([]);
     };
 
@@ -116,9 +107,7 @@ export function Budget() {
             return;
         }
         handleSubmit((formData) => {
-            const currentOrders = localStorageUtils.getItem("ordersList") || [];
-            const updatedOrders = [...currentOrders, formData];
-            localStorageUtils.setItem("ordersList", updatedOrders);
+            const updatedOrders = [...packages, formData];
             setPackages(updatedOrders);
             resetPackageDimensions();
         })();
@@ -126,9 +115,8 @@ export function Budget() {
 
     const handleSend = (e) => {
         e.preventDefault();
-        const ordersList = localStorageUtils.getItem("ordersList") || [];
 
-        if (ordersList.length === 0) {
+        if (packages.length === 0) {
             setIsEmptyListModalVisible(true);
             return;
         }
@@ -137,8 +125,7 @@ export function Budget() {
     };
 
     const handleConfirmSend = () => {
-        const ordersList = localStorageUtils.getItem("ordersList") || [];
-        handleSubmitOrder(ordersList);
+        handleSubmitOrder();
         setIsConfirmationModalVisible(false);
     };
 
@@ -282,6 +269,7 @@ export function Budget() {
                 </form>
             </SectionApp>
 
+            {/* Modais */}
             <ModalSm open={isAlertModalVisible} onClose={() => setIsAlertModalVisible(false)} >
                 <p className="mb-4 text-lg font-semibold">Preencha os campos obrigatórios!</p>
                 <Button variant="secondary" onClick={() => setIsAlertModalVisible(false)}>
