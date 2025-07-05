@@ -1,4 +1,4 @@
-import { Warning } from "phosphor-react";
+import { CheckCircle, Warning } from "phosphor-react";
 import type { ComponentProps, ReactNode } from "react";
 import React from "react";
 import { twMerge } from "tailwind-merge";
@@ -80,7 +80,8 @@ interface ModalConfirmProps extends ComponentProps<"div"> {
   message?: string;
   textLeft?: string;
   textRight?: string;
-  actionWord?: string;
+  options?: string[];
+  good?: boolean;
   onClose?: () => void;
   action?: () => void;
 }
@@ -89,9 +90,10 @@ export function ModalConfirm({
   className,
   children,
   open = false,
+  good = false,
   onClose,
   message,
-  actionWord,
+  options,
   action,
   ...props
 }: ModalConfirmProps) {
@@ -106,15 +108,15 @@ export function ModalConfirm({
       <ModalSm open={open} onClose={onClose}>
         <div className="flex flex-col justify-between gap-4">
           <div className="flex items-center justify-around gap-4">
-            <Warning className="icon text-gray-600" size={32} />
+            {good ? <CheckCircle className="icon text-gray-600" size={32} /> : <Warning className="icon text-gray-600" size={32} /> }
             <p className="flex-1">{message}</p>
           </div>
           <div className="flex justify-end gap-4">
-            <Button className="bg-white-tx text-black border-gray-600 border-1 h-10 sm:h-12" onClick={onClose}>
-              <ButtonText className="text-center">Voltar</ButtonText>
+            <Button className="h-10 sm:h-12" variant="secondary" onClick={onClose}>
+              <ButtonText className="text-center">{options && options[0] || ""}</ButtonText>
             </Button>
-            <Button className="bg-red-50 text-danger-base h-10 sm:h-12" onClick={handleAction}>
-              <ButtonText className="text-center">{actionWord}</ButtonText>
+            <Button className={"h-10 sm:h-12"} variant={good ? "primary" : "danger"} onClick={handleAction}>
+              <ButtonText className="text-center">{options && options[1] || ""}</ButtonText>
             </Button>            
           </div>
           </div>
