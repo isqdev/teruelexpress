@@ -94,7 +94,7 @@ export function Budget() {
         };
 
         console.log("JSON enviado:", finalJson);
-        localStorageUtils.setItem("finalBudget", JSON.stringify(finalJson));
+        localStorageUtils.setItem("finalBudget", finalJson);
         setIsSuccessModalVisible(true);
         setPackages([]);
     };
