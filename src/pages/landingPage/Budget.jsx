@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { normalize } from "@/utils/normalize";
-import { localStorageUtils } from "@/utils/localStorageUtils";
 import { fetchCep } from "@/services/cep";
 
 export function Budget() {
@@ -29,11 +28,6 @@ export function Budget() {
             });
     }, []);
 
-    useEffect(() => {
-        const storedPackages = localStorageUtils.getItem("ordersList") || [];
-        setPackages(storedPackages);
-    }, []);
-
     const toggleDetails = () => {
         setShowDetails((prev) => !prev);
     };
@@ -44,6 +38,7 @@ export function Budget() {
         watch,
         setValue,
         setError,
+        reset,
         clearErrors,
         formState: { errors, touchedFields, isValid }
     } = useForm({
@@ -65,18 +60,13 @@ export function Budget() {
         setValue("budget", randomValue);
     };
 
-    const handleSendOrder = () => {
-        const ordersList = localStorageUtils.getItem("ordersList") || [];
-        if (ordersList.length === 0) {
-            setIsEmptyListModalVisible(true);
-            return;
-        }
+    const handleSubmitOrder = () => {
+        const lastPackage = packages[packages.length - 1];
 
-        const lastPackage = ordersList[ordersList.length - 1];
         const finalJson = {
             addressOrigin: lastPackage.origin,
             addressDestiny: lastPackage.destination,
-            listPackages: ordersList.map((pkg) => ({
+            listPackages: packages.map((pkg) => ({
                 width: pkg.width || 0,
                 height: pkg.height || 0,
                 length: pkg.length || 0,
@@ -87,17 +77,11 @@ export function Budget() {
         };
 
         console.log("JSON enviado:", finalJson);
-        localStorageUtils.setItem("finalBudget", JSON.stringify(finalJson));
-        localStorageUtils.removeItem("ordersList");
+        localStorage.setItem("finalBudget", JSON.stringify(finalJson));
         setPackages([]);
         setTimeout(() => {
             window.location.href = "/login";
         }, 500);
-    };
-
-    const handleConfirmSend = () => {
-        setIsConfirmationModalVisible(false);
-        handleSendOrder();
     };
 
     const handleAddPackage = (e) => {
@@ -108,30 +92,25 @@ export function Budget() {
         }
 
         handleSubmit((formData) => {
-            const currentOrders = localStorageUtils.getItem("ordersList") || [];
-            const updatedOrders = [...currentOrders, formData];
-            localStorageUtils.setItem("ordersList", updatedOrders);
-            setPackages(updatedOrders);
+            const updatedPackages = [...packages, formData];
+            setPackages(updatedPackages);
+            resetPackageDimensions();
         })();
     };
 
-    const handleSend = (e) => {
-        e.preventDefault();
-        const ordersList = localStorageUtils.getItem("ordersList") || [];
-
-        if (ordersList.length === 0) {
-            setIsEmptyListModalVisible(true);
-            return;
-        }
-
+    const handleSend = () => {
         setIsConfirmationModalVisible(true);
+    };
+
+    const handleConfirmSend = () => {
+        handleSubmitOrder();
+        setIsConfirmationModalVisible(false);
     };
 
     const handleIncreaseAmount = (index) => {
         const updatedPackages = [...packages];
         updatedPackages[index].amount = (updatedPackages[index].amount || 1) + 1;
         setPackages(updatedPackages);
-        localStorageUtils.setItem("ordersList", updatedPackages);
     };
 
     const handleDecreaseAmount = (index) => {
@@ -143,15 +122,12 @@ export function Budget() {
             setIsDeleteModalVisible(true);
         } else {
             setPackages(updatedPackages);
-            localStorageUtils.setItem("ordersList", updatedPackages);
         }
     };
 
     const confirmDeletePackage = () => {
-        const updatedPackages = [...packages];
-        updatedPackages.splice(packageToDelete, 1);
+        const updatedPackages = packages.filter((_, index) => index !== packageToDelete);
         setPackages(updatedPackages);
-        localStorageUtils.setItem("ordersList", updatedPackages);
         setIsDeleteModalVisible(false);
         setPackageToDelete(null);
     };
@@ -206,7 +182,7 @@ export function Budget() {
                                 <div className="flex flex-col gap-4">
                                     <Shape className="border border-gray-600">
                                         <h4 className="pb-2">Tipo da carga*</h4>
-                                        <div className="grid grid-cols-2 gap-2">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-2">
                                             <label className="flex gap-1">
                                                 <input type="radio" value="caixa" {...register("loadType")} className="accent-red-tx" />
                                                 <Package className="icon" />
@@ -225,7 +201,7 @@ export function Budget() {
                                         </div>
                                     </Shape>
 
-                                    <div className="hidden lg:block">
+                                    <div className="hidden lg:block space-y-2">
                                         <div className="flex gap-3">
                                             <Info className="icon" />
                                             <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
@@ -242,12 +218,10 @@ export function Budget() {
                             </div>
 
                             <div className="flex flex-col gap-4">
-                                <Button className="bg-white p-0 m-0" type="button" onClick={toggleDetails}>
+                                <p onClick={toggleDetails} className="cursor-pointer flex items-center">
                                     {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
-                                    <ButtonText>
-                                        Mais detalhes sobre a carga
-                                    </ButtonText>
-                                </Button>
+                                    Mais detalhes sobre a carga (opcional)
+                                </p>
 
                                 {showDetails && (
                                     <Shape className="border border-gray-600 xl:col-span-3">
@@ -273,7 +247,7 @@ export function Budget() {
                                     </Button>
                                 </div>
 
-                                <div className="lg:hidden">
+                                <div className="lg:hidden space-y-2">
                                     <div className="flex gap-3">
                                         <Info className="icon" />
                                         <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
@@ -299,13 +273,16 @@ export function Budget() {
                                             Simular
                                         </ButtonText>
                                     </Button>
-                                    <Link to="/login" className={isSimulated ? "col-span-2" : "col-span-2 pointer-events-none"} onClick={handleSend} disabled={!isSimulated}>
-                                        <Button className={isSimulated ? "bg-red-tx" : "bg-gray-50"} type="button">
-                                            <ButtonText className={isSimulated ? "text-white text-center" : "text-gray-100 text-center"}>
-                                                Enviar orçamento
-                                            </ButtonText>
-                                        </Button>
-                                    </Link>
+                                    <Button className={isSimulated ? "bg-red-tx col-span-2" : "bg-gray-50 col-span-2 pointer-events-none"} type="button"
+                                        onClick={() => {
+                                            handleSend();
+                                            reset();
+                                        }}
+                                        disabled={!isSimulated}>
+                                        <ButtonText className={isSimulated ? "text-white text-center" : "text-gray-100 text-center"}>
+                                            Enviar orçamento
+                                        </ButtonText>
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -339,7 +316,7 @@ export function Budget() {
                 message="Deseja finalizar e realizar o pedido?"
                 open={isConfirmationModalVisible}
                 options={["Não", "Sim"]}
-                good={true}
+                good
                 action={handleConfirmSend}
                 onClose={() => setIsConfirmationModalVisible(false)}
             />
@@ -359,17 +336,19 @@ function PackageList({ packages, onIncrease, onDecrease }) {
                             {pkg.loadType === "caixa" && <Package className="icon" />}
                             {pkg.loadType === "envelope" && <File className="icon" />}
                             {pkg.loadType === "sacola" && <ToteSimple className="icon" />}
-                            <p>{pkg.loadType}</p>
-                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}    ${pkg.weight || 0}kg`}</p>
+                            <p className="capitalize">{pkg.loadType}</p>
+                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}cm    ${pkg.weight || 0}kg`}</p>
                         </div>
                         <div className="flex gap-2 items-center">
                             <Minus
-                                className="icon cursor-pointer"
+                                className="cursor-pointer"
+                                size={20}
                                 onClick={() => onDecrease(index)}
                             />
                             <p>{pkg.amount || 1}</p>
                             <Plus
-                                className="icon cursor-pointer"
+                                className="cursor-pointer"
+                                size={20}
                                 onClick={() => onIncrease(index)}
                             />
                         </div>
@@ -441,7 +420,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}cep`}
-                title="CEP"
+                title="CEP*"
                 placeholder="Digite seu CEP"
                 error={errors.cep}
                 dirty={touchedFields.cep}
@@ -451,7 +430,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}state`}
-                title="Estado"
+                title="Estado*"
                 placeholder="Digite seu Estado"
                 error={errors.state}
                 dirty={touchedFields.state}
@@ -459,7 +438,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}city`}
-                title="Cidade"
+                title="Cidade*"
                 placeholder="Digite sua Cidade"
                 error={errors.city}
                 dirty={touchedFields.city}
@@ -467,7 +446,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}neighborhood`}
-                title="Bairro"
+                title="Bairro*"
                 placeholder="Digite seu Bairro"
                 error={errors.neighborhood}
                 dirty={touchedFields.neighborhood}
@@ -475,7 +454,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}street`}
-                title="Rua"
+                title="Rua*"
                 placeholder="Digite sua Rua"
                 error={errors.street}
                 dirty={touchedFields.street}
@@ -483,7 +462,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}number`}
-                title="Número"
+                title="Número*"
                 placeholder="Digite seu Número"
                 error={errors.number}
                 dirty={touchedFields.number}

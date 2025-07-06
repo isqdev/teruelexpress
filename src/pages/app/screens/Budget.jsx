@@ -201,7 +201,7 @@ export function Budget() {
                                     </div>
                                 </Shape>
 
-                                <div className="hidden lg:block">
+                                <div className="hidden lg:block space-y-2">
                                     <div className="flex gap-3">
                                         <Info className="icon" />
                                         <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
