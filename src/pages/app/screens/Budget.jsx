@@ -66,8 +66,7 @@ export function Budget() {
     };
 
     const confirmDeletePackage = () => {
-        const updatedPackages = [...packages];
-        updatedPackages.splice(packageToDelete, 1);
+        const updatedPackages = packages.filter((_, index) => index !== packageToDelete);
         setPackages(updatedPackages);
         setIsDeleteModalVisible(false);
         setPackageToDelete(null);
@@ -179,29 +178,46 @@ export function Budget() {
                         />
                     </Shape>
                     <div className="col-span-2">
-                        <div className="grid col-span-2 gap-6 lg:grid-cols-2 lg:grid-flow-col lg:grid-rows-2">
-                            <Shape className="border border-gray-600 order-1">
-                                <h4 className="pb-2">Tipo da carga*</h4>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-2">
-                                    <label className="flex gap-1">
-                                        <input type="radio" value="caixa" {...register("loadType")} className="accent-red-tx" />
-                                        <Package className="icon" />
-                                        <p>Caixa</p>
-                                    </label>
-                                    <label className="flex gap-1">
-                                        <input type="radio" value="envelope" {...register("loadType")} className="accent-red-tx" />
-                                        <File className="icon" />
-                                        <p>Envelope</p>
-                                    </label>
-                                    <label className="flex gap-1">
-                                        <input type="radio" value="sacola" {...register("loadType")} className="accent-red-tx" />
-                                        <ToteSimple className="icon" />
-                                        <p>Sacola</p>
-                                    </label>
-                                </div>
-                            </Shape>
+                        <div className="grid gap-6 lg:grid lg:grid-cols-2 col-span-2">
+                            <div className="flex flex-col gap-4">
+                                <Shape className="border border-gray-600">
+                                    <h4 className="pb-2">Tipo da carga*</h4>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                                        <label className="flex gap-1">
+                                            <input type="radio" value="caixa" {...register("loadType")} className="accent-red-tx" />
+                                            <Package className="icon" />
+                                            <p>Caixa</p>
+                                        </label>
+                                        <label className="flex gap-1">
+                                            <input type="radio" value="envelope" {...register("loadType")} className="accent-red-tx" />
+                                            <File className="icon" />
+                                            <p>Envelope</p>
+                                        </label>
+                                        <label className="flex gap-1">
+                                            <input type="radio" value="sacola" {...register("loadType")} className="accent-red-tx" />
+                                            <ToteSimple className="icon" />
+                                            <p>Sacola</p>
+                                        </label>
+                                    </div>
+                                </Shape>
 
-                            <div className="order-2 lg:order-3">
+                                <div className="hidden lg:block">
+                                    <div className="flex gap-3">
+                                        <Info className="icon" />
+                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                    </div>
+                                    <Shape className="bg-gray-50">
+                                        <PackageList
+                                            packages={packages}
+                                            onIncrease={handleIncreaseAmount}
+                                            onDecrease={handleDecreaseAmount}
+                                        />
+                                    </Shape>
+                                </div>
+                            </div>
+
+
+                            <div className="flex flex-col gap-4">
                                 <p onClick={toggleDetails} className="cursor-pointer flex items-center">
                                     {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
                                     Mais detalhes sobre a carga (opcional)
@@ -219,57 +235,58 @@ export function Budget() {
                                         </div>
                                     </Shape>
                                 )}
-                            </div>
 
-                            <div className="space-y-2 order-3 lg:order-2">
-                                <div className="flex gap-3">
-                                    <Info className="icon" />
-                                    <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                <div className="space-y-2 lg:hidden">
+                                    <div className="flex gap-3">
+                                        <Info className="icon" />
+                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                    </div>
+                                    <Shape className="bg-gray-50">
+                                        <PackageList
+                                            packages={packages}
+                                            onIncrease={handleIncreaseAmount}
+                                            onDecrease={handleDecreaseAmount}
+                                        />
+                                    </Shape>
                                 </div>
-                                <Shape className="bg-gray-50">
-                                    <PackageList
-                                        packages={packages}
-                                        onIncrease={handleIncreaseAmount}
-                                        onDecrease={handleDecreaseAmount}
-                                    />
-                                </Shape>
+
+                                <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
+                                    <Button
+                                        className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
+                                        onClick={handleAddPackage}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-center text-white">
+                                            Adicionar pacote
+                                        </ButtonText>
+                                    </Button>
+                                    <Button
+                                        className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
+                                        onClick={handleSend}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-white text-center">
+                                            Enviar
+                                        </ButtonText>
+                                    </Button>
+                                    <Button
+                                        className="bg-gray-50 xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
+                                        onClick={handleCancel}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-black text-center">
+                                            Cancelar
+                                        </ButtonText>
+                                    </Button>
+                                </div>
                             </div>
 
-                            <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
-                                <Button
-                                    className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
-                                    onClick={handleAddPackage}
-                                    type="button"
-                                >
-                                    <ButtonText className="text-center text-white">
-                                        Adicionar pacote
-                                    </ButtonText>
-                                </Button>
-                                <Button
-                                    className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
-                                    onClick={handleSend}
-                                    type="button"
-                                >
-                                    <ButtonText className="text-white text-center">
-                                        Enviar
-                                    </ButtonText>
-                                </Button>
-                                <Button
-                                    className="bg-gray-50 xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
-                                    onClick={handleCancel}
-                                    type="button"
-                                >
-                                    <ButtonText className="text-black text-center">
-                                        Cancelar
-                                    </ButtonText>
-                                </Button>
-                            </div>
+
                         </div>
                     </div>
                 </form>
             </SectionApp>
 
-            {/* Modais */}
             <ModalSm open={isAlertModalVisible} onClose={() => setIsAlertModalVisible(false)} >
                 <p className="mb-4 text-lg font-semibold">Preencha os campos obrigatórios!</p>
                 <Button variant="secondary" onClick={() => setIsAlertModalVisible(false)}>
