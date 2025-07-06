@@ -134,6 +134,10 @@ export function Budget() {
         setValue("height", "");
         setValue("length", "");
         setValue("weight", "");
+        touchedFields.height = null;
+        touchedFields.weight = null;
+        touchedFields.width = null;
+        touchedFields.length = null;
     };
 
     const handleCancel = () => {
