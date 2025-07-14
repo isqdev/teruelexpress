@@ -1,28 +1,37 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape } from "@/components";
-import { ArrowRight, CheckCircle, Package, X, ArrowUp, ArrowLeft, HouseLine } from "phosphor-react";
+import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape, ModalConfirm, ModalSm } from "@/components";
+import { CheckCircle, Package, HouseLine, ToteSimple, File, CaretRight, CaretDown, Plus, Minus, Info } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from "react-router-dom";
 import { normalize } from "@/utils/normalize";
+import { localStorageUtils } from "@/utils/localStorageUtils";
 import { fetchCep } from "@/services/cep";
 
 export function Budget() {
-    const [data, setData] = useState("Dados do Formulario em JSON");
-    const [showAllertModal, setShowAllertModal] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [cities, setCities] = useState([]);
-    const [normalizedCities, setNormalizedCities] = useState([]);
+    const [showDetails, setShowDetails] = useState(false);
+    const [packages, setPackages] = useState([]);
+    const [normalizedCityList, setNormalizedCityList] = useState([]);
+    const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+    const [isEmptyListModalVisible, setIsEmptyListModalVisible] = useState(false);
+    const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
+    const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [packageToDelete, setPackageToDelete] = useState(null);
 
     useEffect(() => {
         fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/cities.json')
             .then(res => res.json())
             .then(citiesData => {
-                setCities(citiesData);
-                setNormalizedCities(citiesData.map((city) => normalize(city)));
+                setNormalizedCityList(citiesData.map((city) => normalize(city)));
             });
     }, []);
+
+    const toggleDetails = () => {
+        setShowDetails((prev) => !prev);
+    };
 
     const {
         register,
@@ -34,33 +43,116 @@ export function Budget() {
         reset,
         formState: { errors, touchedFields, isValid }
     } = useForm({
-        resolver: zodResolver(generalSchema(normalizedCities)),
+        resolver: zodResolver(generalSchema(normalizedCityList)),
         mode: "onBlur"
     });
 
-    const postForm = (formData) => {
-        setData({ ...formData });
-        console.log("JSON enviado:", formData);
-        setShowSuccessModal(true);
+    const handleIncreaseAmount = (index) => {
+        const updatedPackages = [...packages];
+        updatedPackages[index].amount = (updatedPackages[index].amount || 1) + 1;
+        setPackages(updatedPackages);
     };
 
-    const onSimulateClick = (e) => {
+    const handleDecreaseAmount = (index) => {
+        const updatedPackages = [...packages];
+        updatedPackages[index].amount = (updatedPackages[index].amount || 1) - 1;
+
+        if (updatedPackages[index].amount < 1) {
+            setPackageToDelete(index);
+            setIsDeleteModalVisible(true);
+        } else {
+            setPackages(updatedPackages);
+        }
+    };
+
+    const confirmDeletePackage = () => {
+        const updatedPackages = packages.filter((_, index) => index !== packageToDelete);
+        setPackages(updatedPackages);
+        setIsDeleteModalVisible(false);
+        setPackageToDelete(null);
+    };
+
+    const handleCancelDelete = () => {
+        setIsDeleteModalVisible(false);
+        setPackageToDelete(null);
+    };
+
+    const handleSubmitOrder = () => {
+        const lastPackage = packages[packages.length - 1];
+
+        const finalJson = {
+            addressOrigin: lastPackage.origin,
+            addressDestiny: lastPackage.destination,
+            listPackages: packages.map((pkg) => ({
+                width: pkg.width || 0,
+                height: pkg.height || 0,
+                length: pkg.length || 0,
+                weight: pkg.weight || 0,
+                loadType: pkg.loadType,
+                amount: pkg.amount || 1,
+            })),
+        };
+
+        console.log("JSON enviado:", finalJson);
+        localStorageUtils.setItem("finalBudget", finalJson);
+        setIsSuccessModalVisible(true);
+        setPackages([]);
+    };
+
+    const handleAddPackage = (e) => {
         e.preventDefault();
         if (!isValid) {
-            setShowAllertModal(true);
+            setIsAlertModalVisible(true);
             return;
         }
-        handleSubmit(postForm)();
+        handleSubmit((formData) => {
+            const updatedOrders = [...packages, formData];
+            setPackages(updatedOrders);
+            resetPackageDimensions();
+        })();
     };
 
-    const handleScrollTop = () => {
-        window.scrollTo({ top: 0, left: 0 });
-    }
+    const handleSend = (e) => {
+        e.preventDefault();
+
+        if (packages.length === 0) {
+            setIsEmptyListModalVisible(true);
+            return;
+        }
+
+        setIsConfirmationModalVisible(true);
+    };
+
+    const handleConfirmSend = () => {
+        handleSubmitOrder();
+        setIsConfirmationModalVisible(false);
+    };
+
+    const resetPackageDimensions = () => {
+        setValue("loadType", "");
+        setValue("width", "");
+        setValue("height", "");
+        setValue("length", "");
+        setValue("weight", "");
+        touchedFields.height = null;
+        touchedFields.weight = null;
+        touchedFields.width = null;
+        touchedFields.length = null;
+    };
+
+    const handleCancel = () => {
+        setIsCancelModalVisible(true);
+    };
+
+    const confirmCancel = () => {
+        setIsCancelModalVisible(false);
+        window.location.href = "/app/home";
+    };
 
     return (
         <>
             <SectionApp className="xl:grid grid-cols-2">
-                <AppHeader screenTitle="Orçamento"/>
+                <AppHeader screenTitle="Orçamento" />
                 <p className="pb-4 grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
                     <Shape className="border border-gray-600">
@@ -89,88 +181,213 @@ export function Budget() {
                             prefix="destination."
                         />
                     </Shape>
-                    <div className="xl:grid xl:grid-cols-4 col-span-2 gap-6">
-                        <Shape className="border border-gray-600 xl:col-span-3">
-                            <h4 className="pb-2">Dimensões da carga</h4>
-                            <div>
-                                <MeasuresForms
-                                    register={register}
-                                    errors={errors}
-                                    touchedFields={touchedFields}
-                                />
+                    <div className="col-span-2">
+                        <div className="grid gap-6 lg:grid lg:grid-cols-2 col-span-2">
+                            <div className="flex flex-col gap-4">
+                                <Shape className="border border-gray-600">
+                                    <h4 className="pb-2">Tipo da carga*</h4>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                                        <label className="flex gap-1">
+                                            <input type="radio" value="caixa" {...register("loadType")} className="accent-red-tx" />
+                                            <Package className="icon" />
+                                            <p>Caixa</p>
+                                        </label>
+                                        <label className="flex gap-1">
+                                            <input type="radio" value="envelope" {...register("loadType")} className="accent-red-tx" />
+                                            <File className="icon" />
+                                            <p>Envelope</p>
+                                        </label>
+                                        <label className="flex gap-1">
+                                            <input type="radio" value="sacola" {...register("loadType")} className="accent-red-tx" />
+                                            <ToteSimple className="icon" />
+                                            <p>Sacola</p>
+                                        </label>
+                                    </div>
+                                </Shape>
+
+                                <div className="hidden lg:block space-y-2">
+                                    <div className="flex gap-3">
+                                        <Info className="icon" />
+                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                    </div>
+                                    <Shape className="bg-gray-50">
+                                        <PackageList
+                                            packages={packages}
+                                            onIncrease={handleIncreaseAmount}
+                                            onDecrease={handleDecreaseAmount}
+                                        />
+                                    </Shape>
+                                </div>
                             </div>
-                        </Shape>
-                        <div className="xl:col-span-1">
-                            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 py-4 items-end xl:grid-cols-1 xl:gap-2 xl:py-0 md:grid-cols-2">
-                                <Link to="/home" className="xs:col-span-2 xl:col-span-1 md:col-span-1">
-                                    <Button className={"bg-white border border-red-tx"} type="button">
-                                        <X className="icon text-red-tx" />
-                                        <ButtonText className={"text-red-tx"}>
+
+
+                            <div className="flex flex-col gap-4">
+                                <p onClick={toggleDetails} className="cursor-pointer flex items-center">
+                                    {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
+                                    Mais detalhes sobre a carga (opcional)
+                                </p>
+
+                                {showDetails && (
+                                    <Shape className="border border-gray-600 xl:col-span-3">
+                                        <h4 className="pb-2">Dimensões da carga</h4>
+                                        <div>
+                                            <MeasuresForms
+                                                register={register}
+                                                errors={errors}
+                                                touchedFields={touchedFields}
+                                            />
+                                        </div>
+                                    </Shape>
+                                )}
+
+                                <div className="space-y-2 lg:hidden">
+                                    <div className="flex gap-3">
+                                        <Info className="icon" />
+                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                    </div>
+                                    <Shape className="bg-gray-50">
+                                        <PackageList
+                                            packages={packages}
+                                            onIncrease={handleIncreaseAmount}
+                                            onDecrease={handleDecreaseAmount}
+                                        />
+                                    </Shape>
+                                </div>
+
+                                <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
+                                    <Button
+                                        className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
+                                        onClick={handleAddPackage}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-center text-white">
+                                            Adicionar pacote
+                                        </ButtonText>
+                                    </Button>
+                                    <Button
+                                        className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
+                                        onClick={handleSend}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-white text-center">
+                                            Enviar
+                                        </ButtonText>
+                                    </Button>
+                                    <Button
+                                        className="bg-gray-50 xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
+                                        onClick={handleCancel}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-black text-center">
                                             Cancelar
                                         </ButtonText>
                                     </Button>
-                                </Link>
-                                <Button className={"bg-red-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={onSimulateClick} type="button">
-                                    <Package className="icon text-white" />
-                                    <ButtonText className={"text-white"}>
-                                        Enviar
-                                    </ButtonText>
-                                    <ArrowRight className="icon text-white" />
-                                </Button>
-                                <Button className={"bg-blue-tx xs:col-span-2 xl:col-span-1 md:col-span-1"} onClick={handleScrollTop} type="button">
-                                    <ArrowUp className="icon text-white" />
-                                    <ButtonText className={"text-white"}>
-                                        Ir para o topo
-                                    </ButtonText>
-                                </Button>
+                                </div>
                             </div>
+
+
                         </div>
                     </div>
                 </form>
             </SectionApp>
 
-            {showAllertModal && (
-                <>
-                    <div className="fixed inset-0 flex items-center justify-center z-3">
-                        <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
-                            <p className="mb-4 text-lg font-semibold">Por favor preencher todos os campos!</p>
-                            <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
-                                <ButtonText className="text-white text-center">Fechar</ButtonText>
-                            </Button>
-                        </Shape>
-                        <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
-                    </div>
-                </>
-            )}
+            <ModalSm open={isAlertModalVisible} onClose={() => setIsAlertModalVisible(false)} >
+                <p className="mb-4 text-lg font-semibold">Preencha os campos obrigatórios!</p>
+                <Button variant="secondary" onClick={() => setIsAlertModalVisible(false)}>
+                    <ButtonText className="text-center">Fechar</ButtonText>
+                </Button>
+            </ModalSm>
 
-            {showSuccessModal && (
-                <div className="fixed inset-0 flex items-center justify-center z-3">
-                    <Shape className="z-2 w-full min-h-screen sm:min-h-0 sm:max-w-lg sm:mx-auto sm:my-20 bg-white sm:rounded-2xl sm:h-fit overflow-hidden p-6 sm:p-8">
-                        <CheckCircle className="icon size-48 text-success-light justify-self-center" weight="fill" />
-                        <h3 className="text-center text-lg font-semibold ">Solicitação enviada!</h3>
-                        <p className="text-center mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        <div className="flex flex-col gap-2">
-                            <Button className="bg-red-tx" onClick={() => {
-                                setShowSuccessModal(false);
-                                reset();
-                                window.scrollTo({ top: 0, left: 0 });
-                            }} >
-                                <Package className="icon text-white" />
-                                <ButtonText className="text-white">Solicitar outro orçamento</ButtonText>
-                            </Button>
-                            <Link to="/home">
-                                <Button className="bg-white border border-gray-600">
-                                    <HouseLine className="icon text-red-tx" />
-                                    <ButtonText className="text-black">Ir para tela inicial</ButtonText>
-                                </Button>
-                            </Link>
-                        </div>
-                    </Shape>
-                    <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
+            <ModalSm open={isSuccessModalVisible} onClose={() => setIsSuccessModalVisible(false)}>
+                <CheckCircle className="icon size-48 text-success-light justify-self-center" weight="fill" />
+                <h3 className="text-center text-lg font-semibold ">Solicitação enviada!</h3>
+                <p className="text-center mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <div className="flex flex-col gap-2">
+                    <Button className="bg-red-tx" onClick={() => {
+                        setIsSuccessModalVisible(false);
+                        reset();
+                        window.scrollTo({ top: 0, left: 0 });
+                    }} >
+                        <Package className="icon text-white" />
+                        <ButtonText className="text-white">Solicitar novo orçamento</ButtonText>
+                    </Button>
+                    <Link to="/app/home">
+                        <Button className="bg-white border border-gray-600">
+                            <HouseLine className="icon text-red-tx" />
+                            <ButtonText className="text-black">Ir para tela inicial</ButtonText>
+                        </Button>
+                    </Link>
                 </div>
-            )}
+            </ModalSm>
+
+            <ModalSm open={isEmptyListModalVisible} onClose={() => setIsEmptyListModalVisible(false)}>
+                <p className="mb-4 text-lg font-semibold">Adicione no mínimo um pacote!</p>
+                <Button variant="secondary" onClick={() => setIsEmptyListModalVisible(false)}>
+                    <ButtonText className=" text-center">Fechar</ButtonText>
+                </Button>
+            </ModalSm>
+
+            <ModalConfirm
+                message="Deseja finalizar e realizar o pedido?"
+                open={isConfirmationModalVisible}
+                options={["Não", "Sim"]}
+                good
+                action={() => handleConfirmSend()}
+                onClose={() => setIsConfirmationModalVisible(false)}
+            />
+
+            <ModalConfirm
+                message="Deseja excluir este pacote da lista?"
+                open={isDeleteModalVisible}
+                options={["Não", "Sim"]}
+                action={confirmDeletePackage}
+                onClose={handleCancelDelete}
+            />
+
+            <ModalConfirm
+                message="Cancelar e voltar para a Página inicial?"
+                open={isCancelModalVisible}
+                options={["Não", "Sim"]}
+                action={confirmCancel}
+                onClose={() => setIsCancelModalVisible(false)}
+            />
         </>
     )
+}
+
+function PackageList({ packages, onIncrease, onDecrease }) {
+    return (
+        <div className="flex flex-col gap-2">
+            {packages.length === 0 ? (
+                <p className="text-gray-600 text-center">Nenhum pacote adicionado</p>
+            ) : (
+                packages.map((pkg, index) => (
+                    <div key={index} className="flex gap-3 justify-between">
+                        <div className="flex gap-2">
+                            {pkg.loadType === "caixa" && <Package className="icon" />}
+                            {pkg.loadType === "envelope" && <File className="icon" />}
+                            {pkg.loadType === "sacola" && <ToteSimple className="icon" />}
+                            <p className="capitalize">{pkg.loadType}</p>
+                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}cm    ${pkg.weight || 0}kg`}</p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <Minus
+                                className="cursor-pointer"
+                                size={20}
+                                onClick={() => onDecrease(index)}
+                            />
+                            <p>{pkg.amount || 1}</p>
+                            <Plus
+                                className="cursor-pointer"
+                                size={20}
+                                onClick={() => onIncrease(index)}
+                            />
+                        </div>
+                    </div>
+                ))
+            )}
+        </div>
+    );
 }
 
 function FormField({ title, placeholder, register, name, error, dirty, type = "text", onChangeMask }) {
@@ -234,7 +451,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}cep`}
-                title="CEP"
+                title="CEP*"
                 placeholder="Digite seu CEP"
                 error={errors.cep}
                 dirty={touchedFields.cep}
@@ -244,7 +461,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}state`}
-                title="Estado"
+                title="Estado*"
                 placeholder="Digite seu Estado"
                 error={errors.state}
                 dirty={touchedFields.state}
@@ -252,7 +469,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}city`}
-                title="Cidade"
+                title="Cidade*"
                 placeholder="Digite sua Cidade"
                 error={errors.city}
                 dirty={touchedFields.city}
@@ -260,7 +477,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}neighborhood`}
-                title="Bairro"
+                title="Bairro*"
                 placeholder="Digite seu Bairro"
                 error={errors.neighborhood}
                 dirty={touchedFields.neighborhood}
@@ -268,7 +485,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}street`}
-                title="Rua"
+                title="Rua*"
                 placeholder="Digite sua Rua"
                 error={errors.street}
                 dirty={touchedFields.street}
@@ -276,7 +493,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
             <FormField
                 register={register}
                 name={`${prefix}number`}
-                title="Número"
+                title="Número*"
                 placeholder="Digite seu Número"
                 error={errors.number}
                 dirty={touchedFields.number}
@@ -288,7 +505,7 @@ function AddressForm({ register, errors, touchedFields, watch, setValue, setErro
 function MeasuresForms({ register, errors, touchedFields }) {
     return (
         <>
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 lg:grid-cols-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 lg:grid-cols-2">
                 <div>
                     <FormField
                         register={register}
@@ -338,11 +555,10 @@ function MeasuresForms({ register, errors, touchedFields }) {
     )
 }
 
-function addressSchema(normalizedCities) {
+function addressSchema(normalizedCityList) {
     return z.object({
         cep: z
             .string()
-            .nullable()
             .transform((val) => val.replace(/\D/g, ""))
             .refine((val) => val.length === 8, { message: "CEP inválido" }),
 
@@ -360,7 +576,7 @@ function addressSchema(normalizedCities) {
             .nonempty("Campo obrigatório")
             .transform(normalize)
             .refine(
-                (val) => normalizedCities.includes(val),
+                (val) => normalizedCityList.includes(val),
                 { message: "Cidade não atendida." }
             ),
 
@@ -378,30 +594,33 @@ function addressSchema(normalizedCities) {
     });
 }
 
-function generalSchema(normalizedCities) {
+function generalSchema(normalizedCityList) {
     return z.object({
-        origin: addressSchema(normalizedCities),
-        destination: addressSchema(normalizedCities),
+        origin: addressSchema(normalizedCityList),
+        destination: addressSchema(normalizedCityList),
+        loadType: z
+            .string()
+            .nonempty("Selecione o tipo de carga"),
         width: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
         height: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
         length: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
         weight: z
             .string()
-            .nonempty("Campo obrigatório")
-            .transform((val) => Number(val.replace(",", ".")))
-            .refine((val) => !isNaN(val) && val > 0, { message: "Informe um número válido" }),
+            .optional()
+            .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
+            .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
     });
 }
 
