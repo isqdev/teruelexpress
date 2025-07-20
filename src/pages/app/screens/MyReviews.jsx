@@ -116,9 +116,9 @@ const CardsWithPaginationAndLocalStorage = () => {
       )}
       <div className=" grid grid-cols-1 xl:grid-cols-2 gap-4 "> 
         {currentItems.map((item) => (
-          <div key={item.id} className="shadow-md p-4 rounded-2xl"> 
+          <div key={item.id} className="mx-auto shadow-md p-4 rounded-2xl"> 
             <div className="flex items-center mb-2">
-              <div className=" w-16 h-16 rounded-full  bg-gray-50 flex items-center justify-center"></div>
+              <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center"></div>
               <div className="pl-2">
                 <p className=" font-bold">{item.nomeCliente}</p>
                 <div className="flex items-center">
