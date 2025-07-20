@@ -1,4 +1,4 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape } from "@/components";
+import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape, ModalSm } from "@/components";
 import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle, Star } from "phosphor-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SectionBox } from "@/components";
 import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
+import { text } from "@cloudinary/url-gen/qualifiers/source";
 
 export function MyReviews() {
   return (
@@ -23,9 +24,14 @@ export function MyReviews() {
 const CardsWithPaginationAndLocalStorage = () => {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; 
+  const itemsPerPage = 6; 
 
-  useEffect(() => {
+
+  const [isModalSmOpen,setIsModalSmOpen] = useState(false);
+  const [selectedReview,setSelectedReview ] = useState(null);
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
     const loadReviewsLocalStorage = () => {
       try {
         const storedReviews = localStorage.getItem('jsonReview');
@@ -48,9 +54,18 @@ const CardsWithPaginationAndLocalStorage = () => {
         setItems([]);
       }
     };
-
-    loadReviewsLocalStorage();
-  }, []); 
+    useEffect(() => {
+      loadReviewsLocalStorage();
+      const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+      };
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    },[]);
+    
+ 
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -63,20 +78,49 @@ const CardsWithPaginationAndLocalStorage = () => {
     }
   };
 
+  const truncateText = (text, maxLength) => {
+    if (text.length > maxLength){
+      return text.substring(0,maxLength) + '...';
+    }
+    return text;
+  };
+
+  const openModal = (reviewContent) => {
+    setSelectedReview(reviewContent);
+    setIsModalSmOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalSmOpen(false);
+    setSelectedReview(null);;
+  };
+
+  const getChars = () => {
+    if (windowWidth < 380) { 
+      return 60; 
+    } else if (windowWidth < 1024) { 
+      return 100; 
+    } else {
+      return 150; 
+    }
+  };
+
+  const maxChars = getChars();
+
   return (
-    <div className="max-w-full  xl:max-w-full mx-auto p-4">
+    <div className="max-w-lg  xl:max-w-full mx-auto p-4">
       {items.length === 0 && (
         <p className="text-center text-gray-600 mb-4">
           Nenhuma avaliação encontrada.
         </p>
       )}
-      <div className=" grid grid-cols-2 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4 "> 
+      <div className=" grid grid-cols-1 xl:grid-cols-2 gap-4 "> 
         {currentItems.map((item) => (
           <div key={item.id} className="shadow-md p-4 rounded-2xl"> 
             <div className="flex items-center mb-2">
               <div className=" w-16 h-16 rounded-full  bg-gray-50 flex items-center justify-center"></div>
               <div className="pl-2">
-                <p className="text-base font-bold">{item.nomeCliente}</p>
+                <p className=" font-bold">{item.nomeCliente}</p>
                 <div className="flex items-center">
                   {[...Array(5)].map((_, starIndex) => (
                     <Star
@@ -89,9 +133,11 @@ const CardsWithPaginationAndLocalStorage = () => {
                 </div>
               </div>
             </div>
-            <p className="text-sm break-words h-[7.5rem] overflow-y-auto">{item.avaliacao}</p>
-            <p className="text-xs ">{item.data}</p> 
-          </div>
+            <p className=" break-words h-[6.8rem] ">{truncateText(item.avaliacao, maxChars)} {item.avaliacao.length > maxChars && (
+              <button onClick={() => openModal(item.avaliacao)} className="text-blue hover:underline"> Ver mais</button>
+            )}</p>
+            <p  className="pt-1">{item.data}</p> 
+          </div >
         ))}
       </div>
 
@@ -118,6 +164,21 @@ const CardsWithPaginationAndLocalStorage = () => {
           </Button>
         </div>
       )}
+      <ModalSm open={isModalSmOpen} onClose={closeModal}>
+        {selectedReview && (
+          <div className="p-3">
+            <h2 className="text-center pb-2">Avaliação</h2>
+            <p className=" break-words">{selectedReview}</p>
+            <div className="flex items-center justify-center">
+              <Button onClick={closeModal} className="border-1 border-black  w-28 h-10">
+                <ButtonText className="text-center ">
+                  Fechar
+                </ButtonText>
+              </Button>
+            </div>
+          </div>
+        )}
+      </ModalSm>
     </div>
   );
 };
