@@ -97,6 +97,7 @@ export function Budget() {
         localStorageUtils.setItem("finalBudget", finalJson);
         setIsSuccessModalVisible(true);
         setPackages([]);
+        reset();
     };
 
     const handleAddPackage = (e) => {
@@ -256,7 +257,7 @@ export function Budget() {
 
                                 <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
                                     <Button
-                                        className="bg-blue-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-1"
+                                        className="bg-blue-tx xs:col-span-2 md:row-start-1 md:col-start-1"
                                         onClick={handleAddPackage}
                                         type="button"
                                     >
@@ -265,7 +266,7 @@ export function Budget() {
                                         </ButtonText>
                                     </Button>
                                     <Button
-                                        className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-1 md:col-start-2"
+                                        className="bg-red-tx xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
                                         onClick={handleSend}
                                         type="button"
                                     >
@@ -274,7 +275,7 @@ export function Budget() {
                                         </ButtonText>
                                     </Button>
                                     <Button
-                                        className="bg-gray-50 xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2"
+                                        className="bg-gray-50 xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-1"
                                         onClick={handleCancel}
                                         type="button"
                                     >
@@ -284,8 +285,6 @@ export function Budget() {
                                     </Button>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 </form>
@@ -299,13 +298,12 @@ export function Budget() {
             </ModalSm>
 
             <ModalSm open={isSuccessModalVisible} onClose={() => setIsSuccessModalVisible(false)}>
-                <CheckCircle className="icon size-48 text-success-light justify-self-center" weight="fill" />
-                <h3 className="text-center text-lg font-semibold ">Solicitação enviada!</h3>
-                <p className="text-center mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <CheckCircle className="icon size-36 text-success-light justify-self-center" weight="fill" />
+                <h4 className="text-center text-lg font-semibold ">Solicitação enviada!</h4>
+                <p className="text-center my-6">Tudo certo, recebemos a sua solicitação, responderemos em breve via email e WhatsApp.</p>
                 <div className="flex flex-col gap-2">
                     <Button className="bg-red-tx" onClick={() => {
                         setIsSuccessModalVisible(false);
-                        reset();
                         window.scrollTo({ top: 0, left: 0 });
                     }} >
                         <Package className="icon text-white" />
@@ -345,7 +343,7 @@ export function Budget() {
             />
 
             <ModalConfirm
-                message="Cancelar e voltar para a Página inicial?"
+                message="Cancelar e voltar para a página inicial?"
                 open={isCancelModalVisible}
                 options={["Não", "Sim"]}
                 action={confirmCancel}

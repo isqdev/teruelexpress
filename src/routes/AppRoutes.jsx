@@ -14,8 +14,8 @@ import { MyReviews } from '../pages/app/screens/MyReviews';
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/app/home" replace />} />
-      <Route path="/land" element={<LandingPage />} />
+      {/* {/* <Route path="/" element={<Navigate to="/app/home" replace />} /> */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<SignUpPage />} />
       <Route

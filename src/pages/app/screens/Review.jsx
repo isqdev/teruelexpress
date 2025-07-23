@@ -1,14 +1,11 @@
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, Shape, AppHeader,ModalSm } from "@/components";
-import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle, Star } from "phosphor-react";
+import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle, Star, Package, HouseLine, StarHalf, StarFour, FolderSimpleStar } from "phosphor-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { SectionBox } from "@/components";
-import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
-import { cpf, cnpj } from 'cpf-cnpj-validator';
-
+import { Toaster } from "@/components/ui/sonner"
+import { toast } from "sonner"
+import { useNavigate } from 'react-router-dom';
 
 export function Review() {
   const {
@@ -17,23 +14,30 @@ export function Review() {
     reset,
     setValue,
     watch,
-    formState: { errors, touchedFields, dirtyFields }
+    formState: { dirtyFields }
   } = useForm({
     mode: "onBlur"
   });
-  const [submittedData, setSubmittedData] = useState(null);
+
+  const navigate = useNavigate();
+
   const [isModalSmOpen, setIsModalSmOpen] = useState(false);
   const avaliacao = watch("avaliacao", "");
   const rating = watch('rating', 0);
-  const [clickedSuggestions,setClickedSuggestions] = useState([]);
 
   const handleCloseModalSm = () => {
     setIsModalSmOpen(false);
   }
 
+  const onError = (errors) => {
+  if (errors.rating) {
+    toast.warning("Selecione entre 1 e 5 estrelas.");
+  }
+};
+
   const onSubmit = (values) => {
+    
     const newReview = {...values, timestamp: new Date().toISOString};
-    setClickedSuggestions(prev => [...prev, newReview]);
     const existingReviews=localStorage.getItem("jsonReview");
     let allReviews= [];
     if (existingReviews){
@@ -51,17 +55,13 @@ export function Review() {
     setIsModalSmOpen(true)
   };
   
-
-  
-  
-
-  
   return (
     <>
       <SectionApp>
         <AppHeader screenTitle="Avaliar" />
+        <Toaster richColors position="top-right"/>
         <div className="max-w-sm sm:max-w-lg mx-auto mt-30" >
-          <form onSubmit={handleSubmit(onSubmit)} >
+          <form onSubmit={handleSubmit(onSubmit, onError)} >
             <div className=" shadow-md p-4 rounded-2xl ">
               <div className="flex gap-2">
                 <div className="w-16 h-16 rounded-full  bg-gray-50 flex items-center justify-center">
@@ -79,7 +79,7 @@ export function Review() {
               </div>
               <div className="relative">
                 <textarea
-                  className="w-full bg-gray-50 rounded-2xl p-2 mt-4 resize-none gap-1 outline-blue-500"
+                  className="w-full h-auto text-lg bg-gray-50 rounded-2xl p-2 mt-4 overflow-hidden scrollbar-hidden overflow-y-auto resize-none gap-1 outline-blue-500"
                   maxLength={300}
                   placeholder="Digite sua avaliação aqui"
                   rows={6}
@@ -117,24 +117,26 @@ export function Review() {
 
 
 function ModalView({open, onClose}){
-  if (!open) return null;
   
-  return(
+  const navigate = useNavigate();
+
+  return (
     <ModalSm open={open} onClose={onClose}>
-      <div className="justify-self-center text-center">
-        <CheckCircle size={130} weight="fill" className="text-success-base mx-auto "/>
-        <h4 className="font-bold ">Avaliação registrada com sucesso!</h4>
-        <p className="pb-4 grid col-span-2 pt-4 mb-4">A TeruelExpress agradece pelo seu feedback.</p>
-        <div >
-          <Link to="/app/home">
-            <Button onClick={onClose} className="border border-black w-30 mx-auto ">
-              <ButtonText className="text-center font-bold">Fechar</ButtonText>
-            </Button>
-          </Link>
-        </div>
+      <CheckCircle className="icon size-36 text-success-light justify-self-center" weight="fill" />
+      <h4 className="text-center text-lg font-semibold ">Avaliação enviada!</h4>
+      <p className="text-center my-6">A Teruel Express agradece a sua avaliação!</p>
+      <div className="flex flex-col gap-2">
+        <Button
+          variant="secondary"
+          onClick={() => {
+            onClose();
+            navigate("/app/home");
+          }}
+        >
+          <ButtonText className="text-center">Fechar</ButtonText>
+        </Button>
       </div>
     </ModalSm>
-    
   )
 }
 
@@ -149,18 +151,31 @@ function FormField({ title,  error, dirty, rating, register,setValue, autoComple
     <>
       <InputLabel className="text-base">{title}</InputLabel>
       <div className="flex gap-1">
-        {[1,2,3,4,5].map((star) => (<Star weight="fill" key={star} size={32}  onClick={() => setValue('rating', star)} 
-        className={`cursor-pointer transition ${star <= rating ? ' text-star ': ' text-gray-100' }`}/>))}
+        {[1,2,3,4,5].map((star) => (
+          <span key={star} onClick={() => setValue('rating', star)} className="cursor-pointer transition">
+            {star <= rating ? (
+              <StarFull />
+            ) : (
+              <Star className="text-gray-100 icon" />
+            )}
+          </span>
+        ))}
       </div>
-      <InputRoot  status={status} className="hidden border-0">
+      <InputRoot status={status} className="hidden border-0">
         <InputField  
           autoComplete={autoComplete}
-          type= "hidden" {...register('rating',{required:true})} 
+          type="hidden" {...register('rating',{required:true})} 
         />
-        
       </InputRoot>
-      
     </>
   )
 }
 
+function StarFull() {
+  return (
+    <div className="relative w-6 sm:w-8" >
+      <Star className="absolute inset-0 text-star icon" weight="fill" />
+      <Star className="absolute inset-0 text-star-border icon" weight="regular" />
+    </div>
+  )
+}

@@ -58,7 +58,7 @@ export function LoginPage() {
               />
               <p className="font-bold text-right cursor-pointer text-blue-tx"><span className="text-sm">Esqueceu a senha?</span></p>
             </div>
-            <div className="pt-4 pb-20">
+            <div className="pt-4 pb-10">
               <Button className={"bg-red-tx"} type="submit">
                 <ButtonText className="text-center text-white">
                   Entrar
@@ -66,7 +66,7 @@ export function LoginPage() {
               </Button>
             </div>
           </form>
-          <div className="justify-items-center">
+          <div className="grid justify-items-center">
             <p className="text-center cursor-default">Não possui uma conta Teruel Exepress?</p>
             <Link to="/cadastro" className="text-red-tx font-bold">
               Crie uma agora

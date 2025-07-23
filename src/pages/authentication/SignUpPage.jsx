@@ -91,7 +91,7 @@ export function SignUpPage() {
           </div>
         </form>
 
-        <div className="justify-items-center pt-6">
+        <div className="grid justify-items-center pt-6">
           <p className="text-center cursor-default">Já possui uma conta Teruel Exepress?</p>
           <Link to="/login" className="text-red-tx font-bold">
             Entre aqui
@@ -104,8 +104,8 @@ export function SignUpPage() {
           <div className="fixed inset-0 flex items-center justify-center z-3">
             <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-sm">
               <p className="mb-4 text-lg font-semibold">Por favor preencher todos os campos!</p>
-              <Button className="bg-red-tx" onClick={() => setShowAllertModal(false)}>
-                <ButtonText className="text-white text-center">Fechar</ButtonText>
+              <Button variant="secondary" onClick={() => setShowAllertModal(false)}>
+                <ButtonText className="text-center">Fechar</ButtonText>
               </Button>
             </Shape>
             <div className="fixed bg-black opacity-70 z-1 h-lvh w-lvw" />
@@ -133,7 +133,7 @@ export function SignUpPage() {
         <div className="fixed inset-0 flex items-center justify-center z-3">
           <Shape className="z-2 w-full min-h-screen sm:min-h-0 sm:max-w-lg sm:mx-auto sm:my-20 bg-white sm:rounded-2xl sm:h-fit overflow-hidden p-6 sm:p-8">
             <div className="flex flex-col gap-6">
-              <h3 className="text-center text-lg font-semibold ">Termos e condições</h3>
+              <h4 className="text-center text-lg font-semibold ">Termos e condições</h4>
               <p className="text-justify">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -141,7 +141,7 @@ export function SignUpPage() {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
               </p>
-              <Button className="bg-white border border-gray-600" onClick={() => setShowTermsModal(false)}>
+              <Button variant="secondary" onClick={() => setShowTermsModal(false)}>
                 <ButtonText className="text-black text-center">Fechar termos</ButtonText>
               </Button>
             </div>
