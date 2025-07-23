@@ -241,7 +241,7 @@ export function Budget() {
                                 )}
                                 <div className="grid grid-cols-2">
                                     <Button
-                                        className="bg-blue-tx -col-start-2"
+                                        className="bg-blue-tx col-span-2"
                                         onClick={handleAddPackage}
                                         type="button"
                                     >

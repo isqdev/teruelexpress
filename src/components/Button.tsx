@@ -8,7 +8,7 @@ interface ButtonProps extends ComponentProps<"button"> {
 
 const variantMap = {
   primary: "bg-red-tx text-white",
-  secondary: "bg-gray-25 border border-gray-50 text-black",
+  secondary: "bg-gray-50 text-black",
   complementary: "bg-blue-tx text-white",
   danger: "bg-red-50 text-danger-base",
 };

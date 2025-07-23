@@ -1,5 +1,5 @@
 import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape, ModalSm } from "@/components";
-import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle, Star } from "phosphor-react";
+import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle, Star, ArrowLeft, ArrowRight } from "phosphor-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -98,45 +98,52 @@ const CardsWithPaginationAndLocalStorage = () => {
   const getChars = () => {
     if (windowWidth < 380) { 
       return 60; 
-    } else if (windowWidth < 1024) { 
+    } else if (windowWidth < 500) { 
       return 100; 
     } else {
-      return 150; 
+      return 140; 
     }
   };
 
   const maxChars = getChars();
 
   return (
-    <div className="max-w-lg  xl:max-w-full mx-auto p-4">
+    <div className=" w-full p-4">
       {items.length === 0 && (
         <p className="text-center text-gray-600 mb-4">
           Nenhuma avaliação encontrada.
         </p>
       )}
-      <div className=" grid grid-cols-1 xl:grid-cols-2 gap-4 "> 
+      <div className=" grid grid-cols-1 lg:grid-cols-2 gap-4 hover:cursor-pointer "> 
         {currentItems.map((item) => (
-          <div key={item.id} className="mx-auto shadow-md p-4 rounded-2xl"> 
+          <div
+            key={item.id}
+            onClick={() => openModal(item.avaliacao)}
+            className="hover:scale-101 transition duration-200 shadow-md p-4 lg:max-w-full rounded-2xl"
+          > 
             <div className="flex items-center mb-2">
               <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center"></div>
               <div className="pl-2">
                 <p className=" font-bold">{item.nomeCliente}</p>
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, starIndex) => (
-                    <Star
-                      key={starIndex}
-                      weight={starIndex < item.rating? "fill" : "regular"} 
-                      size={32}
-                      className={starIndex < item.rating ? "text-star" : "text-gray-100"}
-                    />
-                  ))}
+                <div className="flex">
+                  {[...Array(5)].map((_, starIndex) =>
+                    starIndex < item.rating ? (
+                      <StarFull key={starIndex} />
+                    ) : (
+                      <Star
+                        key={starIndex}
+                        className="icon text-gray-100"
+                      />
+                    )
+                  )}
                 </div>
               </div>
             </div>
-            <p className=" break-words h-[6.8rem] ">{truncateText(item.avaliacao, maxChars)} {item.avaliacao.length > maxChars && (
-              <button onClick={() => openModal(item.avaliacao)} className="text-blue hover:underline"> Ver mais</button>
-            )}</p>
-            <p  className="pt-1">{item.data}</p> 
+            {item.avaliacao ? <p className=" break-words h-auto lg:h-[10rem] xl:h-[8rem]">{truncateText(item.avaliacao, maxChars)} {item.avaliacao.length > maxChars && (
+              <span className="text-red-tx font-bold "> ver mais</span>
+            )}</p> : <p className="italic h-auto md:h-[8rem] lg:h-[10rem] text-gray-600 xl:h-[8rem]">Sem descrição</p>}
+            
+            <p className="pt-1 text-gray-600">{item.data}</p> 
           </div >
         ))}
       </div>
@@ -146,32 +153,42 @@ const CardsWithPaginationAndLocalStorage = () => {
           <Button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="border-1 border-black disabled:opacity-50 w-28 h-10 "
+            className="disabled:opacity-50 disabled:pointer-events-none w-auto"
+            variant="secondary"
           >
-            <ButtonText className="text-center disabled:opacity-50">
-              Voltar
-            </ButtonText>
+            <ArrowLeft className="icon"/>
           </Button>
 
           <Button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="border-1 border-black disabled:opacity-50 w-28 h-10"
+            className="disabled:opacity-50 disabled:pointer-events-none w-auto"
+            variant="secondary"
           >
-            <ButtonText className="text-center disabled:opacity-50">
-              Próximo
-            </ButtonText>
+            <ArrowRight className="icon"/>
           </Button>
         </div>
       )}
       <ModalSm open={isModalSmOpen} onClose={closeModal}>
-        {selectedReview && (
-          <div className="p-3">
-            <h2 className="text-center pb-2">Avaliação</h2>
-            <p className=" break-words">{selectedReview}</p>
+        {selectedReview ? (
+          <div className="">
+            <h4 className="text-center">Avaliação</h4>
+            <p className="break-words py-3">{selectedReview}</p>
             <div className="flex items-center justify-center">
-              <Button onClick={closeModal} className="border-1 border-black  w-28 h-10">
-                <ButtonText className="text-center ">
+              <Button onClick={closeModal} variant="secondary">
+                <ButtonText className="text-center">
+                  Fechar
+                </ButtonText>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-3">
+            <h4 className="text-center">Avaliação</h4>
+            <p className="italic text-gray-600 py-3">Sem descrição</p>
+            <div className="flex items-center justify-center">
+              <Button onClick={closeModal} variant="secondary">
+                <ButtonText className="text-center">
                   Fechar
                 </ButtonText>
               </Button>
@@ -182,3 +199,13 @@ const CardsWithPaginationAndLocalStorage = () => {
     </div>
   );
 };
+
+
+function StarFull() {
+  return (
+    <div className="relative w-6 sm:w-8" >
+      <Star className="absolute inset-0 text-star icon" weight="fill" />
+      <Star className="absolute inset-0 text-star-border icon" weight="regular" />
+    </div>
+  )
+}
