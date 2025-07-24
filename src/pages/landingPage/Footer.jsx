@@ -8,23 +8,23 @@ export function Footer() {
             <div className="bg-blue-tx">
                 <Section className="py-4 sm:py-6 md:py-8 lg:py-8" id="footer">
                     <h4 className="text-white">Contato</h4>
-                    <div className="xl:py-4 xl:grid xl:grid-cols-3">
+                    <div className="items-center xl:py-4 xl:grid xl:grid-cols-3">
                         <Link to="https://wa.me/5544999965596" target="_blank">
-                            <div className="flex text-white xl:gap-4 xl:justify-start xs:gap-2 xs:justify-center">
+                            <div className="flex items-center text-white xl:gap-4 xl:justify-start xs:gap-2 xs:justify-center">
                                 <WhatsappLogo className="icon xs:justify-start" />
                                 <p className="xs:justify-center" >(44) 99996-5596</p>
                                 <ArrowSquareOut className="icon xs:justify-end" />
                             </div>
                         </Link>
                         <Link to="https://wa.me/5544920001842" target="_blank">
-                            <div className="flex text-white xl:gap-4 xl:justify-center xs:py-2 xs:gap-2 xs:justify-center">
+                            <div className="flex items-center text-white xl:gap-4 xl:justify-center xs:gap-2 xs:justify-center">
                                 <WhatsappLogo className="icon xs:justify-start" />
                                 <p className="xs:justify-center" >(44) 92000-1842</p>
                                 <ArrowSquareOut className="icon xs:justify-end" />
                             </div>
                         </Link>
                         <Link to="mailto:teruelexpress.servicos@gmail.com" target="_blank">
-                            <div className="flex text-white xl:gap-4 xl:justify-end xs:gap-2 xs:justify-center">
+                            <div className="flex items-center text-white xl:gap-4 xl:justify-end xs:gap-2 xs:justify-center">
                                 <EnvelopeSimple className="icon xs:justify-start" />
                                 <p className="xs:justify-center" >Enviar email</p>
                                 <ArrowSquareOut className="icon xs:justify-end" />

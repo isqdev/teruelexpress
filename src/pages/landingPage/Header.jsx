@@ -55,7 +55,7 @@ export function Header() {
     }
     return (
         <>
-            <header className="px-6 py-2 sm:px-4 md:px-10 mx-auto max-w-495 sticky top-0 bg-white z-1 flex justify-between items-center">
+            <header className="shadow px-6 py-2 sm:px-4 md:px-10 mx-auto max-w-495 sticky top-0 bg-white z-1 flex justify-between items-center">
                 <CloudinaryImage publicId={"ndmrywtuuk65gxfo8onn"} className="w-26 h-auto"/>
                 <NavBar> </NavBar>
                 <List className="icon self-center hover:cursor-pointer lg:hidden" onClick={() => { setMenu(true) }} />
