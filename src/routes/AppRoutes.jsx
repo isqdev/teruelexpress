@@ -10,6 +10,7 @@ import { Review } from '../pages/app/screens/Review';
 import { ServicedRoutes } from '../pages/app/screens/ServicedRoutes';
 import { MyShipments } from '../pages/app/screens/MyShipments';
 import { MyReviews } from '../pages/app/screens/MyReviews';
+import { Settings } from '../pages/app/screens/Settings';
 
 export function AppRoutes() {
   return (
@@ -32,6 +33,7 @@ export function AppRoutes() {
         <Route path="minhas-avaliacoes" element={<MyReviews />}/>
         <Route path="rotas-atendidas" element={<ServicedRoutes />}/>
         <Route path="minhas-solicitacoes" element={<MyShipments />}/>
+        <Route path="configuracoes" element={<Settings />}/>
       </Route>
     </Routes>
   );
