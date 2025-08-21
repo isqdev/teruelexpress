@@ -18,6 +18,7 @@ import {
   FolderSimpleStar,
   ClipboardText,
   Gear,
+  GearSix,
 } from "phosphor-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
@@ -82,6 +83,15 @@ export function Home() {
         <ButtonText className="text-black">Ver minhas avaliações</ButtonText>
       ),
     },
+    {
+      to: "/app/configuracoes",
+      className: "lg:order-6",
+      buttonClass: "bg-white border border-gray-600",
+      icon: <GearSix className="text-red-tx icon" />,
+      children: (
+        <ButtonText className="text-black">Configurações</ButtonText>
+      ),
+    },
   ];
 
   return (
@@ -106,7 +116,9 @@ export function Home() {
             <span className="font-heading text-sm text-gray-600">Pessoa física</span>
             <span className="font-heading text-xl">João Silva</span>
           </div>
-          <Gear size={32} className="hover:cursor-pointer"/>
+          <Link to="/app/configuracoes">
+            <GearSix size={32} className="hover:cursor-pointer"/>
+          </Link>
         </div>
         <div className="grid grid-cols-1 gap-y-5 gap-x-5 lg:grid-cols-2">
           <Shape className="p-0 xs:p-4 sm:p-4 xl:p-6 xs:shadow-sm drop-shadow-primary border-gray-50 xs:border-1">
