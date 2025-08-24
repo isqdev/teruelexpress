@@ -7,24 +7,24 @@ class BaseService {
         this.api = api;
     }
 
-    async inserir(dados) {
-        const resposta = await this.api.post(this.endPoint, dados)
-        return resposta;
+    async insert(data) {
+        const response = await this.api.post(this.endPoint, data)
+        return response;
     }
 
-    async alterar(dados) {
-        const resposta = await this.api.put(this.endPoint, dados);
-        return resposta;
+    async alter(data) {
+        const response = await this.api.put(this.endPoint, data);
+        return response;
     }
 
-    async excluir(dados) {
-        const resposta = await this.api.delete(`${this.endPoint}/${id}`)
-        return resposta
+    async delete(data) {
+        const response = await this.api.delete(`${this.endPoint}/${id}`)
+        return response
     }
 
-    async buscarTodos() {
-        const resposta = await this.api.get(this.endPoint)
-        return resposta;
+    async findAll() {
+        const response = await this.api.get(this.endPoint)
+        return response;
     }
 }
 
