@@ -40,6 +40,8 @@ export function SignUpPage() {
   const postForm = (formData) => {
     setData({ ...formData });
     console.log("JSON enviado:", formData);
+    const formDataJSON = JSON.stringify(formData);
+    localStorage.setItem('JSON enviado', formDataJSON);
     setShowSuccessModal(true);
   };
 
