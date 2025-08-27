@@ -1,4 +1,4 @@
-import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape, ModalConfirm, ModalSm } from "@/components";
+import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape, ModalConfirm, ModalSm, Pencil, FloppyDiskBack } from "@/components";
 import { useState, useEffect } from "react";
 import { MyReviews } from "./MyReviews";
 import { z } from 'zod';
@@ -95,16 +95,18 @@ export function Settings() {
       <SectionApp>
             <AppHeader screenTitle="Configurações"/>
             <div className="flex">
-              <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center"></div>
+              <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center">
+                <Pencil/>
+              </div>
               <div>
                 <p>{items.nomeCliente}</p>
                 <p>pessoa fisica</p>
                 <p>000.000.000-00</p>
               </div>
             </div>
-            <div>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <p>Dados da conta</p>
+            <div className="border border-2 rounded-2xl border-gray-600">
+              <form onSubmit={handleSubmit(onSubmit)} className="m-2 ">
+                <p className="font-bold">Dados da conta</p>
                 <InputLabel>Nome</InputLabel>
                 <InputRoot>
                   <InputField placeholder={items.nomeCliente} {...register("nome")}   
@@ -131,10 +133,10 @@ export function Settings() {
                       />
                       )}
                   />
-
+                
                 </InputRoot>
-                <Button   type={isEditing ? "submit" : "button"} onClick={!isEditing ? toggleEdit : onSubmit}>
-                  <ButtonText className="text-center">
+                <Button   type={isEditing ? "submit" : "button"} onClick={!isEditing ? toggleEdit : null} className="ml-auto bg-blue-tx w-25 h-5">
+                  <ButtonText className="text-center text-white">
                     {isEditing ? "Salvar" : "Editar"}
                   </ButtonText>
                 </Button>
