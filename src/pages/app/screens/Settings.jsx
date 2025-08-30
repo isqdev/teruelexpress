@@ -119,31 +119,35 @@ export function Settings() {
     <>
       <SectionApp>
             <AppHeader screenTitle="Configurações"/>
-        <div className="flex items-stretch">
+            <div className="sm:shadow-2xl sm:mx-auto sm:rounded-xl sm:p-6 sm:w-full 
+              sm:max-w-3xl sm:flex sm:justify-center sm:items-center">
+            <div>
+            <div className="flex ">
               <div className=" w-18 h-18 rounded-full  bg-gray-50 flex items-center justify-center text-center mr-3">
                 <Pencil className="icon " />
               </div>
-              <div>
-                <p className="font-bold">{items.nomeCliente}</p>
-                <p className="font-bold text-1">pessoa fisica</p>
-                <p>000.000.000-00</p>
+              <div className="gap-0">
+                <p className="font-bold m-0 gap-0">Nome do cliente</p>
+                <span className="font-bold text-xs m-0 gap-0">pessoa fisica</span>
+                <p className="m-0 gap-0">000.000.000-00</p>
               </div>
             </div>
+            <div className="sm:flex sm:gap-8">
             <div className="border border-2 rounded-2xl border-gray-600 mt-4">
               <form onSubmit={handleSubmit(onSubmitEdit)} className="m-2 ">
                 <p className="font-bold mb-5">Dados da conta</p>
                 <InputLabel>Nome</InputLabel>
-                <InputRoot>
+                <InputRoot className={!isEditing ? "bg-gray-50" : ""} >
                   <InputField placeholder={items.nomeCliente} {...register("nome")}   
                   disabled={!isEditing} defaultValue={items.nomeCliente} />
                 </InputRoot>
                 <InputLabel>Email</InputLabel>
-                <InputRoot>
+                <InputRoot className={!isEditing ? "bg-gray-50" : ""} >
                   <InputField placeholder={items.email} defaultValue={items.email} 
                   disabled={!isEditing} {...register("email")}/>
                 </InputRoot>
                 <InputLabel>Telefone</InputLabel>
-                <InputRoot>
+                <InputRoot className={!isEditing ? "bg-gray-50" : ""} >
                   <Controller
                     name="phone"
                     control={control}
@@ -180,15 +184,15 @@ export function Settings() {
               <form onSubmit={handleSubmitPassword(onSubmitPassword)} className="m-2 ">
                 <p className="font-bold mb-5">Senha</p>
                 <InputLabel>Senha atual</InputLabel>
-                <InputRoot>
+                <InputRoot className={!isEditing ? "bg-gray-100" : ""} >
                   <InputField  disabled={!isPassword}/>
-                </InputRoot>
+                </InputRoot >
                 <InputLabel>Nova senha</InputLabel>
-                <InputRoot>
+                <InputRoot className={!isEditing ? "bg-gray-100" : ""}>
                   <InputField disabled={!isPassword} {...registerPassword("password")} type="password" />
                 </InputRoot>
                 <InputLabel>Confirmar senha</InputLabel>
-                <InputRoot>
+                <InputRoot className={!isEditing ? "bg-gray-100" : ""}>
                   <InputField disabled={!isPassword} {...registerPassword("confirmPassword")} type="password" />
                 </InputRoot>
                
@@ -208,7 +212,10 @@ export function Settings() {
                   </ButtonText>
                 </Button>
               </form>
+              </div>
             </div> 
+            </div>
+            </div>
 
       </SectionApp>
     </>
