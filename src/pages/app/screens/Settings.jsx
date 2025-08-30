@@ -1,4 +1,7 @@
-import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp, Shape, ModalConfirm, ModalSm, Pencil, FloppyDiskBack } from "@/components";
+import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, 
+  SectionApp, Shape, ModalConfirm, ModalSm } from "@/components";
+import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle, Star, Package, HouseLine, StarHalf, 
+  StarFour, FolderSimpleStar, Pencil, FloppyDiskBack, LockKeyOpen } from "phosphor-react";
 import { useState, useEffect } from "react";
 import { MyReviews } from "./MyReviews";
 import { z } from 'zod';
@@ -11,6 +14,7 @@ export function Settings() {
   register,
   handleSubmit,
   control,
+  onSubmit,
   reset,
   setValue,
   formState: { errors },
@@ -65,14 +69,35 @@ export function Settings() {
       reviews.phone = data.telefone;
 
       // Salva de volta no localStorage
-      localStorage.setItem('JSON enviado', JSON.stringify(reviews));
+      localStorage.setItem('JSON enviado2', JSON.stringify(reviews));
     } catch (error) {
       console.error("Erro ao salvar dados no localStorage:", error);
     }
   }
 
-  const onSubmit = (data) => {
+  const saveToLocalStoragePassword = (values) => {
+    console.log("oii");
+    try {
+      const storedReviews = localStorage.getItem('JSON enviado');
+      const reviews = storedReviews ? JSON.parse(storedReviews) : {};
+
+      // Atualiza o objeto com os novos dados
+      reviews.namePerson = values.password;
+     ;
+
+      // Salva de volta no localStorage
+      localStorage.setItem('JSON enviado2', JSON.stringify(reviews));
+    } catch (error) {
+      console.error("Erro ao salvar dados no localStorage:", error);
+    }
+  }
+
+  const onSubmitEdit = (data) => {
     saveToLocalStorage(data);
+  }
+
+  const onSubmitPassword = (values) => {
+    saveToLocalStoragePassword(values);
   }
 
 
@@ -95,8 +120,8 @@ export function Settings() {
       <SectionApp>
             <AppHeader screenTitle="Configurações"/>
             <div className="flex">
-              <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center">
-                <Pencil/>
+              <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center text-center">
+                <Pencil className="icon" />
               </div>
               <div>
                 <p>{items.nomeCliente}</p>
@@ -104,9 +129,9 @@ export function Settings() {
                 <p>000.000.000-00</p>
               </div>
             </div>
-            <div className="border border-2 rounded-2xl border-gray-600">
-              <form onSubmit={handleSubmit(onSubmit)} className="m-2 ">
-                <p className="font-bold">Dados da conta</p>
+            <div className="border border-2 rounded-2xl border-gray-600 mt-4">
+              <form onSubmit={handleSubmit(onSubmitEdit)} className="m-2 ">
+                <p className="font-bold mb-5">Dados da conta</p>
                 <InputLabel>Nome</InputLabel>
                 <InputRoot>
                   <InputField placeholder={items.nomeCliente} {...register("nome")}   
@@ -135,33 +160,54 @@ export function Settings() {
                   />
                 
                 </InputRoot>
-                <Button   type={isEditing ? "submit" : "button"} onClick={!isEditing ? toggleEdit : null} className="ml-auto bg-blue-tx w-25 h-5">
-                  <ButtonText className="text-center text-white">
-                    {isEditing ? "Salvar" : "Editar"}
+                <Button type={isEditing ? "submit" : "button"} onClick={!isEditing ? toggleEdit : null} className="ml-auto bg-blue-tx w-30  mt-3">
+                  <ButtonText className="text-center text-white flex">
+                    {isEditing ? (
+                      <>
+                        <FloppyDiskBack className="icon" /> Salvar
+                      </> 
+                    ) : (
+                      <>
+                      <Pencil className="icon" /> Editar 
+                      </>
+                    )}
                   </ButtonText>
                 </Button>
               </form>
             </div>
-            {/*<div>
-              <p>Senha</p>
-              <InputLabel>Senha atual</InputLabel>
-              <InputRoot>
-                <InputField  disabled={!isPassword}/>
-              </InputRoot>
-              <InputLabel>Nova senha</InputLabel>
-              <InputRoot>
-                <InputField disabled={!isPassword}/>
-              </InputRoot>
-              <InputLabel>Confirmar senha</InputLabel>
-              <InputRoot>
-                <InputField  disabled={!isPassword}/>
-              </InputRoot>
-              <Button  onClick={togglePassword}>
-                <ButtonText className="text-center">
-                  {isPassword ? "Salvar" : "Alterar senha"}
-                </ButtonText>
-              </Button>
-            </div>*/}
+            <div className="border border-2 rounded-2xl border-gray-600 mt-4">
+              <form onSubmit={handleSubmit(onSubmitPassword)} className="m-2 ">
+                <p className="font-bold mb-5">Senha</p>
+                <InputLabel>Senha atual</InputLabel>
+                <InputRoot>
+                  <InputField  disabled={!isPassword}/>
+                </InputRoot>
+                <InputLabel>Nova senha</InputLabel>
+                <InputRoot>
+                  <InputField disabled={!isPassword}/>
+                </InputRoot>
+                <InputLabel>Confirmar senha</InputLabel>
+                <InputRoot>
+                  <InputField  disabled={!isPassword}/>
+                </InputRoot>
+           
+
+                <Button type={isPassword ? "submit" : "button"} onClick={!isPassword ? togglePassword : null}  
+              className={!isPassword ? "ml-auto bg-blue-tx w-50  mt-3" : "ml-auto bg-blue-tx w-30  mt-3"}>
+                  <ButtonText className="text-center text-white flex">
+                    {isEditing ? (
+                      <>
+                        <FloppyDiskBack className="icon" /> Salvar
+                      </>
+                    ) : (
+                      <>
+                      <LockKeyOpen className="icon" /> Alterar senha
+                      </>
+                    )}
+                  </ButtonText>
+                </Button>
+              </form>
+            </div> 
 
       </SectionApp>
     </>
@@ -178,7 +224,7 @@ const schema = z.object({
     .transform((val) => val.replace(/\D/g, ""))
     .refine((val) => val.length === 10 || val.length === 11, { message: "Telefone inválido" }),
 
-  /*password: z
+  password: z
     .string()
     .nonempty("Campo obrigatório")
     .min(8, "Mínimo de 8 caracteres")
@@ -188,7 +234,7 @@ const schema = z.object({
   confirmPassword: z.string().nonempty("Campo obrigatório"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
-  path: ["confirmPassword"],*/
+  path: ["confirmPassword"],
 });
 
 
@@ -201,7 +247,7 @@ function maskInput(value) {
         .replace(/^(\d{2})(\d{1})(\d{4})(\d{4}).*/, '($1) $2 $3-$4')
         .replace(/^(\d{2})(\d{1})(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
     }
-    // Fixo: (99) 9999-9999 (10 dígitos)
+
     return onlyDigits
       .replace(/^(\d{2})(\d{4})(\d{4}).*/, '($1) $2-$3')
       .replace(/^(\d{2})(\d{0,4})(\d{0,4})/, (match, ddd, first, last) => {
