@@ -77,7 +77,7 @@ function Code(){
   return (
     <>
 
-    {setShowPasswordScreen ? (
+    {showPasswordScreen ? (
         <PasswordScreen />
       ) : (
       <SectionBox className="pt-0">
@@ -134,7 +134,7 @@ function Code(){
 }
 
 function PasswordScreen(){
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const { control, handleSubmit,register, formState: { errors, touchedFields } } = useForm({
     resolver: zodResolver(passwordSchema),
     mode: "onBlur"
   });
@@ -148,29 +148,27 @@ function PasswordScreen(){
   return (
     <>
       <SectionBox className="pt-0">
-          <form onSubmit={handleSubmit(onSubmitPassword)} noValidate>
+          <form onSubmit={handleSubmit(onSubmitPassword)} noValidate clas>
             <CloudinaryImage publicId="vfq6dw8u2de9vcybxvka" className="w-64 justify-self-center" />
             <h4 className="font-bold text-center py-7 cursor-default">Recupere sua conta</h4>
+            <div className="mb-3 mt-5">
             <FormField
               register={register}
               name="password"
               title="Nova senha"
-              placeholder="Digite a senha nova"
-              dirty={touchedFields.password}
+              type="password"
               error={errors.password}
-              onChangeMask={(v) => maskInput(v, "password")}
-              icon={UserList}
             />
+            </div>
+            <div className="mb-4">
             <FormField
               register={register}
               name="newPassword"
               title="Confirmar nova senha"
-              placeholder="Confirme senha"
-              dirty={touchedFields.password}
+              type="password"
               error={errors.newPassword}
-              onChangeMask={(v) => maskInput(v, "password")}
-              icon={UserList}
             />
+            </div>
 
             <Button className="bg-red-tx text-center">
             <ButtonText className="text-white text-center"> 
@@ -256,25 +254,7 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
   )
 }
 
-function maskInput(value) {
-  const onlyDigits = value.replace(/\D/g, '');
 
-  if (onlyDigits.length <= 11) {
-    // Máscara CPF: 000.000.000-00
-    return onlyDigits
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-  } else {
-    // Máscara CNPJ: 00.000.000/0000-00
-    return onlyDigits
-      .replace(/^(\d{2})(\d)/, '$1.$2')
-      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-      .replace(/\.(\d{3})(\d)/, '.$1/$2')
-      .replace(/(\d{4})(\d)/, '$1-$2')
-      .slice(0, 18);
-  }
-}
 
 const recoverSchema = z.object({
   email: z
