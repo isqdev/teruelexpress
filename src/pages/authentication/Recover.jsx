@@ -272,13 +272,15 @@ const codeSchema = z.object({
 
 const passwordSchema = z.object({
   password: z
-    .string()
-    .nonempty("Campo obrigatório")
-    .min(8, "Mínimo de 8 caracteres"),
-  newPassword: z
-    .string()
-    .nonempty("Confirme sua senha"),
-}).refine(data => data.password === data.newPassword, {
-  message: "As senhas não coincidem.",
-  path: ["newPassword"],
+      .string()
+      .nonempty("Campo obrigatório")
+      .min(8, "Mínimo de 8 caracteres")
+      .refine((val) => /[A-Z]/.test(val), { message: "Deve conter ao menos 1 letra maiúscula" })
+      .refine((val) => /[0-9]/.test(val), { message: "Deve conter ao menos 1 número" })
+      .refine((val) => /[@#$?]/.test(val), { message: "Deve conter ao menos 1 caractere especial (@, #, $, ?)" }),
+    newPassword: z.string().nonempty("Campo obrigatório"),
+  }).refine((data) => data.password === data.newPassword, {
+    message: "As senhas não coincidem",
+    path: ["newPassword"],
 });
+  
