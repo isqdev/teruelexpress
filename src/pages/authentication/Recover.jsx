@@ -8,6 +8,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SectionBox } from "@/components";
 import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
 import { cpf, cnpj } from 'cpf-cnpj-validator';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 
 export function Recover() {
 
@@ -16,8 +22,20 @@ export function Recover() {
       <SectionBox className="pt-0">
         <CloudinaryImage publicId="vfq6dw8u2de9vcybxvka" className="w-64 justify-self-center" />
         <h4 className="font-bold text-center py-7 cursor-default">Recupere sua conta</h4>
-        <div className="flex flex-col">
-          
+        <div className="flex flex-col items-center">
+          <InputOTP maxLength={6}>
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+          </InputOTPGroup>
+          <InputOTPSeparator />
+          <InputOTPGroup>
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+          </InputOTP>
         </div>
       </SectionBox>
     </>
