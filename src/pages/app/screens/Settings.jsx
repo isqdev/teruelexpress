@@ -11,16 +11,21 @@ import { useForm, Controller } from "react-hook-form";
 export function Settings() {
 
   const {
-  register,
-  handleSubmit,
-  control,
-  onSubmit,
-  reset,
-  setValue,
-  formState: { errors },
-} = useForm({
-  resolver: zodResolver(schema),
-});
+    register,
+    handleSubmit,
+    control,
+    formState: { errors: errorsEdit },
+  } = useForm({
+    resolver: zodResolver(schemaEdit),
+  });
+
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    formState: { errors: errorsPassword },
+  } = useForm({
+    resolver: zodResolver(schemaPassword),
+  });
 
 
   const [isEditing, setIsEditing]= useState(false);
@@ -58,39 +63,34 @@ export function Settings() {
   }
   
   const saveToLocalStorage = (data) => {
-    console.log("oii");
+    console.log("Salvando dados de edição...");
     try {
       const storedReviews = localStorage.getItem('JSON enviado');
       const reviews = storedReviews ? JSON.parse(storedReviews) : {};
-
-      // Atualiza o objeto com os novos dados
       reviews.namePerson = data.nome;
       reviews.email = data.email;
-      reviews.phone = data.telefone;
-
-      // Salva de volta no localStorage
+      reviews.phone = data.phone;
       localStorage.setItem('JSON enviado2', JSON.stringify(reviews));
+      // setIsEditing(!isEditing);
+      loadReviewsLocalStorage();
     } catch (error) {
       console.error("Erro ao salvar dados no localStorage:", error);
     }
-  }
+  };
 
   const saveToLocalStoragePassword = (values) => {
-    console.log("oii");
+    console.log("Salvando nova senha...");
     try {
       const storedReviews = localStorage.getItem('JSON enviado');
       const reviews = storedReviews ? JSON.parse(storedReviews) : {};
-
-      // Atualiza o objeto com os novos dados
-      reviews.namePerson = values.password;
-     ;
-
-      // Salva de volta no localStorage
-      localStorage.setItem('JSON enviado2', JSON.stringify(reviews));
+      reviews.password = values.password;
+      localStorage.setItem('JSON enviado3', JSON.stringify(reviews));
+      setIsPassword(!isPassword);
+      loadReviewsLocalStorage();
     } catch (error) {
       console.error("Erro ao salvar dados no localStorage:", error);
     }
-  }
+  };
 
   const onSubmitEdit = (data) => {
     saveToLocalStorage(data);
@@ -119,13 +119,13 @@ export function Settings() {
     <>
       <SectionApp>
             <AppHeader screenTitle="Configurações"/>
-            <div className="flex">
-              <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center text-center">
-                <Pencil className="icon" />
+        <div className="flex items-stretch">
+              <div className=" w-18 h-18 rounded-full  bg-gray-50 flex items-center justify-center text-center mr-3">
+                <Pencil className="icon " />
               </div>
               <div>
-                <p>{items.nomeCliente}</p>
-                <p>pessoa fisica</p>
+                <p className="font-bold">{items.nomeCliente}</p>
+                <p className="font-bold text-1">pessoa fisica</p>
                 <p>000.000.000-00</p>
               </div>
             </div>
@@ -145,11 +145,12 @@ export function Settings() {
                 <InputLabel>Telefone</InputLabel>
                 <InputRoot>
                   <Controller
-                    name="telefone"
+                    name="phone"
                     control={control}
                     render={({ field }) => (
                       <InputField
-                        placeholder={items.telefone}
+                        {...register("phone")}
+
                         {...field}
                         onChange={(e) => {
                           field.onChange(maskInput(e.target.value));
@@ -160,15 +161,15 @@ export function Settings() {
                   />
                 
                 </InputRoot>
-                <Button type={isEditing ? "submit" : "button"} onClick={!isEditing ? toggleEdit : null} className="ml-auto bg-blue-tx w-30  mt-3">
+            <Button type={isEditing ? "submit" : "button"} onClick={!isEditing ? toggleEdit : null} className="ml-auto bg-blue-tx w-auto  mt-3">
                   <ButtonText className="text-center text-white flex">
                     {isEditing ? (
                       <>
-                        <FloppyDiskBack className="icon" /> Salvar
+                    <FloppyDiskBack className="icon mr-2" /> Salvar
                       </> 
                     ) : (
                       <>
-                      <Pencil className="icon" /> Editar 
+                      <Pencil className="icon mr-2" /> Editar 
                       </>
                     )}
                   </ButtonText>
@@ -176,7 +177,7 @@ export function Settings() {
               </form>
             </div>
             <div className="border border-2 rounded-2xl border-gray-600 mt-4">
-              <form onSubmit={handleSubmit(onSubmitPassword)} className="m-2 ">
+              <form onSubmit={handleSubmitPassword(onSubmitPassword)} className="m-2 ">
                 <p className="font-bold mb-5">Senha</p>
                 <InputLabel>Senha atual</InputLabel>
                 <InputRoot>
@@ -184,24 +185,24 @@ export function Settings() {
                 </InputRoot>
                 <InputLabel>Nova senha</InputLabel>
                 <InputRoot>
-                  <InputField disabled={!isPassword}/>
+                  <InputField disabled={!isPassword} {...registerPassword("password")} type="password" />
                 </InputRoot>
                 <InputLabel>Confirmar senha</InputLabel>
                 <InputRoot>
-                  <InputField  disabled={!isPassword}/>
+                  <InputField disabled={!isPassword} {...registerPassword("confirmPassword")} type="password" />
                 </InputRoot>
-           
+               
 
                 <Button type={isPassword ? "submit" : "button"} onClick={!isPassword ? togglePassword : null}  
-              className={!isPassword ? "ml-auto bg-blue-tx w-50  mt-3" : "ml-auto bg-blue-tx w-30  mt-3"}>
+                  className="ml-auto bg-blue-tx w-auto  mt-3">
                   <ButtonText className="text-center text-white flex">
-                    {isEditing ? (
+                    {isPassword ? (
                       <>
-                        <FloppyDiskBack className="icon" /> Salvar
+                    <FloppyDiskBack className="icon mr-2" /> Salvar
                       </>
                     ) : (
                       <>
-                      <LockKeyOpen className="icon" /> Alterar senha
+                      <LockKeyOpen className="icon mr-2" /> Alterar senha
                       </>
                     )}
                   </ButtonText>
@@ -214,16 +215,19 @@ export function Settings() {
   );
 }
 
-const schema = z.object({
+const schemaEdit = z.object({
+  nome: z.string().nonempty("O nome é obrigatório"),
   email: z
     .string()
     .email("Email inválido"),
-
   phone: z
     .string()
     .transform((val) => val.replace(/\D/g, ""))
     .refine((val) => val.length === 10 || val.length === 11, { message: "Telefone inválido" }),
+});
 
+
+const schemaPassword = z.object({
   password: z
     .string()
     .nonempty("Campo obrigatório")
