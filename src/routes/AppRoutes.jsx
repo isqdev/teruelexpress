@@ -10,6 +10,8 @@ import { Review } from '../pages/app/screens/Review';
 import { ServicedRoutes } from '../pages/app/screens/ServicedRoutes';
 import { MyShipments } from '../pages/app/screens/MyShipments';
 import { MyReviews } from '../pages/app/screens/MyReviews';
+import { Settings } from '../pages/app/screens/Settings';
+import { Recover } from '../pages/authentication/Recover';
 
 export function AppRoutes() {
   return (
@@ -18,6 +20,7 @@ export function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<SignUpPage />} />
+      <Route path="/recuperar" element={<Recover />} />
       <Route
         path="/app"
         element={
@@ -32,6 +35,7 @@ export function AppRoutes() {
         <Route path="minhas-avaliacoes" element={<MyReviews />}/>
         <Route path="rotas-atendidas" element={<ServicedRoutes />}/>
         <Route path="minhas-solicitacoes" element={<MyShipments />}/>
+        <Route path="configuracoes" element={<Settings />}/>
       </Route>
     </Routes>
   );

@@ -11,7 +11,7 @@ export function ServicedRoutes() {
 
 
   useEffect(() => {
-    fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/front-end/refs/heads/main/src/assets/cities.json').
+    fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/cities.json').
       then(data => data.json()).
       then(data => setCities(data))
   }, []);
