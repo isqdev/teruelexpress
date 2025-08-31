@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SectionBox } from "@/components";
 import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
+import { useNavigate } from "react-router-dom";
 import { cpf, cnpj } from 'cpf-cnpj-validator';
 import {
   InputOTP,
@@ -164,6 +165,8 @@ function Code({ onBackToEmail }){
 }
 
 function PasswordScreen(){
+  const navigate = useNavigate();
+
   const { control, handleSubmit,register, formState: { errors, touchedFields } } = useForm({
     resolver: zodResolver(passwordSchema),
     mode: "onBlur"
@@ -174,7 +177,7 @@ function PasswordScreen(){
   const onSubmitPassword = (data) => {
     console.log("Código válido:");
     localStorage.setItem('passwordData', JSON.stringify(data));
-    
+    navigate('/login');
   };
   return (
     <>
@@ -200,13 +203,13 @@ function PasswordScreen(){
               error={errors.newPassword}
             />
             </div>
-            <Link to="/login">
+           
             <Button className="bg-red-tx text-center">
             <ButtonText className="text-white text-center"> 
               Salvar
             </ButtonText>
             </Button>
-            </Link>
+           
           </form>
       </SectionBox>
     </>
