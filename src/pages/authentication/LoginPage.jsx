@@ -56,7 +56,10 @@ export function LoginPage() {
                 icon={LockSimpleOpen}
                 autoComplete="password"
               />
-              <p className="font-bold text-right cursor-pointer text-blue-tx"><span className="text-sm">Esqueceu a senha?</span></p>
+              <Link to="/recuperar">
+              <p className="font-bold text-right cursor-pointer text-blue-tx">
+                <span className="text-sm">Esqueceu a senha?</span></p>
+              </Link>
             </div>
             <div className="pt-4 pb-10">
               <Button className={"bg-red-tx"} type="submit">

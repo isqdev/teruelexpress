@@ -26,6 +26,7 @@ export function Recover() {
 
   const onSubmit = (data) => {
     console.log("enviado...");
+    localStorage.setItem('recoveData', JSON.stringify(data));
     setShowCodeScreen(true);
   };
 
@@ -34,7 +35,7 @@ export function Recover() {
     <>
 
       {showCodeScreen ? (
-        <Code />
+        <Code onBackToEmail={() => setShowCodeScreen(false)}/>
       ) : (
       <SectionBox className="pt-0">
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -61,7 +62,7 @@ export function Recover() {
 
 }
 
-function Code(){
+function Code({ onBackToEmail }){
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(codeSchema),
@@ -72,6 +73,7 @@ function Code(){
   
   const onSubmitCode = (data) => {
     console.log("Código válido:");
+    localStorage.setItem('codeData', JSON.stringify(data));
     setShowPasswordScreen(true);
   };
   return (
@@ -122,7 +124,11 @@ function Code(){
           </Button>
           <p className="text-center leading-none"><span className="text-sm">Código enviado para</span><br/>
           <span className="text-xs ">cliente@gmail.com</span></p>
-          <p className="text-center mt-1"><span className="text-base font-bold">Mudar email</span></p>
+          <p className="text-center mt-1 cursor-pointer"
+              onClick={onBackToEmail}
+            >
+              <span className="text-base font-bold">Mudar email</span>
+            </p>
         </div>
         </div>
         </form>
@@ -143,6 +149,7 @@ function PasswordScreen(){
   
   const onSubmitPassword = (data) => {
     console.log("Código válido:");
+    localStorage.setItem('passwordData', JSON.stringify(data));
     
   };
   return (
@@ -169,12 +176,13 @@ function PasswordScreen(){
               error={errors.newPassword}
             />
             </div>
-
+            <Link to="/login">
             <Button className="bg-red-tx text-center">
             <ButtonText className="text-white text-center"> 
-              salvar
+              Salvar
             </ButtonText>
-          </Button>
+            </Button>
+            </Link>
           </form>
       </SectionBox>
     </>
