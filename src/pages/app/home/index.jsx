@@ -139,7 +139,7 @@ export function Home() {
           </Shape>
         </div>
       </div>
-      <div className="fixed right-2 bottom-2 sm:right-8 sm:bottom-8 space-y-2 sm: space-y-4">
+      <div className="fixed right-2 bottom-2 sm:right-8 sm:bottom-8 space-y-2">
         {showWhatsApp && <WhatsAppNumbers toggle={toggleWhatsApp}/>}
         <div className="flex gap-2 sm:gap-4 justify-end">
           <Button className="size-12 flex justify-around sm:size-16 sm:aspect-square bg-blue-500  ">
