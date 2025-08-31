@@ -2,28 +2,55 @@ import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel
 import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle } from "phosphor-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SectionBox } from "@/components";
 import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
 import { cpf, cnpj } from 'cpf-cnpj-validator';
+import { localStorageUtils } from "../../utils/localStorageUtils";
+import AuthService from "../../services/authService";
+import Cookies from 'js-cookie';
+import { toast, Toaster } from "sonner";
 
 export function LoginPage() {
+  const navigate = useNavigate();
+  const authService = new AuthService();
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, touchedFields }
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: "onBlur"
   });
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
+    values.cpf_cnpj = values.cpf_cnpj.replace(/\D/g, '');
     console.log(values);
+    localStorageUtils.setItem("login", values);
     reset();
+    await login(values);
   };
+
+  const login = async (usuario) => {
+    try {
+      const resposta = await authService.login(JSON.stringify(usuario));
+      console.log(resposta);
+      if (resposta.status === 200 && resposta.data.token) {
+        Cookies.set('token', resposta.data.token, { expires: 1, path: '/' });
+        navigate("/app/home");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+      const message = error.response.data.message;
+      setError("cpf_cnpj", { type: "server", message });
+      setError("password", { type: "server", message });
+    }
+  }
 
   return (
     <>
@@ -56,10 +83,7 @@ export function LoginPage() {
                 icon={LockSimpleOpen}
                 autoComplete="password"
               />
-              <Link to="/recuperar">
-              <p className="font-bold text-right cursor-pointer text-blue-tx">
-                <span className="text-sm">Esqueceu a senha?</span></p>
-              </Link>
+              <p className="font-bold text-right cursor-pointer text-blue-tx"><span className="text-sm">Esqueceu a senha?</span></p>
             </div>
             <div className="pt-4 pb-10">
               <Button className={"bg-red-tx"} type="submit">
@@ -76,6 +100,7 @@ export function LoginPage() {
             </Link>
           </div>
         </div>
+        <Toaster position="top-right" richColors/>
       </SectionBox>
     </>
   );
@@ -84,7 +109,7 @@ export function LoginPage() {
 
 function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon, onChangeMask, autoComplete = "off" }) {
   let status;
-  if (dirty) {
+  if (error) {
     status = error ? "error" : "default"
   }
 
