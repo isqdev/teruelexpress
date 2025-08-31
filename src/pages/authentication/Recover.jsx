@@ -26,7 +26,7 @@ export function Recover() {
 
   const onSubmit = (data) => {
     console.log("enviado...");
-    localStorage.setItem('recoveData', JSON.stringify(data));
+    localStorage.setItem('recoverData', JSON.stringify(data));
     setShowCodeScreen(true);
   };
 
@@ -70,6 +70,30 @@ function Code({ onBackToEmail }){
   });
 
   const [showPasswordScreen, setShowPasswordScreen] = useState(false);
+  const [items, setItems] = useState({});
+
+  useEffect(() => {
+    loadReviewsLocalStorage();
+  }, []);
+
+  const loadReviewsLocalStorage = () => {
+      try {
+        const storedReviews = localStorage.getItem('recoverData');
+        if (storedReviews) {
+          const reviews = JSON.parse(storedReviews);
+
+         
+          const itemsUser = {
+            email: reviews.email,
+          };
+          setItems(itemsUser);
+        } 
+        
+      } catch (error) {
+        console.error("Erro ao carregar  'jsonReview' do localStorage:", error);
+        setItems();
+      }
+  }
   
   const onSubmitCode = (data) => {
     console.log("Código válido:");
@@ -123,7 +147,7 @@ function Code({ onBackToEmail }){
             </ButtonText>
           </Button>
           <p className="text-center leading-none"><span className="text-sm">Código enviado para</span><br/>
-          <span className="text-xs ">cliente@gmail.com</span></p>
+          <span className="text-xs ">{items.email}</span></p>
           <p className="text-center mt-1 cursor-pointer"
               onClick={onBackToEmail}
             >
