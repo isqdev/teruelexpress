@@ -19,7 +19,6 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
-    reset,
     setError,
     formState: { errors, touchedFields }
   } = useForm({
@@ -31,7 +30,6 @@ export function LoginPage() {
     values.cpf_cnpj = values.cpf_cnpj.replace(/\D/g, '');
     console.log(values);
     localStorageUtils.setItem("login", values);
-    reset();
     await login(values);
   };
 
