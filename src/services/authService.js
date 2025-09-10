@@ -10,6 +10,11 @@ class AuthService extends BaseService{
         const resposta = this.api.post(`${this.endPoint}/login`, dados);
         return resposta;
     }
+
+    async getInfo(){
+        const resposta = this.api.get(`${this.endPoint}/home`);
+        return resposta;
+    }
 }
 
 export default AuthService;
