@@ -21,6 +21,7 @@ export function OurClients() {
         <div className="bg-gray-50">
           <Section id="clients">
             <h2>Nossos clientes</h2>
+            <p className="mb-4">Confie em quem já escolheu nossos serviços e descubra o caminho para uma logística mais inteligente.</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 place-items-center">
               {clientImages.map((publicId) => (
                 <CloudinaryImage
