@@ -9,7 +9,8 @@ import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox"
 import { cpf, cnpj } from 'cpf-cnpj-validator';
 import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
-
+import UserService from "../../services/UserService";
+import { toast, Toaster } from "sonner";
 
 export function SignUpPage() {
   const [data, setData] = useState("Dados do Formulario em JSON");
@@ -18,31 +19,52 @@ export function SignUpPage() {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showAllertModal, setShowAllertModal] = useState(false);
+  const [isWainting, setIsWainting] = useState(false);
+
+  const userService = new UserService();
 
   const schema = isBusiness ? businessSchema : personSchema;
 
   const {
     register,
     handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors, touchedFields, isValid }
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onBlur"
   });
 
-
   const handleChangedPerson = (business) => {
+    clearErrors();
     if (isBusiness !== business) {
       setIsBusiness(business);
     }
   }
 
-  const postForm = (formData) => {
+  const postForm = async (formData) => {
+    if(isWainting) return;
+    setIsWainting(true);
     setData({ ...formData });
     console.log("JSON enviado:", formData);
-    const formDataJSON = JSON.stringify(formData);
-    localStorage.setItem('JSON enviado', formDataJSON);
-    setShowSuccessModal(true);
+
+    try {
+      const resposta = isBusiness ? await userService.createBusiness(formData) : await userService.createClient(formData);
+      console.log(resposta);
+      
+      if (resposta.status === 200) {
+        setShowSuccessModal(true);
+      }
+    } catch (error) {
+      setIsWainting(false);
+      console.log(error);
+      toast.error(error.response.data.message);
+      const message = error.response.data.message;
+      setError("cnpj", { type: "server", message });
+      setError("cpf", { type: "server", message });
+      setError("email", { type: "server", message });
+    }
   };
 
   const handleCreateAccount = (e) => {
@@ -99,6 +121,7 @@ export function SignUpPage() {
             Entre aqui
           </Link>
         </div>
+        <Toaster position="top-right" richColors/>
       </SectionBox>
 
       {showAllertModal && (
@@ -167,6 +190,7 @@ function FormPerson({ register, errors, touchedFields }) {
         error={errors.namePerson}
         dirty={touchedFields.namePerson}
         icon={UserList}
+        onChangeMask={(v) => maskInput(v, "name")}
         autoComplete="name"
       />
 
@@ -349,7 +373,8 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
 const personSchema = z.object({
   namePerson: z
     .string()
-    .nonempty("Campo obrigatório"),
+    .nonempty("Campo obrigatório")
+    .regex(/^[A-Za-zÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços"),
 
   cpf: z
     .string()
@@ -384,7 +409,9 @@ const personSchema = z.object({
 const businessSchema = z.object({
   nameBusiness: z
     .string()
-    .nonempty("Campo obrigatório"),
+    .nonempty("Campo obrigatório")
+    .refine((val) => /[A-Za-z]/.test(val), { message: "Deve conter letras" })
+,
 
   cnpj: z
     .string()
@@ -417,6 +444,10 @@ const businessSchema = z.object({
 });
 
 function maskInput(value, field) {
+    if (field === "name") {
+    return value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
+    }
+
   const onlyDigits = value.replace(/\D/g, '');
 
   if (field === "cpf") {
