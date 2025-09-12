@@ -160,11 +160,18 @@ export function SignUpPage() {
             <div className="flex flex-col gap-6">
               <h4 className="text-center text-lg font-semibold ">Termos e condições</h4>
               <p className="text-justify">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ao realizar o cadastro na plataforma da Teruel Express, o usuário declara estar ciente e de acordo com os seguintes termos:
+
+                As informações fornecidas no momento do cadastro devem ser verdadeiras e atualizadas.
+                <br/>
+                O usuário é responsável por manter a confidencialidade de seus dados de acesso.
+                <br/>
+                A Teruel Express reserva-se o direito de entrar em contato por e-mail, telefone ou WhatsApp para tratar sobre solicitações de orçamento, acompanhamento de pedidos e demais comunicações relacionadas ao serviço.
+                <br/>
+                Ao cadastrar-se, o usuário concorda com o uso de seus dados exclusivamente para finalidades relacionadas à prestação dos serviços da empresa, em conformidade com a legislação vigente.
+                <br/>
+                O não cumprimento destes termos pode acarretar na suspensão ou exclusão do cadastro.
+
               </p>
               <Button variant="secondary" onClick={() => setShowTermsModal(false)}>
                 <ButtonText className="text-black text-center">Fechar termos</ButtonText>
