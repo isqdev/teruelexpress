@@ -1,4 +1,4 @@
-import BaseService from "./BaseService";
+import BaseService from "./baseService";
 
 class AuthService extends BaseService{
 
@@ -6,13 +6,8 @@ class AuthService extends BaseService{
         super("/auth");
     }
 
-    async login(dados){
-        const resposta = this.api.post(`${this.endPoint}/login`, dados);
-        return resposta;
-    }
-
-    async getInfo(){
-        const resposta = this.api.get(`${this.endPoint}/home`);
+    async login(data){
+        const resposta = this.api.post(`${this.endPoint}/login`, data);
         return resposta;
     }
 }

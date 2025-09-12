@@ -22,9 +22,9 @@ import {
 } from "phosphor-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import AuthService from "../../../services/authService";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import UserService from "../../../services/UserService";
 
 export function Home() {
   const [showWhatsApp, setShowWhatsApp] = useState(false);
@@ -33,7 +33,7 @@ export function Home() {
 
 
   const toggleWhatsApp = () => setShowWhatsApp((prev) => !prev);
-  const authService = new AuthService();
+  const userService = new UserService();
 
   const serviceButtons = [
     {
@@ -74,11 +74,12 @@ export function Home() {
 
   const getInfo = async () => {
     try {
-      const resposta = await authService.getInfo();
+      const resposta = await userService.getInfo();
       console.log(resposta);
       if (resposta.status === 200) {
         setUserName(resposta.data.nome || "Nome Generéico");
         setTipoConta(resposta.data.tipoConta || "Pessoa Física");
+        sessionStorage.setItem("home", [resposta.data.nome, resposta.data.tipoConta]);
       }
     } catch (error) {
       toast.error("Erro ao buscar dados");
@@ -89,7 +90,7 @@ export function Home() {
 
   useEffect(() => {
     getInfo();
-  }, []);
+  }, [sessionStorage.getItem("home")]);
 
   const reviewButtons = [
     {
