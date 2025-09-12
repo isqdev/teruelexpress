@@ -8,7 +8,9 @@ export function About () {
                 <Section>
                     <CarouselPlugin />
                     <h2 className="q pt-1 lg:pt-2 text-white mt-4">Sobre</h2>
-                    <p className="text-xs text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+                    <p className="text-xs text-white">A Teruel Express é uma empresa especializada em serviços de entregas que atua em grande parte da região Noroeste do Paraná.
+                        Nosso propósito é oferecer soluções logísticas com rapidez, qualidade e segurança, sempre alinhando excelência no atendimento com os melhores preços do mercado.
+                        Com uma equipe dedicada e foco em resultados, buscamos atender às necessidades de nossos clientes com eficiência, garantindo agilidade e confiança em cada entrega.
                     </p>
                 </Section>
 
