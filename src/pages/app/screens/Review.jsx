@@ -42,8 +42,7 @@ export function Review() {
     try {
       const newReview = {
         nota: values.rating,
-        descricao: values.avaliacao,
-        pessoaId: 4,
+        descricao: values.avaliacao
       };
 
       await reviewService.insert(newReview);
