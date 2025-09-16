@@ -13,8 +13,8 @@ export function MyReviews() {
   return (
     <>
       <SectionApp>
-            <AppHeader screenTitle="Minhas avaliações"/>
-            <CardsWithPaginationAndLocalStorage/>
+        <AppHeader screenTitle="Minhas avaliações" />
+        <CardsWithPaginationAndLocalStorage />
       </SectionApp>
     </>
   );
@@ -24,48 +24,48 @@ export function MyReviews() {
 const CardsWithPaginationAndLocalStorage = () => {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; 
+  const itemsPerPage = 6;
 
 
-  const [isModalSmOpen,setIsModalSmOpen] = useState(false);
-  const [selectedReview,setSelectedReview ] = useState(null);
+  const [isModalSmOpen, setIsModalSmOpen] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    const loadReviewsLocalStorage = () => {
-      try {
-        const storedReviews = localStorage.getItem('jsonReview');
-        if (storedReviews) {
-          const reviews = JSON.parse(storedReviews);
+  const loadReviewsLocalStorage = () => {
+    try {
+      const storedReviews = localStorage.getItem('jsonReview');
+      if (storedReviews) {
+        const reviews = JSON.parse(storedReviews);
 
-         
-          const itemsIds = reviews.map((review, index) => ({
-            id: index + 1, 
-            nomeCliente: 'Nome cliente', 
-            avaliacao: review.avaliacao,
-            rating: review.rating,
-            data: '10/06/2025', 
-          }));
-          setItems(itemsIds);
-        } 
-        
-      } catch (error) {
-        console.error("Erro ao carregar  'jsonReview' do localStorage:", error);
-        setItems([]);
+
+        const itemsIds = reviews.map((review, index) => ({
+          id: index + 1,
+          nomeCliente: 'Nome cliente',
+          avaliacao: review.avaliacao,
+          rating: review.rating,
+          data: '10/06/2025',
+        }));
+        setItems(itemsIds);
       }
+
+    } catch (error) {
+      console.error("Erro ao carregar  'jsonReview' do localStorage:", error);
+      setItems([]);
+    }
+  };
+  useEffect(() => {
+    loadReviewsLocalStorage();
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
     };
-    useEffect(() => {
-      loadReviewsLocalStorage();
-      const handleResize = () => {
-        setWindowWidth(window.innerWidth);
-      };
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    },[]);
-    
- 
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -79,8 +79,8 @@ const CardsWithPaginationAndLocalStorage = () => {
   };
 
   const truncateText = (text, maxLength) => {
-    if (text.length > maxLength){
-      return text.substring(0,maxLength) + '...';
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
     }
     return text;
   };
@@ -96,12 +96,12 @@ const CardsWithPaginationAndLocalStorage = () => {
   };
 
   const getChars = () => {
-    if (windowWidth < 380) { 
-      return 60; 
-    } else if (windowWidth < 500) { 
-      return 100; 
+    if (windowWidth < 380) {
+      return 60;
+    } else if (windowWidth < 500) {
+      return 100;
     } else {
-      return 140; 
+      return 140;
     }
   };
 
@@ -114,13 +114,13 @@ const CardsWithPaginationAndLocalStorage = () => {
           Nenhuma avaliação encontrada.
         </p>
       )}
-      <div className=" grid grid-cols-1 lg:grid-cols-2 gap-4 hover:cursor-pointer "> 
+      <div className=" grid grid-cols-1 lg:grid-cols-2 gap-4 hover:cursor-pointer ">
         {currentItems.map((item) => (
           <div
             key={item.id}
             onClick={() => openModal(item.avaliacao)}
             className="hover:scale-101 transition duration-200 shadow-md p-4 lg:max-w-full rounded-2xl"
-          > 
+          >
             <div className="flex items-center mb-2">
               <div className=" w-16 h-16 rounded-full  bg-gray-50  items-center justify-center"></div>
               <div className="pl-2">
@@ -142,8 +142,8 @@ const CardsWithPaginationAndLocalStorage = () => {
             {item.avaliacao ? <p className=" break-words h-auto lg:h-[10rem] xl:h-[8rem]">{truncateText(item.avaliacao, maxChars)} {item.avaliacao.length > maxChars && (
               <span className="text-red-tx font-bold "> ver mais</span>
             )}</p> : <p className="italic h-auto md:h-[8rem] lg:h-[10rem] text-gray-600 xl:h-[8rem]">Sem descrição</p>}
-            
-            <p className="pt-1 text-gray-600">{item.data}</p> 
+
+            <p className="pt-1 text-gray-600">{item.data}</p>
           </div >
         ))}
       </div>
@@ -156,7 +156,7 @@ const CardsWithPaginationAndLocalStorage = () => {
             className="disabled:opacity-50 disabled:pointer-events-none w-auto"
             variant="secondary"
           >
-            <ArrowLeft className="icon"/>
+            <ArrowLeft className="icon" />
           </Button>
 
           <Button
@@ -165,7 +165,7 @@ const CardsWithPaginationAndLocalStorage = () => {
             className="disabled:opacity-50 disabled:pointer-events-none w-auto"
             variant="secondary"
           >
-            <ArrowRight className="icon"/>
+            <ArrowRight className="icon" />
           </Button>
         </div>
       )}
