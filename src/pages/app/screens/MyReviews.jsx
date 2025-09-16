@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SectionBox } from "@/components";
 import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
 import { text } from "@cloudinary/url-gen/qualifiers/source";
+import ReviewService from "../../../services/ReviewService";
 
 export function MyReviews() {
   return (
@@ -25,37 +26,39 @@ const CardsWithPaginationAndLocalStorage = () => {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-
-
   const [isModalSmOpen, setIsModalSmOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
-
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  const loadReviewsLocalStorage = () => {
+  const reviewService = new ReviewService();
+
+  const formatDate = (dateArray) => {
+    if (!dateArray) return "";
+    const [year, month, day] = dateArray;
+    return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+  };
+
+  const loadReviews = async () => {
     try {
-      const storedReviews = localStorage.getItem('jsonReview');
-      if (storedReviews) {
-        const reviews = JSON.parse(storedReviews);
+      const response = await reviewService.findAllByPessoaId();
+      const reviews = response.data.content || [];
 
-
-        const itemsIds = reviews.map((review, index) => ({
-          id: index + 1,
-          nomeCliente: 'Nome cliente',
-          avaliacao: review.avaliacao,
-          rating: review.rating,
-          data: '10/06/2025',
-        }));
-        setItems(itemsIds);
-      }
-
+      const itemsIds = reviews.map((review) => ({
+        id: review.id,
+        nomeCliente: review.nomeAvaliador,
+        avaliacao: review.descricao,
+        rating: review.nota,
+        data: formatDate(review.dataAvaliacao),
+      }));
+      setItems(itemsIds);
     } catch (error) {
-      console.error("Erro ao carregar  'jsonReview' do localStorage:", error);
+      console.error("Erro ao carregar avaliações:", error);
       setItems([]);
     }
   };
+
   useEffect(() => {
-    loadReviewsLocalStorage();
+    loadReviews();
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
