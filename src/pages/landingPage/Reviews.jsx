@@ -9,14 +9,25 @@ import {
 } from "@/components/ui/carousel"
 import { Star, UserCircle } from "phosphor-react";
 import { useEffect, useState } from "react";
+import ReviewService from "@/services/ReviewService";
 
 export function Reviews() {
   const [reviews, setReviews] = useState([]);
+  const reviewService = new ReviewService();
 
   useEffect(() => {
-    fetch('https://raw.githubusercontent.com/CS-PI-2025-Delinquentes/json-end/refs/heads/main/reviews.json').
-      then(data => data.json()).
-      then(data => setReviews(data))
+
+    reviewService.findAllLanding()
+      .then(response => {
+        const data = response.data.content || [];
+        const formatted = data.map(r => ({
+          nome: r.nomeAvaliador,
+          estrelas: r.nota,
+          comentario: r.descricao
+        }));
+        setReviews(formatted);
+      })
+      .catch(() => setReviews([]));
   }, []);
 
   return (
@@ -66,8 +77,8 @@ export function CarouselSize({ data }) {
         ))}
       </CarouselContent>
       <div className="bg-white hidden md:block">
-        <CarouselPrevious className="cursor-pointer"/>
-        <CarouselNext className="cursor-pointer"/>
+        <CarouselPrevious className="cursor-pointer" />
+        <CarouselNext className="cursor-pointer" />
       </div>
     </Carousel>
   )
