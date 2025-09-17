@@ -5,10 +5,12 @@ class ReviewService extends BaseService {
         super("/avaliacoes")
     }
 
-    async findAllByPessoaId(){
-        const resultado = await this.api.get(`${this.endPoint}/clientes`);
+    async findAllByPessoaId(page){
+        const resultado = await this.api.get(`${this.endPoint}/clientes?size=6&page=${page}&sort=id,asc`);
         return resultado;
     }
+
+
 }
 
 export default ReviewService;
