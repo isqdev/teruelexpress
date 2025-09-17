@@ -8,13 +8,13 @@ export function MyReviews() {
     <>
       <SectionApp>
         <AppHeader screenTitle="Minhas avaliações" />
-        <CardsWithPaginationAndLocalStorage />
+        <CardsWithPagination />
       </SectionApp>
     </>
   );
 }
 
-const CardsWithPaginationAndLocalStorage = () => {
+const CardsWithPagination = () => {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -26,6 +26,9 @@ const CardsWithPaginationAndLocalStorage = () => {
 
   useEffect(() => {
     loadReviews(currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
@@ -33,7 +36,7 @@ const CardsWithPaginationAndLocalStorage = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [currentPage]);
+  }, []);
 
   const loadReviews = async (page) => {
     try {
