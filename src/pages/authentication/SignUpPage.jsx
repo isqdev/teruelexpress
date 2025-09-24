@@ -19,7 +19,7 @@ export function SignUpPage() {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showAllertModal, setShowAllertModal] = useState(false);
-  const [isWainting, setIsWainting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const userService = new UserService();
 
@@ -44,8 +44,8 @@ export function SignUpPage() {
   }
 
   const postForm = async (formData) => {
-    if(isWainting) return;
-    setIsWainting(true);
+    if(loading) return;
+    setLoading(true);
     setData({ ...formData });
     console.log("JSON enviado:", formData);
 
@@ -57,7 +57,7 @@ export function SignUpPage() {
         setShowSuccessModal(true);
       }
     } catch (error) {
-      setIsWainting(false);
+      setLoading(false);
       console.log(error);
       toast.error(error.response.data.message);
       const message = error.response.data.message;
