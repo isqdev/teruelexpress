@@ -1,5 +1,5 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
-import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle } from "phosphor-react";
+import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage } from "@/components";
+import { Eye, EyeSlash, UserList, LockSimpleOpen } from "phosphor-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
@@ -18,6 +18,8 @@ export function LoginPage() {
   const navigate = useNavigate();
   const expirationDays = parseInt(import.meta.env.VITE_COOKIE_EXPIRATION_DAYS);
   const authService = new AuthService();
+  const expirationDays = parseInt(import.meta.env.VITE_COOKIE_EXPIRATION_DAYS);
+
   const {
     register,
     handleSubmit,
@@ -111,7 +113,7 @@ export function LoginPage() {
 
 }
 
-function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon, onChangeMask, autoComplete = "off" }) {
+function FormField({ title, placeholder, register, name, error, type = "text", icon: Icon, onChangeMask, autoComplete = "off" }) {
   let status;
   if (error) {
     status = error ? "error" : "default"
