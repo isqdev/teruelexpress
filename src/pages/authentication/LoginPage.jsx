@@ -112,7 +112,7 @@ export function LoginPage() {
 
 }
 
-function FormField({ title, placeholder, register, name, error, dirty, type = "text", icon: Icon, onChangeMask, autoComplete = "off" }) {
+function FormField({ title, placeholder, register, name, error, type = "text", icon: Icon, onChangeMask, autoComplete = "off" }) {
   let status;
   if (error) {
     status = error ? "error" : "default"
