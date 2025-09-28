@@ -1,10 +1,9 @@
-import { ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, SectionApp, AppHeader, Shape, Modal, ModalConfirm } from "@/components";
+import { SectionApp, AppHeader, Modal, ModalConfirm } from "@/components";
 import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -19,13 +18,11 @@ import {
 } from "@/components/ui/table";
 
 import { Button } from "@/components/ui/button"
-import { X } from "phosphor-react";
-import { setInfo, getInfo, updateInfo, getOriginDestiny } from "@/services/shipments";
-import { useIsMobile } from "@/hooks/use-mobile" 
+import { X, ArrowLeft, ArrowRight } from "phosphor-react";
+import { useIsMobile } from "@/hooks/use-mobile"
+import BudgetService from "../../../services/BudgetService";
 
-export function MyShipments() {  
-  getInfo() ?? setInfo();
-  
+export function MyShipments() {
   return (
     <>
       <SectionApp>
@@ -37,12 +34,12 @@ export function MyShipments() {
   );
 }
 
-const getColumns = ({ onCancelClick }) => [
+const getColumns = ({ onCancelClick, currentPage = 0 }) => [
   {
     accessorKey: "id",
     header: "ID",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("id")}</div>
+      <div className="capitalize">{row.index + 1 + (currentPage * 10)}</div>
     ),
   },
   {
@@ -69,28 +66,47 @@ const getColumns = ({ onCancelClick }) => [
     accessorKey: "origem",
     header: "Origem/Destino",
     cell: ({ row }) => (
-        <div className="capitalize">{getOriginDestiny(row.index)}</div>
+      <div className="capitalize">{row.getValue("origem")} / {row.getValue("destino")}</div>
+    ),
+  },
+  {
+    accessorKey: "destino",
+    header: "Destino",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("destino")}</div>
     ),
   },
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
+    cell: ({ row }) => {
+      const status = row.getValue("status");
+      const formattedStatus = status ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase() : '';
+      return (
+        <div>{formattedStatus}</div>
+      );
+    },
   },
   {
     id: "actions",
     enableHiding: false,
     header: "Cancelar",
     cell: ({ row }) => {
+      const status = row.getValue("status");
+      const isPendente = status && status.toLowerCase() === 'pendente';
+
       return (
-        <Button variant="secondary" className={`h-8 w-8 p-0 ${row.getValue('status') == 'pendente' ? ' hover:cursor-pointer' : 'capitalize text-gray-100 cursor-default'}`}  onClick={() => 
-          {
-            if(row.getValue("status") == "pendente")
-             onCancelClick(row.original)
-          }}>
-          <X/>
+        <Button
+          variant="secondary"
+          className={`h-8 w-8 p-0 ${isPendente ? 'hover:cursor-pointer' : 'text-gray-400 cursor-not-allowed opacity-50'}`}
+          onClick={() => {
+            if (isPendente) {
+              onCancelClick(row.original);
+            }
+          }}
+          disabled={!isPendente}
+        >
+          <X />
         </Button>
       );
     },
@@ -102,43 +118,96 @@ function DataTableDemo() {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRow, setSelectedRow] = React.useState(null);
-  const [tableData, setTableData] = React.useState(getInfo());
+  const [tableData, setTableData] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [loading, setLoading] = React.useState(false);
 
-  const isMobile = useIsMobile()
+  const budgetService = new BudgetService();
+  const isMobile = useIsMobile();
 
-  React.useEffect(() => {
-      setColumnVisibility({
-        id: !isMobile,
-        origem: !isMobile,
-      })
-    }, [isMobile])
-
-  const columns = getColumns({
-    onCancelClick: setSelectedRow
-  })
-
-  const handleCancel = () => {
-    if (!selectedRow) return;
-
-    setTableData(updateInfo(selectedRow.id)); 
-    setSelectedRow(null);  
+  const formatDate = (dateArray) => {
+    if (!dateArray) return "";
+    const [year, month, day] = dateArray;
+    return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
   };
 
-const table = useReactTable({
+  const loadShipments = async (page) => {
+    setLoading(true);
+    try {
+      const response = await budgetService.findAllClient(page);
+      const shipments = response.data.content || [];
+      setTotalPages(response.data.totalPages);
+
+      const formattedData = shipments.map((shipment) => ({
+        id: shipment.id,
+        data: formatDate(shipment.dataPedido),
+        origem: shipment.origem,
+        destino: shipment.destino,
+        status: shipment.status,
+      }));
+
+      setTableData(formattedData);
+    } catch (error) {
+      console.error("Erro ao carregar solicitações:", error);
+      setTableData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    loadShipments(currentPage);
+  }, [currentPage]);
+
+  React.useEffect(() => {
+    setColumnVisibility({
+      id: !isMobile,
+      origem: !isMobile,
+      destino: false,
+    });
+  }, [isMobile]);
+
+  const goToPage = (page) => {
+    if (page >= 0 && page < totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const columns = React.useMemo(() => getColumns({
+    onCancelClick: setSelectedRow,
+    currentPage
+  }), [currentPage]);
+
+  const handleCancel = async () => {
+    if (!selectedRow) return;
+
+    // adicionar o service cancelar aqui    
+    await loadShipments(currentPage);
+    setSelectedRow(null);
+  };
+
+  const table = useReactTable({
     data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    manualPagination: true,
+    pageCount: totalPages,
     state: {
       columnFilters,
       columnVisibility,
       rowSelection,
+      sorting,
+      pagination: {
+        pageIndex: currentPage,
+        pageSize: 10,
+      },
     },
     initialState: {
       sorting: [
@@ -150,13 +219,23 @@ const table = useReactTable({
     },
   });
 
+  if (loading) {
+    return (
+      <div className="w-full pt-5">
+        <div className="text-center text-gray-600">
+          Carregando solicitações...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full pt-5">
       <div className="rounded-md border">
         <Table>
-          <TableHeader >
+          <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id} >
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
                   <TableHead key={header.id} className="text-center font-bold">
                     {header.isPlaceholder
@@ -181,7 +260,7 @@ const table = useReactTable({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()                  
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -190,14 +269,39 @@ const table = useReactTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  Nenhuma solicitação encontrada.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+
+      {/* Paginação customizada */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 0}
+            className="disabled:opacity-50 disabled:pointer-events-none w-auto"
+            variant="outline"
+          >
+            <ArrowLeft className="icon" />
+          </Button>
+          <span className="text-sm text-gray-600 mx-2">
+            {currentPage + 1} de {totalPages}
+          </span>
+          <Button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage >= totalPages - 1}
+            className="disabled:opacity-50 disabled:pointer-events-none w-auto"
+            variant="outline"
+          >
+            <ArrowRight className="icon" />
+          </Button>
+        </div>
+      )}
+
       <ModalConfirm
         message="Você realmente deseja cancelar esta solicitação?"
         open={!!selectedRow}
@@ -205,7 +309,6 @@ const table = useReactTable({
         action={() => handleCancel()}
         onClose={() => setSelectedRow(null)}
       />
-      </div>
     </div>
   );
 }
