@@ -6,9 +6,13 @@ class BudgetService extends BaseService {
     }
 
     async findAllClient(page) {
-        const resultado = await this.api.get(`${this.endPoint}/client?size=10&page=${page}&sort=id,desc`);
-        console.log(resultado);
+        const resultado = await this.api.get(`${this.endPoint}/clientes?size=10&page=${page}&sort=id,desc`);
         return resultado;
+    }
+
+    async deleteClient(id) {
+        const resultado = await this.api.delete(`${this.endPoint}/clientes/${id}`);
+        return resultado
     }
 }
 

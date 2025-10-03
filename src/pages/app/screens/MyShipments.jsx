@@ -142,6 +142,7 @@ function DataTableDemo() {
 
       const formattedData = shipments.map((shipment) => ({
         id: shipment.id,
+        realId: shipment.id,
         data: formatDate(shipment.dataPedido),
         origem: shipment.origem,
         destino: shipment.destino,
@@ -183,9 +184,14 @@ function DataTableDemo() {
   const handleCancel = async () => {
     if (!selectedRow) return;
 
-    // adicionar o service cancelar aqui    
-    await loadShipments(currentPage);
-    setSelectedRow(null);
+    try {
+      await budgetService.deleteClient(selectedRow.realId);
+      await loadShipments(currentPage);
+    } catch (error) {
+      console.error("Erro ao cancelar solicitação:", error);
+    } finally {
+      setSelectedRow(null);
+    }
   };
 
   const table = useReactTable({
