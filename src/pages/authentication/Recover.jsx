@@ -29,11 +29,13 @@ export function Recover() {
     mode: "onBlur"
   });
 
+  const recoverService = new RecoverService()
+
   const onSubmit = async (data) => {
     try {
       setIsWaiting(true);
       console.log("enviado...");
-      const resposta = await gerarCodigo(data);
+      const resposta = await gerarCodigo(data.email);
       console.log("resposta backend:", resposta);
       localStorage.setItem("recoverData", JSON.stringify(data));
       setShowCodeScreen(true);
@@ -48,7 +50,7 @@ export function Recover() {
   };
 
   const gerarCodigo = async (pessoa) => {
-    return await RecoverService.gerarCodigo(pessoa);
+    return await recoverService.gerarCodigo(pessoa);
   };
 
 

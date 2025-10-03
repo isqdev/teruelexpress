@@ -7,7 +7,7 @@ class RecoverService extends BaseService {
     }
 
     async gerarCodigo(data) {
-        const resposta = this.api.post(`${this.endPoint}/gerar`, data);
+        const resposta = this.api.post(`${this.endPoint}/gerar?email=${data}`);
         return resposta;
     }
 
