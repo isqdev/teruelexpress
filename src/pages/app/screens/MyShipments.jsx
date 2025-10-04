@@ -44,7 +44,7 @@ const getColumns = ({ onCancelClick, currentPage = 0 }) => [
   },
   {
     accessorKey: "date",
-    header: "Date",
+    header: "Data",
     sortingFn: (rowA, rowB, columnId) => {
       function parseDate(dateString) {
         const parts = dateString.split("/");
