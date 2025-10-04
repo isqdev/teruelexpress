@@ -43,8 +43,8 @@ const getColumns = ({ onCancelClick, currentPage = 0 }) => [
     ),
   },
   {
-    accessorKey: "data",
-    header: "Data",
+    accessorKey: "date",
+    header: "Date",
     sortingFn: (rowA, rowB, columnId) => {
       function parseDate(dateString) {
         const parts = dateString.split("/");
@@ -59,21 +59,14 @@ const getColumns = ({ onCancelClick, currentPage = 0 }) => [
       return rowA > rowB ? 1 : rowA < rowB ? -1 : 0
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("data")}</div>
+      <div className="capitalize">{row.getValue("date")}</div>
     ),
   },
   {
-    accessorKey: "origem",
+    accessorKey: "address",
     header: "Origem/Destino",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("origem")} / {row.getValue("destino")}</div>
-    ),
-  },
-  {
-    accessorKey: "destino",
-    header: "Destino",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("destino")}</div>
+      <div className="capitalize">{row.original.origin}/{row.original.destination}</div>
     ),
   },
   {
@@ -93,18 +86,18 @@ const getColumns = ({ onCancelClick, currentPage = 0 }) => [
     header: "Cancelar",
     cell: ({ row }) => {
       const status = row.getValue("status");
-      const isPendente = status && status.toLowerCase() === 'pendente';
+      const isPending = status && status.toLowerCase() === 'pendente';
 
       return (
         <Button
           variant="secondary"
-          className={`h-8 w-8 p-0 ${isPendente ? 'hover:cursor-pointer' : 'text-gray-400 cursor-not-allowed opacity-50'}`}
+          className={`h-8 w-8 p-0 ${isPending ? 'hover:cursor-pointer' : 'text-gray-400 cursor-not-allowed opacity-50'}`}
           onClick={() => {
-            if (isPendente) {
+            if (isPending) {
               onCancelClick(row.original);
             }
           }}
-          disabled={!isPendente}
+          disabled={!isPending}
         >
           <X />
         </Button>
@@ -142,10 +135,9 @@ function DataTableDemo() {
 
       const formattedData = shipments.map((shipment) => ({
         id: shipment.id,
-        realId: shipment.id,
-        data: formatDate(shipment.dataPedido),
-        origem: shipment.origem,
-        destino: shipment.destino,
+        date: formatDate(shipment.dataPedido),
+        origin: shipment.origem,
+        destination: shipment.destino,
         status: shipment.status,
       }));
 
@@ -185,7 +177,7 @@ function DataTableDemo() {
     if (!selectedRow) return;
 
     try {
-      await budgetService.deleteClient(selectedRow.realId);
+      await budgetService.deleteClient(selectedRow.id);
       await loadShipments(currentPage);
     } catch (error) {
       console.error("Erro ao cancelar solicitação:", error);
