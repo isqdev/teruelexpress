@@ -16,7 +16,6 @@ import { toast, Toaster } from "sonner";
 export function LoginPage() {
   const [isWainting, setIsWainting] = useState(false);
   const navigate = useNavigate();
-  const expirationDays = parseInt(import.meta.env.VITE_COOKIE_EXPIRATION_DAYS);
   const authService = new AuthService();
   const expirationDays = parseInt(import.meta.env.VITE_COOKIE_EXPIRATION_DAYS);
 
