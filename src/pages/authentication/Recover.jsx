@@ -1,28 +1,26 @@
-import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel, InputMessage, Section, Shape } from "@/components";
-import { Eye, EyeSlash, UserList, LockSimpleOpen, CheckCircle } from "phosphor-react";
+import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage } from "@/components";
+import { Eye, EyeSlash } from "phosphor-react";
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SectionBox } from "@/components";
 import { CloudinaryImage } from "@/components/CloudinaryImage.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
 import RecoverService from "../../services/RecoverService";
-import RecoverPessoaService from "../../services/RecoverPessoaService";
-import { cpf, cnpj } from 'cpf-cnpj-validator';
-import { toast, Toaster } from "sonner";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
+import { z } from "zod";
 
 export function Recover() {
 
   const [showCodeScreen, setShowCodeScreen] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
+  const [email, setEmail] = useState("");
 
   const { register, handleSubmit, formState: { errors }, setError } = useForm({
     resolver: zodResolver(recoverSchema),
@@ -31,35 +29,35 @@ export function Recover() {
 
   const recoverService = new RecoverService()
 
-  const onSubmit = async (data) => {
+  const gerarCodigo = async (emailToSend) => {
     try {
       setIsWaiting(true);
-      console.log("enviado...");
-      const resposta = await gerarCodigo(data.email);
-      console.log("resposta backend:", resposta);
-      localStorage.setItem("recoverData", JSON.stringify(data));
-      setShowCodeScreen(true);
+      await recoverService.gerarCodigo(emailToSend);
+      toast.success("Código enviado com sucesso!");
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Email nao encontrado");
-      const message = error.response?.data?.message || "Não foi posivel gerar o codigo";
-      setError("email", { type: "server", message });
+      toast.error(error.response?.data?.message || "Erro ao enviar código");
+      throw error;
     } finally {
       setIsWaiting(false);
     }
   };
 
-  const gerarCodigo = async (pessoa) => {
-    return await recoverService.gerarCodigo(pessoa);
+  const onSubmit = async (data) => {
+    try {
+      await gerarCodigo(data.email);
+      setEmail(data.email);
+      setShowCodeScreen(true);
+    } catch (error) {
+      const message = error.response?.data?.message || "Não foi posivel gerar o codigo";
+      setError("email", { type: "server", message });
+    }
   };
-
-
 
   return (
     <>
-
       {showCodeScreen ? (
-        <Code onBackToEmail={() => setShowCodeScreen(false)} />
+        <Code email={email} onBackToEmail={() => setShowCodeScreen(false)} onResendCode={gerarCodigo} />
       ) : (
         <SectionBox className="pt-0">
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -72,9 +70,9 @@ export function Recover() {
                   placeholder="Digite seu email" {...register("email")} />
               </InputRoot>
               <InputMessage className="text-danger-base">{errors.email?.message}</InputMessage>
-              <Button type="submit" className="bg-red-tx text-center mt-4">
+              <Button type="submit" className={`text-center mt-4 ${isWaiting ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-tx cursor-pointer'}`} disabled={isWaiting}>
                 <ButtonText className="text-white text-center">
-                  Enviar código
+                  {isWaiting ? "Enviando..." : "Enviar código"}
                 </ButtonText>
               </Button>
             </div>
@@ -86,8 +84,7 @@ export function Recover() {
 
 }
 
-function Code({ onBackToEmail }) {
-
+function Code({ email, onBackToEmail, onResendCode }) {
   const { control, handleSubmit, formState: { errors }, setError } = useForm({
     resolver: zodResolver(codeSchema),
     mode: "onBlur"
@@ -95,46 +92,20 @@ function Code({ onBackToEmail }) {
 
   const [isWaiting, setIsWaiting] = useState(false);
   const [showPasswordScreen, setShowPasswordScreen] = useState(false);
-  const [items, setItems] = useState({});
+  const [validatedCode, setValidatedCode] = useState("");
 
-  useEffect(() => {
-    loadReviewsLocalStorage();
-  }, []);
-
-  const loadReviewsLocalStorage = () => {
-    try {
-      const storedReviews = localStorage.getItem('recoverData');
-      if (storedReviews) {
-        const reviews = JSON.parse(storedReviews);
-
-
-        const itemsUser = {
-          email: reviews.email,
-        };
-        setItems(itemsUser);
-      }
-
-    } catch (error) {
-      console.error("Erro ao carregar  'jsonReview' do localStorage:", error);
-      setItems();
-    }
-  }
+  const recoverService = new RecoverService()
 
   const onSubmitCode = async (data) => {
     try {
       setIsWaiting(true);
-      console.log("validando código...", data);
-      const recoverData = JSON.parse(localStorage.getItem("recoverData"));
-      const email = recoverData?.email;
-      const payload = {
+      const code = {
         code: data.code,
       };
-      const resposta = await RecoverService.validarCodigo(email, payload);
-      console.log("resposta backend:", resposta);
-      localStorage.setItem("codeData", JSON.stringify(payload));
+      await recoverService.validarCodigo(email, code.code);
+      setValidatedCode(code.code);
       setShowPasswordScreen(true);
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.message || "Erro ao validar código");
       const message = error.response?.data?.message || "Código inválido";
       setError("code", { type: "server", message });
@@ -145,9 +116,8 @@ function Code({ onBackToEmail }) {
 
   return (
     <>
-
       {showPasswordScreen ? (
-        <PasswordScreen />
+        <PasswordScreen email={email} code={validatedCode} />
       ) : (
         <SectionBox className="pt-0">
           <form onSubmit={handleSubmit(onSubmitCode)} noValidate>
@@ -183,14 +153,14 @@ function Code({ onBackToEmail }) {
                     </InputOTP>
                   )} />
                 <InputMessage className="text-danger-base">{errors.code?.message}</InputMessage>
-                <Countdown />
-                <Button className="bg-red-tx text-center">
+                <Countdown email={email} onResendCode={onResendCode} />
+                <Button type="submit" className={`text-center ${isWaiting ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-tx cursor-pointer'}`} disabled={isWaiting}>
                   <ButtonText className="text-white text-center">
-                    Confirmar
+                    {isWaiting ? "Confirmando..." : "Confirmar"}
                   </ButtonText>
                 </Button>
                 <p className="text-center leading-none"><span className="text-sm">Código enviado para</span><br />
-                  <span className="text-xs ">{items.email}</span></p>
+                  <span className="text-xs ">{email}</span></p>
                 <p className="text-center mt-1 cursor-pointer"
                   onClick={onBackToEmail}
                 >
@@ -206,32 +176,26 @@ function Code({ onBackToEmail }) {
   );
 }
 
-function PasswordScreen() {
+function PasswordScreen({ email, code }) {
   const navigate = useNavigate();
-
   const [isWaiting, setIsWaiting] = useState(false);
-  const { control, handleSubmit, register, formState: { errors, touchedFields } } = useForm({
+  const { handleSubmit, register, formState: { errors }, setError } = useForm({
     resolver: zodResolver(passwordSchema),
     mode: "onBlur"
   });
 
-
+  const recoverService = new RecoverService()
 
   const onSubmitPassword = async (data) => {
     try {
       setIsWaiting(true);
-      console.log("atualizando senha...", data);
-      const recoverData = JSON.parse(localStorage.getItem("recoverData"));
-      const email = recoverData?.email;
-      const payload = {
-        senha: data.password,
-      };
-      const resposta = await RecoverPessoaService.atualizarSenha(email, payload);
-      console.log("resposta backend:", resposta);
+      await recoverService.atualizarSenha(email, code, data.password);
+      toast.success("Senha atualizada com sucesso! Redirecionando para login...");
 
-      toast.success("Senha atualizada com sucesso");
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.message || "Erro ao atualizar senha");
       const message = error.response?.data?.message || "Erro";
       setError("password", { type: "server", message });
@@ -242,7 +206,7 @@ function PasswordScreen() {
   return (
     <>
       <SectionBox className="pt-0">
-        <form onSubmit={handleSubmit(onSubmitPassword)} noValidate clas>
+        <form onSubmit={handleSubmit(onSubmitPassword)} noValidate>
           <CloudinaryImage publicId="vfq6dw8u2de9vcybxvka" className="w-64 justify-self-center" />
           <h4 className="font-bold text-center py-7 cursor-default">Recupere sua conta</h4>
           <div className="mb-3 mt-5">
@@ -264,9 +228,9 @@ function PasswordScreen() {
             />
           </div>
 
-          <Button className="bg-red-tx text-center">
+          <Button type="submit" className={`text-center ${isWaiting ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-tx cursor-pointer'}`} disabled={isWaiting}>
             <ButtonText className="text-white text-center">
-              Salvar
+              {isWaiting ? "Salvando..." : "Salvar"}
             </ButtonText>
           </Button>
 
@@ -276,9 +240,10 @@ function PasswordScreen() {
   )
 }
 
-const Countdown = () => {
+const Countdown = ({ email, onResendCode }) => {
   const [seconds, setSeconds] = useState(60);
   const [isActive, setIsActive] = useState(true);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     let interval = null;
@@ -293,20 +258,27 @@ const Countdown = () => {
     }
 
     return () => clearInterval(interval);
-  }, [isActive, seconds, isActive]);
+  }, [isActive, seconds]);
 
-
-  const handleResend = () => {
-    setSeconds(60);
-    setIsActive(true);
+  const handleResend = async () => {
+    try {
+      setIsResending(true);
+      await onResendCode(email);
+      setSeconds(60);
+      setIsActive(true);
+    } catch (error) {
+      console.error("Erro ao reenviar código:", error);
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
     <p
-      className={`text-center font-bold my-2  ${seconds === 0 ? "cursor-pointer" : ""}`}
-      onClick={seconds === 0 ? handleResend : null}
+      className={`text-center font-bold my-2  ${seconds === 0 && !isResending ? "cursor-pointer" : ""}`}
+      onClick={seconds === 0 && !isResending ? handleResend : null}
     ><span className="text-base">
-        {seconds === 0 ? "Reenviar código" : `Enviar código novamente (${seconds}s)`}
+        {isResending ? "Enviando..." : (seconds === 0 ? "Reenviar código" : `Enviar código novamente (${seconds}s)`)}
       </span>
     </p>
   );
@@ -348,8 +320,6 @@ function FormField({ title, placeholder, register, name, error, dirty, type = "t
     </>
   )
 }
-
-
 
 const recoverSchema = z.object({
   email: z

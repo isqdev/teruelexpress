@@ -11,8 +11,13 @@ class RecoverService extends BaseService {
         return resposta;
     }
 
-    async validarCodigo(data) {
-        const resposta = this.api.post(`${this.endPoint}/validar`, data);
+    async validarCodigo(email, codigo) {
+        const resposta = this.api.post(`${this.endPoint}/validar?email=${email}&codigo=${codigo}`);
+        return resposta;
+    }
+
+    async atualizarSenha(email, codigo, senha) {
+        const resposta = this.api.patch(`${this.endPoint}/atualizar?email=${email}&codigo=${codigo}&novaSenha=${senha}`);
         return resposta;
     }
 }
