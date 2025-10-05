@@ -14,7 +14,9 @@ import Cookies from 'js-cookie';
 import { toast, Toaster } from "sonner";
 
 export function LoginPage() {
+  const [isWainting, setIsWainting] = useState(false);
   const navigate = useNavigate();
+  const expirationDays = parseInt(import.meta.env.VITE_COOKIE_EXPIRATION_DAYS);
   const authService = new AuthService();
   const {
     register,
@@ -27,8 +29,9 @@ export function LoginPage() {
   });
 
   const onSubmit = async (values) => {
+    if (isWainting) return;
+    setIsWainting(true);
     values.cpf_cnpj = values.cpf_cnpj.replace(/\D/g, '');
-    console.log(values);
     localStorageUtils.setItem("login", values);
     await login(values);
   };
@@ -36,13 +39,12 @@ export function LoginPage() {
   const login = async (usuario) => {
     try {
       const resposta = await authService.login(JSON.stringify(usuario));
-      console.log(resposta);
       if (resposta.status === 200 && resposta.data.token) {
-        Cookies.set('token', resposta.data.token, { expires: 1, path: '/' });
+        Cookies.set('token', resposta.data.token, { expires: expirationDays, path: '/' });
         navigate("/app/home");
       }
     } catch (error) {
-      console.log(error);
+      setIsWainting(false);
       toast.error(error.response.data.message);
       const message = error.response.data.message;
       setError("cpf_cnpj", { type: "server", message });
@@ -81,7 +83,11 @@ export function LoginPage() {
                 icon={LockSimpleOpen}
                 autoComplete="password"
               />
-              <p className="font-bold text-right cursor-pointer text-blue-tx"><span className="text-sm">Esqueceu a senha?</span></p>
+              <p className="font-bold text-right cursor-pointer text-blue-tx">
+                <Link to='/recuperar'>
+                  <span className="text-sm">Esqueceu a senha?</span>
+                </Link>
+              </p>
             </div>
             <div className="pt-4 pb-10">
               <Button className={"bg-red-tx"} type="submit">
@@ -98,7 +104,7 @@ export function LoginPage() {
             </Link>
           </div>
         </div>
-        <Toaster position="top-right" richColors/>
+        <Toaster position="top-right" richColors />
       </SectionBox>
     </>
   );
