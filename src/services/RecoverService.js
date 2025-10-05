@@ -7,17 +7,17 @@ class RecoverService extends BaseService {
     }
 
     async gerarCodigo(data) {
-        const resposta = this.api.post(`${this.endPoint}/gerar?email=${data}`);
+        const resposta = await this.api.post(`${this.endPoint}/gerar?email=${data}`);
         return resposta;
     }
 
     async validarCodigo(email, codigo) {
-        const resposta = this.api.post(`${this.endPoint}/validar?email=${email}&codigo=${codigo}`);
+        const resposta = await this.api.post(`${this.endPoint}/validar?email=${email}&codigo=${codigo}`);
         return resposta;
     }
 
     async atualizarSenha(email, codigo, senha) {
-        const resposta = this.api.patch(`${this.endPoint}/atualizar?email=${email}&codigo=${codigo}&novaSenha=${senha}`);
+        const resposta = this.api.patch(`${this.endPoint}/atualizar`,{ email, codigo, novaSenha: senha }); 
         return resposta;
     }
 }
