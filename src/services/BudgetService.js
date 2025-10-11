@@ -12,7 +12,12 @@ class BudgetService extends BaseService {
 
     async deleteClient(id) {
         const resultado = await this.api.delete(`${this.endPoint}/clientes/${id}`);
-        return resultado
+        return resultado;
+    }
+
+    async create(orcamento) {
+        const resultado = await this.api.post(`${this.endPoint}`, orcamento);
+        return resultado;
     }
 }
 
