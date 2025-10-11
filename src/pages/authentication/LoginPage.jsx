@@ -18,7 +18,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const authService = new AuthService();
   const expirationDays = parseInt(import.meta.env.VITE_COOKIE_EXPIRATION_DAYS);
-
+  
   const {
     register,
     handleSubmit,
