@@ -17,7 +17,7 @@ class RecoverService extends BaseService {
     }
 
     async atualizarSenha(email, codigo, senha) {
-        const resposta = this.api.patch(`${this.endPoint}/atualizar`,{ email, codigo, novaSenha: senha }); 
+        const resposta = await this.api.patch(`${this.endPoint}/atualizar`,{ email, codigo, novaSenha: senha }); 
         return resposta;
     }
 }
