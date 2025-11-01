@@ -12,7 +12,7 @@ export function Header() {
             <>
                 <div className="w-6/10 h-auto bg-white fixed top-5 right-0 rounded-bl-2xl justify-self-end pr-5 pl-5 z-3 lg:hidden">
                     <X className="icon mb-4 hover:cursor-pointer" onClick={() => { setMenu(false) }} />
-                    <div className="flex flex-col" onClick={() => { setMenu(false) }}>
+                    <div className="flex flex-col my-5" onClick={() => { setMenu(false) }}>
                         <a className="font-bold hover:cursor-pointer" href="#budget">
                             <p>Simular orçamento</p>
                         </a>

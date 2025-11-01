@@ -1,5 +1,7 @@
-import { House, Package, Truck, Cube, Star, FolderSimpleStar, ClipboardText, GearSix } from "phosphor-react"
-import { useLocation } from "react-router-dom"
+import { House, Package, Truck, Cube, Star, FolderSimpleStar, ClipboardText, GearSix } from "phosphor-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+
 
 import {
   Sidebar,
@@ -96,3 +98,19 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+function LogoutButton() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // 1. LIMPAR O TOKEN DO COOKIE
+    // O método 'remove' da biblioteca JS-Cookie é usado para deletar o cookie.
+    // É crucial passar a mesma chave ('token') e o mesmo 'path' ('/').
+    Cookies.remove('token', { path: '/' }); 
+    
+    // 2. Limpar o Estado Global (Opcional, mas recomendado)
+    // Se você usa Context API/Redux, chame sua função para limpar o estado do usuário.
+    // ex: clearUserState();
+    
+    // 3. Redirecionar
+    navigate('/login');
+  };
