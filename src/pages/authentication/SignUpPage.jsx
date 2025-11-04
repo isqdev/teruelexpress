@@ -143,7 +143,7 @@ export function SignUpPage() {
           <Shape className="z-2 border border-gray-600 bg-white flex flex-col items-center max-w-xs gap-4">
             <CheckCircle className="icon size-24 text-success-light justify-self-center" weight="fill" />
             <h3 className="text-center text-lg font-semibold ">Conta criada</h3>
-            <Link to="/home">
+            <Link to="/login">
               <Button className="bg-white border border-gray-600">
                 <HouseLine className="icon text-black" />
                 <ButtonText className="text-black">Entrar</ButtonText>
