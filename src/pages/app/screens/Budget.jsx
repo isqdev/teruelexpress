@@ -83,6 +83,7 @@ export function Budget() {
 
     const handleSubmitOrder = async () => {
         const lastPackage = packages[packages.length - 1];
+        const observationValue = watch("observation");
 
         const finalJson = {
             addressOrigin: lastPackage.origin,
@@ -96,6 +97,10 @@ export function Budget() {
                 amount: pkg.amount || 1,
             })),
         };
+
+        if (observationValue && observationValue.trim()) {
+            finalJson.observation = observationValue.trim();
+        }
 
         try {
             setIsSubmitting(true);
@@ -381,7 +386,10 @@ export function Budget() {
                                 <Shape className="border border-gray-600">
                                     <p className="pb-3 font-bold">Obervações (opcional)</p>
                                     <InputRoot>
-                                        <InputField placeholder="Adicione mais detalhes sobre a entrega" />
+                                        <InputField 
+                                            placeholder="Adicione mais detalhes sobre a entrega" 
+                                            {...register("observation")}
+                                        />
                                     </InputRoot>
                                 </Shape>
                             </div>
@@ -760,6 +768,9 @@ function generalSchema(cityList) {
             .optional()
             .transform((val) => (val ? Number(val.replace(",", ".")) : undefined))
             .refine((val) => val === undefined || (!isNaN(val) && val > 0), { message: "Informe um número válido" }),
+        observation: z
+            .string()
+            .optional(),
     });
 }
 
