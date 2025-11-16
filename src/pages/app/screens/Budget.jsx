@@ -171,23 +171,12 @@ export function Budget() {
         setTab(tab + 1);
     }
 
-    //<Button
-    //    className={`${isSubmitting ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-tx cursor-pointer'}`}
-    //    onClick={handleSend}
-    //    type="button"
-    //    disabled={isSubmitting}
-    //>
-    //    <ButtonText className="text-white text-center">
-    //        {isSubmitting ? "Enviando..." : "Enviar"}
-    //    </ButtonText>
-    //</Button>
-
     return (
         <>
             <SectionApp>
                 <AppHeader screenTitle="Orçamento" />
                 <p className="grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
-                <div className="flex gap-6 py-2 font-bold">
+                <div className="flex gap-6 py-4 font-bold">
                     <p
                         onClick={() => setTab(1)}
                         className={`cursor-pointer ${tab === 1 ? 'border-b-3 border-red-tx' : ''}`}
@@ -209,7 +198,7 @@ export function Budget() {
                 </div>
                 <form>
                     <div data-tab={tab} className="hidden data-[tab=1]:grid gap-6">
-                        <Shape className="border border-gray-600 w-full">
+                        <Shape className="border border-gray-600">
                             <h4 className="pb-2">Endereço origem</h4>
                             <AddressForm
                                 register={register}
@@ -222,7 +211,7 @@ export function Budget() {
                                 prefix="origin."
                             />
                         </Shape>
-                        <Shape className="border border-gray-600 w-full">
+                        <Shape className="border border-gray-600">
                             <h4 className="pb-2">Endereço destino</h4>
                             <AddressForm
                                 register={register}
@@ -236,8 +225,8 @@ export function Budget() {
                             />
                         </Shape>
 
-                        <div className="flex-col gap-4 hidden lg:flex lg:col-start-2">
-                            <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
+                        <div className="flex-col gap-4 lg:col-start-2">
+                            <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
                                 <Button
                                     className="bg-gray-50"
                                     onClick={handleCancel}
@@ -322,7 +311,7 @@ export function Budget() {
                                     <Info className="icon" />
                                     <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
                                 </div>
-                                <Shape className="bg-gray-50">
+                                <Shape>
                                     <PackageList
                                         packages={packages}
                                         onIncrease={handleIncreaseAmount}
@@ -332,7 +321,7 @@ export function Budget() {
                             </div>
 
                             <div className="flex flex-col gap-4 lg:col-start-2">
-                                <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
+                                <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
                                     <Button
                                         className="bg-gray-50"
                                         onClick={handleBack}
@@ -356,8 +345,76 @@ export function Budget() {
                             </div>
                         </div>
                     </div>
+                    <div data-tab={tab} className="hidden data-[tab=3]:block">
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <AdressList
+                                adress={{
+                                    cep: watch("origin.cep"),
+                                    estado: watch("origin.state"),
+                                    cidade: watch("origin.city"),
+                                    bairro: watch("origin.neighborhood"),
+                                    rua: watch("origin.street"),
+                                    numero: watch("origin.number"),
+                                }}
+                                title="Endereço de Origem"
+                            />
+
+                            <AdressList
+                                adress={{
+                                    cep: watch("destination.cep"),
+                                    estado: watch("destination.state"),
+                                    cidade: watch("destination.city"),
+                                    bairro: watch("destination.neighborhood"),
+                                    rua: watch("destination.street"),
+                                    numero: watch("destination.number"),
+                                }}
+                                title="Endereço de Destino"
+                            />
+
+                            <div className="py-2">
+                                <Shape>
+                                    <PackageListReview packages={packages} />
+                                </Shape>
+                            </div>
+
+                            <div>
+                                <Shape className="border border-gray-600">
+                                    <p className="pb-3 font-bold">Obervações (opcional)</p>
+                                    <InputRoot>
+                                        <InputField placeholder="Adicione mais detalhes sobre a entrega" />
+                                    </InputRoot>
+                                </Shape>
+                            </div>
+
+                            <div className="flex flex-col gap-4 lg:col-start-2">
+                                <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0">
+                                    <Button
+                                        className="bg-gray-50"
+                                        onClick={handleBack}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-black text-center">
+                                            Voltar
+                                        </ButtonText>
+                                    </Button>
+
+                                    <Button
+                                        className={`${isSubmitting ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-tx cursor-pointer'}`}
+                                        onClick={handleSend}
+                                        type="button"
+                                        disabled={isSubmitting}
+                                    >
+                                        <ButtonText className="text-white text-center">
+                                            {isSubmitting ? "Enviando..." : "Enviar"}
+                                        </ButtonText>
+                                    </Button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </form>
-            </SectionApp>
+            </SectionApp >
 
             <ModalSm open={isAlertModalVisible} onClose={() => setIsAlertModalVisible(false)} >
                 <p className="mb-4 text-lg font-semibold">Preencha os campos obrigatórios!</p>
@@ -423,36 +480,53 @@ export function Budget() {
 }
 
 function PackageList({ packages, onIncrease, onDecrease }) {
+    if (packages.length === 0) {
+        return <p className="text-gray-600 text-center">Nenhum pacote adicionado</p>;
+    }
+
     return (
-        <div className="flex flex-col gap-2">
-            {packages.length === 0 ? (
-                <p className="text-gray-600 text-center">Nenhum pacote adicionado</p>
-            ) : (
-                packages.map((pkg, index) => (
-                    <div key={index} className="flex gap-3 justify-between">
-                        <div className="flex gap-2">
-                            {pkg.loadType === "caixa" && <Package className="icon" />}
-                            {pkg.loadType === "envelope" && <File className="icon" />}
-                            {pkg.loadType === "sacola" && <ToteSimple className="icon" />}
-                            <p className="capitalize">{pkg.loadType}</p>
-                            <p>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}cm    ${pkg.weight || 0}kg`}</p>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                            <Minus
-                                className="cursor-pointer"
-                                size={20}
-                                onClick={() => onDecrease(index)}
-                            />
-                            <p>{pkg.amount || 1}</p>
-                            <Plus
-                                className="cursor-pointer"
-                                size={20}
-                                onClick={() => onIncrease(index)}
-                            />
+        <div className="flex flex-col">
+            <div className="flex gap-x-4 pb-2 mb-2 border-b-2 border-gray-300 font-bold">
+                <span className="flex-1">Tipo</span>
+                <span className="flex-1">Dimensões</span>
+                <span className="w-20 text-center">Qtd</span>
+            </div>
+            
+            {packages.map((pkg, index) => (
+                <div
+                    key={index}
+                    className="flex gap-x-4 py-2 border-b border-gray-100 items-center"
+                >
+                    <div className="flex-1 flex items-center gap-2">
+                        {pkg.loadType === "caixa" && <Package size={20} />}
+                        {pkg.loadType === "envelope" && <File size={20} />}
+                        {pkg.loadType === "sacola" && <ToteSimple size={20} />}
+                        <span className="capitalize">{pkg.loadType}</span>
+                    </div>
+                    
+                    <div className="flex-1">
+                        <div className="text-sm">
+                            <span>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}cm`}</span>
+                            <br />
+                            <span>{`${pkg.weight || 0}kg`}</span>
                         </div>
                     </div>
-                ))
-            )}
+                    
+                    <div className="w-20 flex items-center justify-center gap-2">
+                        <Minus
+                            className="cursor-pointer"
+                            size={16}
+                            onClick={() => onDecrease(index)}
+                        />
+                        <span className="min-w-[20px] text-center">{pkg.amount || 1}</span>
+                        <Plus
+                            className="cursor-pointer"
+                            size={16}
+                            onClick={() => onIncrease(index)}
+                        />
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }
@@ -701,4 +775,71 @@ function maskInput(value, field) {
     }
 
     return value;
+}
+
+function AdressList({ adress, title }) {
+    const labels = ["CEP", "Estado", "Cidade", "Bairro", "Rua", "Número"];
+
+    const addressValues = [
+        adress?.cep || '',
+        adress?.estado || adress?.state || '',
+        adress?.cidade || adress?.city || '',
+        adress?.bairro || adress?.neighborhood || '',
+        adress?.rua || adress?.street || '',
+        adress?.numero || adress?.number || ''
+    ];
+
+    return (
+        <Shape className="border-gray-600 border-1 sm:pt-2 sm:pb-5 sm:pl-4 lg:mt-0">
+            <span className="text-lg font-bold">{title}</span>
+            {labels.map((label, index) => (
+                <div className="flex flex-col mt-3" key={index}>
+                    <span className="sm:text-xs font-bold">{label}</span>
+                    <span className="text-base">{addressValues[index]}</span>
+                </div>
+            ))}
+        </Shape>
+    );
+}
+
+function PackageListReview({ packages }) {
+    if (packages.length === 0) {
+        return <p className="text-gray-600 text-center">Nenhum pacote adicionado</p>;
+    }
+
+    return (
+        <div className="flex flex-col">
+            <div className="flex gap-x-4 pb-2 mb-2 border-b-2 border-gray-300 font-bold">
+                <span className="flex-1">Tipo</span>
+                <span className="flex-1">Dimensões</span>
+                <span className="w-16 text-center">Qtd</span>
+            </div>
+
+            {packages.map((pkg, index) => (
+                <div
+                    key={index}
+                    className="flex gap-x-4 py-2 border-b border-gray-100 items-center"
+                >
+                    <div className="flex-1 flex items-center gap-2">
+                        {pkg.loadType === "caixa" && <Package size={20} />}
+                        {pkg.loadType === "envelope" && <File size={20} />}
+                        {pkg.loadType === "sacola" && <ToteSimple size={20} />}
+                        <span className="capitalize">{pkg.loadType}</span>
+                    </div>
+
+                    <div className="flex-1">
+                        <div className="text-sm">
+                            <span>{`${pkg.width || 0}x${pkg.height || 0}x${pkg.length || 0}cm`}</span>
+                            <br />
+                            <span>{`${pkg.weight || 0}kg`}</span>
+                        </div>
+                    </div>
+
+                    <div className="w-16 text-center">
+                        <span>{pkg.amount || 1}</span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
 }
