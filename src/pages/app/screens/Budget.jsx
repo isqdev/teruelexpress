@@ -21,6 +21,7 @@ export function Budget() {
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [packageToDelete, setPackageToDelete] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [tab, setTab] = useState(1);
 
     const budgetService = new BudgetService();
 
@@ -162,41 +163,106 @@ export function Budget() {
         window.location.href = "/app/home";
     };
 
+    const handleBack = () => {
+        setTab(tab - 1);
+    }
+
+    const handleNext = () => {
+        setTab(tab + 1);
+    }
+
+    //<Button
+    //    className={`${isSubmitting ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-tx cursor-pointer'}`}
+    //    onClick={handleSend}
+    //    type="button"
+    //    disabled={isSubmitting}
+    //>
+    //    <ButtonText className="text-white text-center">
+    //        {isSubmitting ? "Enviando..." : "Enviar"}
+    //    </ButtonText>
+    //</Button>
+
     return (
         <>
-            <SectionApp className="xl:grid grid-cols-2">
+            <SectionApp>
                 <AppHeader screenTitle="Orçamento" />
-                <p className="pb-4 grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
-                <form className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:col-span-2">
-                    <Shape className="border border-gray-600">
-                        <h4 className="pb-2">Endereço origem</h4>
-                        <AddressForm
-                            register={register}
-                            errors={errors.origin || {}}
-                            touchedFields={touchedFields.origin || {}}
-                            watch={watch}
-                            setValue={setValue}
-                            setError={setError}
-                            clearErrors={clearErrors}
-                            prefix="origin."
-                        />
-                    </Shape>
-                    <Shape className="border border-gray-600">
-                        <h4 className="pb-2">Endereço destino</h4>
-                        <AddressForm
-                            register={register}
-                            errors={errors.destination || {}}
-                            touchedFields={touchedFields.destination || {}}
-                            watch={watch}
-                            setValue={setValue}
-                            setError={setError}
-                            clearErrors={clearErrors}
-                            prefix="destination."
-                        />
-                    </Shape>
-                    <div className="col-span-2">
-                        <div className="grid gap-6 lg:grid lg:grid-cols-2 col-span-2">
-                            <div className="flex flex-col gap-4">
+                <p className="grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
+                <div className="flex gap-6 py-2 font-bold">
+                    <p
+                        onClick={() => setTab(1)}
+                        className={`cursor-pointer ${tab === 1 ? 'border-b-3 border-red-tx' : ''}`}
+                    >
+                        Endereços
+                    </p>
+                    <p
+                        onClick={() => setTab(2)}
+                        className={`cursor-pointer ${tab === 2 ? 'border-b-3 border-red-tx' : ''}`}
+                    >
+                        Carga
+                    </p>
+                    <p
+                        onClick={() => setTab(3)}
+                        className={`cursor-pointer ${tab === 3 ? 'border-b-3 border-red-tx' : ''}`}
+                    >
+                        Revisão
+                    </p>
+                </div>
+                <form>
+                    <div data-tab={tab} className="hidden data-[tab=1]:grid gap-6">
+                        <Shape className="border border-gray-600 w-full">
+                            <h4 className="pb-2">Endereço origem</h4>
+                            <AddressForm
+                                register={register}
+                                errors={errors.origin || {}}
+                                touchedFields={touchedFields.origin || {}}
+                                watch={watch}
+                                setValue={setValue}
+                                setError={setError}
+                                clearErrors={clearErrors}
+                                prefix="origin."
+                            />
+                        </Shape>
+                        <Shape className="border border-gray-600 w-full">
+                            <h4 className="pb-2">Endereço destino</h4>
+                            <AddressForm
+                                register={register}
+                                errors={errors.destination || {}}
+                                touchedFields={touchedFields.destination || {}}
+                                watch={watch}
+                                setValue={setValue}
+                                setError={setError}
+                                clearErrors={clearErrors}
+                                prefix="destination."
+                            />
+                        </Shape>
+
+                        <div className="flex-col gap-4 hidden lg:flex lg:col-start-2">
+                            <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
+                                <Button
+                                    className="bg-gray-50"
+                                    onClick={handleCancel}
+                                    type="button"
+                                >
+                                    <ButtonText className="text-black text-center">
+                                        Cancelar
+                                    </ButtonText>
+                                </Button>
+
+                                <Button
+                                    className="bg-red-tx cursor-pointer"
+                                    onClick={handleNext}
+                                    type="button"
+                                >
+                                    <ButtonText className="text-white text-center">
+                                        Próximo
+                                    </ButtonText>
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-tab={tab} className="hidden data-[tab=2]:block">
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            <div>
                                 <Shape className="border border-gray-600">
                                     <h4 className="pb-2">Tipo da carga*</h4>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 xl:grid-cols-3 gap-2">
@@ -216,84 +282,74 @@ export function Budget() {
                                             <p>Sacola</p>
                                         </label>
                                     </div>
-                                </Shape>
 
-                                <div className="hidden lg:block space-y-2">
-                                    <div className="flex gap-3">
-                                        <Info className="icon" />
-                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
+                                    <div className="py-4">
+                                        <p onClick={toggleDetails} className="cursor-pointer flex items-center ">
+                                            {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
+                                            Mais detalhes sobre a carga (opcional)
+                                        </p>
+
+                                        {showDetails && (
+                                            <div className="xl:col-span-3">
+                                                <h4 className="pb-2">Dimensões da carga</h4>
+                                                <div>
+                                                    <MeasuresForms
+                                                        register={register}
+                                                        errors={errors}
+                                                        touchedFields={touchedFields}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                    <Shape className="bg-gray-50">
-                                        <PackageList
-                                            packages={packages}
-                                            onIncrease={handleIncreaseAmount}
-                                            onDecrease={handleDecreaseAmount}
-                                        />
-                                    </Shape>
-                                </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-2">
+                                        <Button
+                                            className="bg-blue-tx lg:col-start-2"
+                                            onClick={handleAddPackage}
+                                            type="button"
+                                        >
+                                            <ButtonText className="text-center text-white">
+                                                Adicionar pacote
+                                            </ButtonText>
+                                        </Button>
+                                    </div>
+                                </Shape>
                             </div>
 
-
-                            <div className="flex flex-col gap-4">
-                                <p onClick={toggleDetails} className="cursor-pointer flex items-center">
-                                    {showDetails ? <CaretDown className="icon" /> : <CaretRight className="icon" />}
-                                    Mais detalhes sobre a carga (opcional)
-                                </p>
-
-                                {showDetails && (
-                                    <Shape className="border border-gray-600 xl:col-span-3">
-                                        <h4 className="pb-2">Dimensões da carga</h4>
-                                        <div>
-                                            <MeasuresForms
-                                                register={register}
-                                                errors={errors}
-                                                touchedFields={touchedFields}
-                                            />
-                                        </div>
-                                    </Shape>
-                                )}
-
-                                <div className="space-y-2 lg:hidden">
-                                    <div className="flex gap-3">
-                                        <Info className="icon" />
-                                        <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
-                                    </div>
-                                    <Shape className="bg-gray-50">
-                                        <PackageList
-                                            packages={packages}
-                                            onIncrease={handleIncreaseAmount}
-                                            onDecrease={handleDecreaseAmount}
-                                        />
-                                    </Shape>
+                            <div className="space-y-2">
+                                <div className="flex gap-3">
+                                    <Info className="icon" />
+                                    <p>Todos os pacotes serão enviados para o mesmo endereço informado acima.</p>
                                 </div>
+                                <Shape className="bg-gray-50">
+                                    <PackageList
+                                        packages={packages}
+                                        onIncrease={handleIncreaseAmount}
+                                        onDecrease={handleDecreaseAmount}
+                                    />
+                                </Shape>
+                            </div>
 
+                            <div className="flex flex-col gap-4 lg:col-start-2">
                                 <div className="grid xs:grid-cols-2 gap-3 py-4 items-end xl:py-0 order-4">
                                     <Button
-                                        className="bg-blue-tx xs:col-span-2 md:row-start-1 md:col-start-1"
-                                        onClick={handleAddPackage}
-                                        type="button"
-                                    >
-                                        <ButtonText className="text-center text-white">
-                                            Adicionar pacote
-                                        </ButtonText>
-                                    </Button>
-                                    <Button
-                                        className={`xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-2 ${isSubmitting ? 'bg-gray-600 cursor-not-allowed' : 'bg-red-tx cursor-pointer'}`}
-                                        onClick={handleSend}
-                                        type="button"
-                                        disabled={isSubmitting}
-                                    >
-                                        <ButtonText className="text-white text-center">
-                                            {isSubmitting ? "Enviando..." : "Enviar"}
-                                        </ButtonText>
-                                    </Button>
-                                    <Button
-                                        className="bg-gray-50 xs:col-span-2 md:col-span-1 md:row-start-2 md:col-start-1"
-                                        onClick={handleCancel}
+                                        className="bg-gray-50"
+                                        onClick={handleBack}
                                         type="button"
                                     >
                                         <ButtonText className="text-black text-center">
-                                            Cancelar
+                                            Voltar
+                                        </ButtonText>
+                                    </Button>
+
+                                    <Button
+                                        className="bg-red-tx cursor-pointer"
+                                        onClick={handleNext}
+                                        type="button"
+                                    >
+                                        <ButtonText className="text-white text-center">
+                                            Próximo
                                         </ButtonText>
                                     </Button>
                                 </div>
@@ -521,7 +577,7 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="width"
-                        title="Largura (cm)"
+                        title="Largura"
                         placeholder="cm"
                         error={errors.width}
                         dirty={touchedFields.width}
@@ -532,7 +588,7 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="height"
-                        title="Altura (cm)"
+                        title="Altura"
                         placeholder="cm"
                         error={errors.height}
                         dirty={touchedFields.height}
@@ -543,7 +599,7 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="length"
-                        title="Comprimento (cm)"
+                        title="Comprimento"
                         placeholder="cm"
                         error={errors.length}
                         dirty={touchedFields.length}
@@ -554,7 +610,7 @@ function MeasuresForms({ register, errors, touchedFields }) {
                     <FormField
                         register={register}
                         name="weight"
-                        title="Peso (kg)"
+                        title="Peso"
                         placeholder="kg"
                         error={errors.weight}
                         dirty={touchedFields.weight}
