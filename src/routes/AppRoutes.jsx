@@ -23,11 +23,11 @@ export function AppRoutes() {
       <Route path="/recuperar" element={<Recover />} />
       <Route
         path="/app"
-     /*  element={
+       element={
        <RequireAuth>
             <Layout />
           </RequireAuth> 
-        } */
+        } 
       >
         <Route path="home" element={<Home />} />
         <Route path="orcamento" element={<Budget />} />
