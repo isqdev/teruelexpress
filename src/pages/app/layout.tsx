@@ -4,12 +4,14 @@ import React from "react"
 import { Outlet } from "react-router-dom"
 
 export function Layout() {
-  return (
+ return (
     <SidebarProvider>
-          <AppSidebar/>
-          <main className="flex-1">
-            <Outlet />
-          </main>     
+      <div className="flex min-h-screen w-full">  
+        <AppSidebar />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
     </SidebarProvider>
   );
 }
