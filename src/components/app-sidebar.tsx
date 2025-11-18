@@ -1,4 +1,4 @@
-import { House, Package, Truck, Cube, Star, FolderSimpleStar, ClipboardText, GearSix } from "phosphor-react";
+import { House, Package, Truck, Cube, Star, FolderSimpleStar, ClipboardText, GearSix, SignOut } from "phosphor-react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import Cookies from 'js-cookie';
 import React from "react";
@@ -71,8 +71,9 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleLogout}
-                  className="h-10 text-red-600 hover:bg-red-100"
+                  className="h-10 text-red-600 hover:bg-red-100 flex items-center gap-2"
                 >
+                  <SignOut size={20} />
                   <span className="text-base">Sair</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
