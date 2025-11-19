@@ -151,7 +151,7 @@ export function Home() {
         <div className="grid grid-cols-1 gap-y-5 gap-x-5 lg:grid-cols-2">
           <Shape className="p-0 xs:p-4 sm:p-4 xl:p-6 xs:shadow-sm drop-shadow-primary border-gray-50 xs:border-1">
             <h4 className="lg:col-span mb-4">Frete</h4>
-            <div className="grid grid-cols-1 gap-3 lg:gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:gap-4">
               {serviceButtons.map((props, idx) => (
                 <ServiceButtonLink key={idx} {...props} />
               ))}
