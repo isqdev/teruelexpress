@@ -1,5 +1,5 @@
 import { Button, ButtonText, InputRoot, InputField, InputIcon, InputLabel, InputMessage, AppHeader, SectionApp } from "@/components";
-import { CheckCircle, Pencil, FloppyDiskBack, LockKeyOpen } from "phosphor-react";
+import { CheckCircle, Pencil, FloppyDiskBack, LockKeyOpen, LockSimpleOpen, EyeSlash, Eye } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -64,8 +64,6 @@ export function Settings() {
   const [isEditingPassword, setIsEditingPassword] = useState(false);
 
   const onSubmitEdit = async (data) => {
-    // localStorage.setItem("user-data", JSON.stringify(data))
-    // console.log(data);
     if(account == "Pessoa Física") {
       await userService.updatePF(data);
     } else {
@@ -73,12 +71,17 @@ export function Settings() {
     }
     setisEditingData(false);
     getInfo();
-    // sessionStorage.setItem("home", JSON.stringify([username, account, cpfCnpj, email, phone]));
     toast.success("Cadastro atualizado!");
   };
 
-  const onSubmitPassword = (data) => {
+  const onSubmitPassword = async (data) => {
     localStorage.setItem("pass", JSON.stringify(data));
+    console.log(data);
+    if(account == "Pessoa Física") {
+      await userService.updatePasswordPF(data);
+    } else {
+      await userService.updatePasswordPJ(data);
+    }
     setIsEditingPassword(false);
     resetPassword();
     toast.success("Senha atualizada!")
@@ -162,6 +165,7 @@ export function Settings() {
                     error={errorsPassword.currentPassword}
                     dirty={touchedFieldsPassword.currentPassword}
                     type="password"
+                    icon={LockSimpleOpen}
                   />
                   <FormField
                     readOnly={!isEditingPassword}
@@ -274,6 +278,7 @@ function FormField({ title, placeholder = "", register, name, error, dirty, type
   if (dirty) {
     status = error ? "error" : "validated"
   }
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <>
@@ -286,13 +291,18 @@ function FormField({ title, placeholder = "", register, name, error, dirty, type
           readOnly={readOnly}
           disabled={readOnly}
           placeholder={placeholder}
-          type={type}
+          type={type === "password" ? (showPassword ? "text" : "password") : type}
           {...register(name, onChangeMask ? {
             onChange: (e) => {
               e.target.value = onChangeMask(e.target.value);
             }
           } : {})}
         />
+        {type === "password" && (
+          <InputIcon onClick={() => setShowPassword((v) => !v)} className="cursor-pointer">
+            {showPassword ? <Eye className="icon" /> : <EyeSlash className="icon" />}
+          </InputIcon>
+        )}
         {status === "validated" && (
           <InputIcon>
             <CheckCircle size={32} className="text-success-base" />
