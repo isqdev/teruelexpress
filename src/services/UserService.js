@@ -20,6 +20,16 @@ class UserService extends BaseService{
         const resposta = this.api.post(`${this.endPoint}/pessoa-juridica`, data);
         return resposta;
     }
+
+    async updatePJ(data){
+        const resposta = this.api.put(`${this.endPoint}/pessoa-juridica`, data);
+        return resposta;
+    }
+
+    async updatePF(data){
+        const resposta = this.api.put(`${this.endPoint}/pessoa-fisica`, data);
+        return resposta;
+    }
 }
 
 export default UserService;
