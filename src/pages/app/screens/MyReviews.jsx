@@ -106,12 +106,12 @@ const CardsWithPagination = () => {
           Nenhuma avaliação encontrada.
         </p>
       )}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 hover:cursor-pointer">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch hover:cursor-pointer">
         {items.map((item) => (
           <div
             key={item.id}
             onClick={() => openModal(item.avaliacao)}
-            className="hover:scale-101 transition duration-200 shadow-md p-4 lg:max-w-full rounded-2xl"
+            className="hover:scale-101 transition duration-200 shadow-md p-4 lg:max-w-full rounded-2xl h-full"
           >
             <div className="flex items-center mb-2">
               <div className="w-16 h-16 rounded-full bg-gray-50 items-center justify-center"></div>

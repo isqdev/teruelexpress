@@ -55,8 +55,8 @@ export function CarouselSize({ data }) {
           <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/3">
             <div className="p-1">
               <Card>
-                <CardContent className="flex h-55 items-center justify-center p-6">
-                  <div className="flex flex-col">
+                <CardContent className="flex flex-col justify-start min-h-[220px] p-6">
+                  <div className="flex items-center gap-4">
                     <div className="flex items-center gap-4">
                       <UserCircle className="icon w-16 h-16 text-gray-100 " />
                       <div className="flex flex-col">
