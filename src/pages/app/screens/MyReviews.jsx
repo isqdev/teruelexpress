@@ -22,8 +22,7 @@ const CardsWithPagination = () => {
   const [isModalSmOpen, setIsModalSmOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [loading, setLoading] = useState(true); // <-- ADICIONADO
-
+  const [loading, setLoading] = useState(true); 
   const reviewService = new ReviewService();
 
   useEffect(() => {
@@ -41,10 +40,8 @@ const CardsWithPagination = () => {
   }, []);
 
   const loadReviews = async (page) => {
-    setLoading(true); // <-- ADICIONADO
+    setLoading(true); 
 
-    // ⏳ DELAY de 1.5s para visualizar o Spinner
-    await new Promise(resolve => setTimeout(resolve, 1500));
 
     try {
       const response = await reviewService.findAllByPessoaId(page);
@@ -63,7 +60,7 @@ const CardsWithPagination = () => {
       console.error("Erro ao carregar avaliações:", error);
       setItems([]);
     } finally {
-      setLoading(false); // <-- ADICIONADO
+      setLoading(false); 
     }
   };
 
@@ -108,15 +105,15 @@ const CardsWithPagination = () => {
 
   const maxChars = getChars();
 
-  // ========== SPINNER ==============
+  
   if (loading) {
     return (
       <div className="w-full flex justify-center items-center py-10">
-        <Spinner className="w-10 h-10 text-gray-600" />
+        <Spinner className="text-blue-500" />
       </div>
     );
   }
-  // =================================
+  
 
   return (
     <div className="w-full p-4">

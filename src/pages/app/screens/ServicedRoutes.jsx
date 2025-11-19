@@ -10,6 +10,9 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
+import { Spinner } from "@/components/ui/spinner";
+
+
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -141,6 +144,24 @@ function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, ); 
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-72">
+        <Spinner className="text-blue-500" />
+      </div>
+    );
+  }
+
   const table = useReactTable({
     data,
     columns,
@@ -162,13 +183,11 @@ function DataTableDemo() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-      </div>
       <div className="rounded-md border">
         <Table>
-          <TableHeader >
+          <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id} >
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
                   <TableHead key={header.id} className="text-center">
                     {header.isPlaceholder
@@ -182,10 +201,12 @@ function DataTableDemo() {
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
-                <TableRow className="text-center"
+                <TableRow
+                  className="text-center"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
@@ -209,27 +230,26 @@ function DataTableDemo() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
 
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }
