@@ -2,6 +2,7 @@ import { Button, ButtonText, Image, InputRoot, InputField, InputIcon, InputLabel
 import { Star, ArrowLeft, ArrowRight } from "phosphor-react";
 import { useState, useEffect } from "react";
 import ReviewService from "../../../services/ReviewService";
+import { Spinner } from "@/components/ui/spinner";
 
 export function MyReviews() {
   return (
@@ -21,6 +22,7 @@ const CardsWithPagination = () => {
   const [isModalSmOpen, setIsModalSmOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [loading, setLoading] = useState(true); // <-- ADICIONADO
 
   const reviewService = new ReviewService();
 
@@ -39,6 +41,11 @@ const CardsWithPagination = () => {
   }, []);
 
   const loadReviews = async (page) => {
+    setLoading(true); // <-- ADICIONADO
+
+    // ⏳ DELAY de 1.5s para visualizar o Spinner
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
     try {
       const response = await reviewService.findAllByPessoaId(page);
       const reviews = response.data.content || [];
@@ -55,6 +62,8 @@ const CardsWithPagination = () => {
     } catch (error) {
       console.error("Erro ao carregar avaliações:", error);
       setItems([]);
+    } finally {
+      setLoading(false); // <-- ADICIONADO
     }
   };
 
@@ -72,7 +81,7 @@ const CardsWithPagination = () => {
 
   const truncateText = (text, maxLength) => {
     if (text.length > maxLength) {
-      return text.substring(0, maxLength) + '...';
+      return text.substring(0, maxLength) + "...";
     }
     return text;
   };
@@ -99,6 +108,16 @@ const CardsWithPagination = () => {
 
   const maxChars = getChars();
 
+  // ========== SPINNER ==============
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center py-10">
+        <Spinner className="w-10 h-10 text-gray-600" />
+      </div>
+    );
+  }
+  // =================================
+
   return (
     <div className="w-full p-4">
       {items.length === 0 && (
@@ -106,6 +125,7 @@ const CardsWithPagination = () => {
           Nenhuma avaliação encontrada.
         </p>
       )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch hover:cursor-pointer">
         {items.map((item) => (
           <div
@@ -122,15 +142,13 @@ const CardsWithPagination = () => {
                     starIndex < item.rating ? (
                       <StarFull key={starIndex} />
                     ) : (
-                      <Star
-                        key={starIndex}
-                        className="icon text-gray-100"
-                      />
+                      <Star key={starIndex} className="icon text-gray-100" />
                     )
                   )}
                 </div>
               </div>
             </div>
+
             {item.avaliacao ? (
               <p className="break-words h-auto lg:h-[10rem] xl:h-[8rem]">
                 {truncateText(item.avaliacao, maxChars)}{" "}
@@ -143,6 +161,7 @@ const CardsWithPagination = () => {
                 Sem descrição
               </p>
             )}
+
             <p className="pt-1 text-gray-600">{item.data}</p>
           </div>
         ))}
@@ -158,9 +177,11 @@ const CardsWithPagination = () => {
           >
             <ArrowLeft className="icon" />
           </Button>
+
           <span className="text-sm text-gray-600 mx-2">
             {currentPage + 1} de {totalPages}
           </span>
+
           <Button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage >= totalPages - 1}
@@ -171,6 +192,7 @@ const CardsWithPagination = () => {
           </Button>
         </div>
       )}
+
       <ModalSm open={isModalSmOpen} onClose={closeModal}>
         {selectedReview ? (
           <div className="">
@@ -178,9 +200,7 @@ const CardsWithPagination = () => {
             <p className="break-words py-3">{selectedReview}</p>
             <div className="flex items-center justify-center">
               <Button onClick={closeModal} variant="secondary">
-                <ButtonText className="text-center">
-                  Fechar
-                </ButtonText>
+                <ButtonText className="text-center">Fechar</ButtonText>
               </Button>
             </div>
           </div>
@@ -190,9 +210,7 @@ const CardsWithPagination = () => {
             <p className="italic text-gray-600 py-3">Sem descrição</p>
             <div className="flex items-center justify-center">
               <Button onClick={closeModal} variant="secondary">
-                <ButtonText className="text-center">
-                  Fechar
-                </ButtonText>
+                <ButtonText className="text-center">Fechar</ButtonText>
               </Button>
             </div>
           </div>
@@ -202,12 +220,11 @@ const CardsWithPagination = () => {
   );
 };
 
-
 function StarFull() {
   return (
-    <div className="relative w-6 sm:w-8" >
+    <div className="relative w-6 sm:w-8">
       <Star className="absolute inset-0 text-star icon" weight="fill" />
       <Star className="absolute inset-0 text-star-border icon" weight="regular" />
     </div>
-  )
+  );
 }
