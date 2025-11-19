@@ -214,14 +214,17 @@ function DataTableDemo() {
     },
   });
 
+      if (loading) {
+      return (
+        <div className="flex justify-center items-center h-72">
+          <Spinner className="text-blue-500" />
+        </div>
+      );
+    }
+
   return (
     <div className="w-full pt-5">
-      <div className="rounded-md border min-h-[200px] flex items-center justify-center">
-
-        
-        {loading ? (
-          <Spinner className="text-blue-500" />
-        ) : (
+      <div className="rounded-md border flex items-center justify-center">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map(headerGroup => (

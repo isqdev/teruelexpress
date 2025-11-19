@@ -80,9 +80,9 @@ export function Home() {
       const resposta = await userService.getInfo();
       console.log(resposta);
       if (resposta.status === 200) {
-        setUserName(resposta.data.nome || "Nome Generéico");
-        setTipoConta(resposta.data.tipoConta || "Pessoa Física");
-        sessionStorage.setItem("home", [resposta.data.nome, resposta.data.tipoConta]);
+        setUserName(resposta.data.name || "Nome Generéico");
+        setTipoConta(resposta.data.accountType || "Pessoa Física");
+        sessionStorage.setItem("home", JSON.stringify([resposta.data.name, resposta.data.accountType, resposta.data.cpfCnpj, resposta.data.email, resposta.data.phone]));
       }
     } catch (error) {
       toast.error("Erro ao buscar dados");
