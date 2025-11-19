@@ -183,20 +183,17 @@ export function Budget() {
                 <p className="grid col-span-2 pt-4">Preencha o formulário a seguir para solicitar um orçamento para seu frete.</p>
                 <div className="flex gap-6 py-4 font-bold">
                     <p
-                        onClick={() => setTab(1)}
-                        className={`cursor-pointer ${tab === 1 ? 'border-b-3 border-red-tx' : ''}`}
+                        className={`${tab === 1 ? 'border-b-3 border-red-tx' : ''}`}
                     >
                         Endereços
                     </p>
                     <p
-                        onClick={() => setTab(2)}
-                        className={`cursor-pointer ${tab === 2 ? 'border-b-3 border-red-tx' : ''}`}
+                        className={`${tab === 2 ? 'border-b-3 border-red-tx' : ''}`}
                     >
                         Carga
                     </p>
                     <p
-                        onClick={() => setTab(3)}
-                        className={`cursor-pointer ${tab === 3 ? 'border-b-3 border-red-tx' : ''}`}
+                        className={`${tab === 3 ? 'border-b-3 border-red-tx' : ''}`}
                     >
                         Revisão
                     </p>
