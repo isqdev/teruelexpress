@@ -130,7 +130,7 @@ const CardsWithPagination = () => {
             onClick={() => openModal(item.avaliacao)}
             className="hover:scale-101 transition duration-200 shadow-md p-4 lg:max-w-full rounded-2xl h-full"
           >
-            <div className="flex items-center mb-2">
+            <div className="flex align-top mb-2">
               <div className="w-16 h-16 rounded-full bg-gray-50 items-center justify-center"></div>
               <div className="pl-2">
                 <p className="font-bold">{item.nomeCliente}</p>
