@@ -28,6 +28,8 @@ export function Reviews() {
         setReviews(formatted);
       })
       .catch(() => setReviews([]));
+
+      
   }, []);
 
   return (
@@ -56,7 +58,7 @@ export function CarouselSize({ data }) {
             <div className="p-1">
               <Card>
                 <CardContent className="flex flex-col justify-start min-h-[220px] p-6">
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-4">
                       <UserCircle className="icon w-16 h-16 text-gray-100 " />
                       <div className="flex flex-col">
